@@ -20,6 +20,9 @@ public class GameClient {
         socketChannel = SocketChannel.open();
         socketChannel.connect(serverAddress);
         System.out.println("Connected to the server.");
+
+        ServerInputHandler serverInputHandler = new ServerInputHandler(socketChannel);
+        serverInputHandler.start();
     }
 
     public void stop() {
