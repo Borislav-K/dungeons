@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.server;
+package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -29,6 +29,11 @@ public class SmartBuffer {
     public void write(String s) {
         buffer.clear();
         buffer.put(s.getBytes());
+    }
+
+    public void write(byte[] bytes) {
+        buffer.clear();
+        buffer.put(bytes);
     }
 
     public int readFromChannel(SocketChannel from) throws IOException {

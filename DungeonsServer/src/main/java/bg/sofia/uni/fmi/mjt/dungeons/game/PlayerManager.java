@@ -56,11 +56,12 @@ public class PlayerManager {
         }
     }
 
-    public void removePlayerByChannel(SocketChannel channel) {
+    public int removePlayerByChannel(SocketChannel channel) {
         int playerId = getPlayerIdByChannel(channel);
         System.out.printf("Removing player with id %d\n", playerId);
         players.remove(playerId);
         freeIDs.add(playerId);
+        return playerId;
     }
 
 

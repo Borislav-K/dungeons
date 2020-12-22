@@ -28,7 +28,7 @@ public class KeyboardEventHandler {
         this.webClient = webClient;
     }
 
-    public void handleKeyboardEvent(int keyCode) {
+    public void handleKeyboardEvent(int keyCode) { // TODO check handling of multiple movement keys pressed at once
         if (keybinds.containsKey(keyCode)) {
             webClient.sendMessage(keybinds.get(keyCode));
         }
