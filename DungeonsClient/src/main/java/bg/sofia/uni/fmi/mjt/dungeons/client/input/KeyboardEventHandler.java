@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.client.input;
 
-import bg.sofia.uni.fmi.mjt.dungeons.client.GameClient;
+import bg.sofia.uni.fmi.mjt.dungeons.client.network.GameClient;
 
 import java.util.Map;
 
