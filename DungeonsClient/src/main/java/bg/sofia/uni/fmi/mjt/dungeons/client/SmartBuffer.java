@@ -18,11 +18,11 @@ public class SmartBuffer {
         this.buffer = ByteBuffer.allocate(capacity); // TODO think about allocateDirect()
     }
 
-    public String read() {
+    public byte[] read(int limit) {
         buffer.flip();
-        byte[] destination = new byte[buffer.remaining()];
-        buffer.get(destination);
-        return new String(destination, StandardCharsets.UTF_8);
+        byte[] destination = new byte[limit];
+        buffer.get(destination, 0, limit);
+        return destination;
     }
 
     public void write(String s) {
