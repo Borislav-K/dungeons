@@ -14,8 +14,10 @@ public class KeyboardListener extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println(e.toString());
-        keyboardEventHandler.handleKeyboardEvent(e.getKeyCode());
+        int keyCode = e.getKeyCode();
+        System.out.printf("Pressed %d\n", keyCode);
+        keyboardEventHandler.publishCommand(keyCode);
+
     }
 
 }

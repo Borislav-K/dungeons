@@ -16,11 +16,13 @@ public class Game {
     private GameClient webClient;
     private RenderableMap gameMap;
     private GameWindow gameWindow;
+    private KeyboardEventHandler keyboardEventHandler;
 
     public Game() {
         webClient = new GameClient();
         gameMap = new RenderableMap();
         gameWindow = new GameWindow(gameMap);
+        keyboardEventHandler = new KeyboardEventHandler(webClient);
     }
 
     public void start() {
@@ -40,7 +42,6 @@ public class Game {
     }
 
     private void addKeyboardListener() {
-        KeyboardEventHandler keyboardEventHandler = new KeyboardEventHandler(webClient);
         KeyboardListener k = new KeyboardListener(keyboardEventHandler);
         gameWindow.addKeyListener(k);
     }
@@ -61,6 +62,7 @@ public class Game {
     }
 
     private void tick() {
+        keyboardEventHandler.handleNext();
         char[][] newMap = webClient.fetchMapFromServer();
         gameMap.updateMap(newMap);
         gameWindow.repaint();
