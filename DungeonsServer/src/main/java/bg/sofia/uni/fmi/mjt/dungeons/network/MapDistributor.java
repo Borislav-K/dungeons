@@ -13,18 +13,23 @@ public class MapDistributor {
 
     private SmartBuffer buffer;
 
-    public MapDistributor(GameMap gameMap, PlayerManager playerManager) {
+    public MapDistributor(PlayerManager playerManager, GameMap gameMap) {
         this.gameMap = gameMap;
         this.playerManager = playerManager;
         this.buffer = new SmartBuffer();
     }
 
-    public void distributeMap() throws IOException {
+    public void distributeMap() {
         byte[] mapBytes = gameMap.serialize();
 
         for (SocketChannel channel : playerManager.getAllPlayers()) {
             buffer.write(mapBytes);
-            buffer.writeIntoChannel(channel); // TODO check if it's necessary to reload every time
+            try {
+                buffer.writeIntoChannel(channel); // TODO check if it's necessary to reload every time
+            } catch (IOException e) {
+                System.out.println("Could not distribute the map to a player!");
+                e.printStackTrace();
+            }
         }
     }
 

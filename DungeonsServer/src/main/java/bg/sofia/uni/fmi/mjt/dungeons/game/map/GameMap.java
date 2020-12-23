@@ -38,25 +38,6 @@ public class GameMap {
         return result;
     }
 
-    public char[][] getMap() {
-        return fields;
-    }
-
-
-    // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
-    public void movePlayer(int playerId, int newX, int newY) {
-        if (!isFreeSpace(newX, newY)) {
-            return;
-        }
-        int previousPosition = players.get(playerId);
-        int oldX = previousPosition / SQUARE_SIDE;
-        int oldY = previousPosition % SQUARE_SIDE;
-        fields[oldX][oldY] = EMPTY_SPACE;
-
-        players.put(playerId, newX * SQUARE_SIDE + newY);
-        fields[newX][newY] = (char) ('0' + playerId);
-    }
-
     // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
     public void movePlayer(int playerId, Direction direction) {
         int previousPosition = players.get(playerId);
@@ -79,7 +60,7 @@ public class GameMap {
     }
 
     //Will throw NullPointerException if the player does not exist on the map
-    public void removePlayer(int playerId) {
+    public void despawnPlayer(int playerId) {
         int currentPosition = players.get(playerId);
         int x = currentPosition / SQUARE_SIDE;
         int y = currentPosition % SQUARE_SIDE;

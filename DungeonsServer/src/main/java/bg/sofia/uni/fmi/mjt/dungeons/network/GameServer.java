@@ -1,10 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
-import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
-import bg.sofia.uni.fmi.mjt.dungeons.game.event.ActionQueue;
-import bg.sofia.uni.fmi.mjt.dungeons.game.event.PlayerMovement;
-import bg.sofia.uni.fmi.mjt.dungeons.game.event.PlayerConnect;
-import bg.sofia.uni.fmi.mjt.dungeons.game.event.PlayerDisconnect;
+import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerActionHandler;
+import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerConnect;
+import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerDisconnect;
+import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerMovement;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -21,12 +20,12 @@ public class GameServer {
     private static final int PORT = 10_000;
 
     private SmartBuffer buffer;
-    private ActionQueue actionQueue;
+    private PlayerActionHandler actionHandler;
 
     private Selector selector;
 
-    public GameServer(ActionQueue actionQueue) {
-        this.actionQueue = actionQueue;
+    public GameServer(PlayerActionHandler actionHandler) {
+        this.actionHandler = actionHandler;
         this.buffer = new SmartBuffer();
     }
 
@@ -59,18 +58,17 @@ public class GameServer {
                     int r = buffer.readFromChannel(sc);
                     if (r <= 0) {
                         System.out.println("A player disconnected manually");
-                        //sc.close();
-                        actionQueue.publish(new PlayerDisconnect(sc));
+                        actionHandler.publish(new PlayerDisconnect(sc));
                         break;
                     }
                     String receivedData = buffer.read();
-                    actionQueue.publish(new PlayerMovement(receivedData, sc));
+                    actionHandler.publish(new PlayerMovement(receivedData, sc));
                     System.out.printf("Received message: %s\n", receivedData);
                 } else if (key.isAcceptable()) {
                     ServerSocketChannel sockChannel = (ServerSocketChannel) key.channel();
                     SocketChannel playerChannel = sockChannel.accept();
                     playerChannel.configureBlocking(false);
-                    actionQueue.publish(new PlayerConnect(playerChannel));
+                    actionHandler.publish(new PlayerConnect(playerChannel));
                     playerChannel.register(selector, SelectionKey.OP_READ);
                 }
 
