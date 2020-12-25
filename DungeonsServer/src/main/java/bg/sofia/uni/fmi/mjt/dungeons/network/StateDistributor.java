@@ -6,14 +6,15 @@ import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
-public class MapDistributor {
+// StateDistributor distributes only the necessary data (PlayerPackage) to the clients
+public class StateDistributor {
 
     private GameState gameState;
     private PlayerManager playerManager;
 
     private SmartBuffer buffer;
 
-    public MapDistributor(PlayerManager playerManager, GameState gameState) {
+    public StateDistributor(PlayerManager playerManager, GameState gameState) {
         this.gameState = gameState;
         this.playerManager = playerManager;
         this.buffer = new SmartBuffer();

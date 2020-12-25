@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+// Game state holds the current state of the game with all the information inside
 public class GameState implements Serializable {
 
     private static final long serialVersionUID = 1L;
