@@ -2,9 +2,10 @@ package bg.sofia.uni.fmi.mjt.dungeons.client;
 
 import bg.sofia.uni.fmi.mjt.dungeons.client.input.KeyboardEventHandler;
 import bg.sofia.uni.fmi.mjt.dungeons.client.input.KeyboardListener;
+import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 import bg.sofia.uni.fmi.mjt.dungeons.client.network.GameClient;
 import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.GameWindow;
-import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.RenderableMap;
+import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.Renderer;
 
 import java.io.IOException;
 
@@ -14,14 +15,14 @@ public class Game {
     private static final double FRAME_NANOS = 17000000.0;
 
     private GameClient webClient;
-    private RenderableMap gameMap;
+    private Renderer renderer;
     private GameWindow gameWindow;
     private KeyboardEventHandler keyboardEventHandler;
 
     public Game() {
         webClient = new GameClient();
-        gameMap = new RenderableMap();
-        gameWindow = new GameWindow(gameMap);
+        renderer = new Renderer();
+        gameWindow = new GameWindow(renderer);
         keyboardEventHandler = new KeyboardEventHandler(webClient);
     }
 
@@ -63,9 +64,11 @@ public class Game {
 
     private void tick() {
         keyboardEventHandler.handleNext();
-        char[][] newMap = webClient.fetchMapFromServer();
-        gameMap.updateMap(newMap);
-        gameWindow.repaint();
+        GameState newState = webClient.fetchStateFromServer();
+        if (newState != null) {
+            renderer.updateState(newState);
+            gameWindow.repaint();
+        }
     }
 
 

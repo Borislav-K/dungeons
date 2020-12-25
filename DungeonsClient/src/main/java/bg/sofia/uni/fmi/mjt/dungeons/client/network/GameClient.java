@@ -1,9 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeons.client.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.client.SmartBuffer;
-import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.RenderableMap;
+import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
@@ -26,15 +28,6 @@ public class GameClient {
         System.out.println("Connected to the server.");
     }
 
-    public void disconnect() {
-        try {
-            this.socketChannel.close();
-        } catch (IOException e) {
-            System.out.println("Could not properly terminate the connection to the server");
-            e.printStackTrace();
-        }
-    }
-
     public void sendMessage(String msg) {
         buffer.write(msg);
         try {
@@ -45,7 +38,7 @@ public class GameClient {
         }
     }
 
-    public char[][] fetchMapFromServer() {
+    public GameState fetchStateFromServer() {
         try {
             int r = buffer.readFromChannel(socketChannel);
             if (r <= 0) {
@@ -58,15 +51,15 @@ public class GameClient {
     }
 
 
-    private char[][] deserializeMap(SmartBuffer buffer) {
-        int mapSize = RenderableMap.MAP_DIMENSIONS;
-
-        byte[] mapBytes = buffer.read(mapSize * mapSize);
-        char[][] map = new char[mapSize][mapSize];
-        for (int i = 0; i < mapBytes.length; i++) {
-            map[i / mapSize][i % mapSize] = (char) mapBytes[i];
+    private GameState deserializeMap(SmartBuffer buffer) {
+        byte[] mapBytes = buffer.read();
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
+             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
+            return (GameState) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            //TODO if multiple packets are sent by the server, this will crash - handle it
+            throw new RuntimeException("Could not deserialize game state", e);
         }
-        return map;
     }
 
 }

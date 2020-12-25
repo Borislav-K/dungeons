@@ -2,7 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.game.action;
 
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
-import bg.sofia.uni.fmi.mjt.dungeons.game.map.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
@@ -13,11 +13,11 @@ public class PlayerActionHandler {
 
     private Queue<PlayerAction> actionQueue;
     private PlayerManager playerManager;
-    private GameMap gameMap;
+    private GameState gameState;
 
-    public PlayerActionHandler(PlayerManager playerManager, GameMap gameMap) {
+    public PlayerActionHandler(PlayerManager playerManager, GameState gameState) {
         this.playerManager = playerManager;
-        this.gameMap = gameMap;
+        this.gameState = gameState;
         this.actionQueue = new LinkedList<>();
     }
 
@@ -45,7 +45,7 @@ public class PlayerActionHandler {
     private void handlePlayerConnect(PlayerConnect connection) {
         try {
             int playerId = playerManager.addNewPlayer(connection.getChannel());
-            gameMap.spawnPlayer(playerId);
+            gameState.spawnPlayer(playerId);
         } catch (PlayerCapacityReachedException e) {
             System.out.println("Game is full - cannot add player"); //TODO let the player know as well
         }
@@ -60,12 +60,12 @@ public class PlayerActionHandler {
             e.printStackTrace();
         }
         int playerId = playerManager.removePlayerByChannel(disconnection.getChannel());
-        gameMap.despawnPlayer(playerId);
+        gameState.despawnPlayer(playerId);
     }
 
     private void handleMovement(PlayerMovement action) {
         int playerId = playerManager.getPlayerIdByChannel(action.getInitiator());
-        gameMap.movePlayer(playerId, action.getDirection());
+        gameState.movePlayer(playerId, action.getDirection());
     }
 
 }

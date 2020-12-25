@@ -1,41 +1,33 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.map;
+package bg.sofia.uni.fmi.mjt.dungeons.game.state;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 
-import java.util.HashMap;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Random;
 
-public class GameMap {
+public class GameMap implements Serializable {
 
-    private static final int SQUARE_SIDE = 10; //TODO increase
-    private static final int OBSTACLES_COUNT = 10;
+    private static final long serialVersionUID = 1L;
+
+    private static final int SQUARE_SIDE = 20; //TODO increase
+    private static final int OBSTACLES_COUNT = 30;
 
     private static final char EMPTY_SPACE = '.';
     private static final char OBSTACLE = '#';
     private static final char TREASURE = 'T'; //TODO generate on bootstrap
     private static final char MINION = 'M'; //TODO generate on bootstrap
 
-    private Random generator;
+    private transient Random generator;
+    private transient Map<Integer, Integer> players;
+
     private char[][] fields;
 
-    private Map<Integer, Integer> players;
-
-    public GameMap() {
-        this.players = new HashMap<>();
+    public GameMap(Map<Integer, Integer> players) {
+        this.players = players;
         generator = new Random();
         fields = new char[SQUARE_SIDE][SQUARE_SIDE];
         constructGameMap();
-    }
-
-    public byte[] serialize() {
-        byte[] result = new byte[SQUARE_SIDE * SQUARE_SIDE];
-        for (int i = 0; i < SQUARE_SIDE; i++) {
-            for (int j = 0; j < SQUARE_SIDE; j++) {
-                result[i * SQUARE_SIDE + j] = (byte) fields[i][j];
-            }
-        }
-        return result;
     }
 
     // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
@@ -112,5 +104,4 @@ public class GameMap {
         return x < SQUARE_SIDE && y < SQUARE_SIDE &&
                fields[x][y] == EMPTY_SPACE;
     }
-
 }

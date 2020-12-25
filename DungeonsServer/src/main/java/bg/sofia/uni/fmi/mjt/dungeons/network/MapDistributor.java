@@ -1,26 +1,26 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
-import bg.sofia.uni.fmi.mjt.dungeons.game.map.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 public class MapDistributor {
 
-    private GameMap gameMap;
+    private GameState gameState;
     private PlayerManager playerManager;
 
     private SmartBuffer buffer;
 
-    public MapDistributor(PlayerManager playerManager, GameMap gameMap) {
-        this.gameMap = gameMap;
+    public MapDistributor(PlayerManager playerManager, GameState gameState) {
+        this.gameState = gameState;
         this.playerManager = playerManager;
         this.buffer = new SmartBuffer();
     }
 
     public void distributeMap() {
-        byte[] mapBytes = gameMap.serialize();
+        byte[] mapBytes = gameState.serialize();
 
         for (SocketChannel channel : playerManager.getAllPlayers()) {
             buffer.write(mapBytes);
