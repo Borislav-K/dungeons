@@ -6,7 +6,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
 public class SmartBuffer {
-    private static final int DEFAULT_BUFFER_SIZE = 1024;
+    private static final int DEFAULT_BUFFER_SIZE = 2048;
 
     private ByteBuffer buffer;
 
@@ -16,6 +16,13 @@ public class SmartBuffer {
 
     public SmartBuffer(int capacity) {
         this.buffer = ByteBuffer.allocate(capacity); // TODO think about allocateDirect()
+    }
+
+    public byte[] read() {
+        buffer.flip();
+        byte[] destination = new byte[buffer.remaining()];
+        buffer.get(destination);
+        return destination;
     }
 
     public byte[] read(int limit) {
