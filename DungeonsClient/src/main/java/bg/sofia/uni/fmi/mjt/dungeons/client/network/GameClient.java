@@ -44,20 +44,20 @@ public class GameClient {
             if (r <= 0) {
                 return null; //TODO handle this in a better way
             }
+            return deserializeState(buffer);
         } catch (IOException e) {
             throw new IllegalStateException("Server stopped responding", e);//TODO handle this in a better way
         }
-        return deserializeMap(buffer);
     }
 
 
-    private GameState deserializeMap(SmartBuffer buffer) {
+    private GameState deserializeState(SmartBuffer buffer) {
         byte[] mapBytes = buffer.read();
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
              ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
             return (GameState) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            //TODO if multiple packets are sent by the server, this will crash - handle it
+            //TODO if multiple segments are sent by the server, this will crash - handle it
             throw new RuntimeException("Could not deserialize game state", e);
         }
     }

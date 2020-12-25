@@ -15,4 +15,5 @@ public class GameState implements Serializable {
     public GameMap GameMap() {
         return gameMap;
     }
+
 }

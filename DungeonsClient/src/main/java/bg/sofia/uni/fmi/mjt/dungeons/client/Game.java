@@ -2,10 +2,10 @@ package bg.sofia.uni.fmi.mjt.dungeons.client;
 
 import bg.sofia.uni.fmi.mjt.dungeons.client.input.KeyboardEventHandler;
 import bg.sofia.uni.fmi.mjt.dungeons.client.input.KeyboardListener;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 import bg.sofia.uni.fmi.mjt.dungeons.client.network.GameClient;
 import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.GameWindow;
 import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.Renderer;
+import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 
 import java.io.IOException;
 
@@ -70,6 +70,5 @@ public class Game {
             gameWindow.repaint();
         }
     }
-
 
 }
