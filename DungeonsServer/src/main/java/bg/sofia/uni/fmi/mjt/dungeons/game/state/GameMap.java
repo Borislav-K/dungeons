@@ -19,11 +19,11 @@ public class GameMap implements Serializable {
     private static final char MINION = 'M'; //TODO generate on bootstrap
 
     private transient Random generator;
-    private transient Map<Integer, Integer> players;
+    private transient Map<Integer, Position2D> players;
 
     private char[][] fields;
 
-    public GameMap(Map<Integer, Integer> players) {
+    public GameMap(Map<Integer, Position2D> players) {
         this.players = players;
         generator = new Random();
         fields = new char[SQUARE_SIDE][SQUARE_SIDE];
@@ -32,37 +32,33 @@ public class GameMap implements Serializable {
 
     // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
     public void movePlayer(int playerId, Direction direction) {
-        int previousPosition = players.get(playerId);
-        int oldX = previousPosition / SQUARE_SIDE;
-        int oldY = previousPosition % SQUARE_SIDE;
+        Position2D previousPosition = players.get(playerId);
+        int oldX = previousPosition.x();
+        int oldY = previousPosition.y();
 
-        int newPosition = switch (direction) {
-            case LEFT -> previousPosition - 1;
-            case RIGHT -> previousPosition + 1;
-            case UP -> previousPosition - SQUARE_SIDE;
-            case DOWN -> previousPosition + SQUARE_SIDE;
-        };
-        int newX = newPosition / SQUARE_SIDE;
-        int newY = newPosition % SQUARE_SIDE;
-        if (isFreeSpace(newX, newY)) {
+        Position2D newPosition = switch (direction) {
+            case LEFT -> new Position2D(oldX - 1, oldY);
+            case RIGHT -> new Position2D(oldX + 1, oldY);
+            case UP -> new Position2D(oldX, oldY - 1);
+            case DOWN -> new Position2D(oldX, oldY + 1);
+        }; // The start of the coordinate system is the upper left corner of the window
+        if (isFreeSpace(newPosition)) {
             players.put(playerId, newPosition);
             fields[oldX][oldY] = EMPTY_SPACE;
-            fields[newX][newY] = (char) ('0' + playerId);
+            fields[newPosition.x()][newPosition.y()] = (char) ('0' + playerId);
         }
     }
 
     //Will throw NullPointerException if the player does not exist on the map
     public void despawnPlayer(int playerId) {
-        int currentPosition = players.get(playerId);
-        int x = currentPosition / SQUARE_SIDE;
-        int y = currentPosition % SQUARE_SIDE;
-        fields[x][y] = EMPTY_SPACE;
+        Position2D currentPosition = players.get(playerId);
+        fields[currentPosition.x()][currentPosition.y()] = EMPTY_SPACE;
     }
 
     // Spawns the player at a random free position
     public void spawnPlayer(int playerId) {
-        int randomPos = getRandomFreePosition();
-        fields[randomPos / SQUARE_SIDE][randomPos % SQUARE_SIDE] = (char) ('0' + playerId);
+        Position2D randomPos = getRandomFreePosition();
+        fields[randomPos.x()][randomPos.y()] = (char) ('0' + playerId);
         players.put(playerId, randomPos);
     }
 
@@ -85,22 +81,24 @@ public class GameMap implements Serializable {
 
     private void setObstacles() {
         for (int i = 1; i <= OBSTACLES_COUNT; i++) {
-            int randomPos = getRandomFreePosition();
-            int randomX = randomPos / SQUARE_SIDE;
-            int randomY = randomPos % SQUARE_SIDE;
-            fields[randomX][randomY] = OBSTACLE;
+            Position2D randomPos = getRandomFreePosition();
+            fields[randomPos.x()][randomPos.y()] = OBSTACLE;
         }
     }
 
-    private int getRandomFreePosition() {
-        int randomPos = generator.nextInt(SQUARE_SIDE * SQUARE_SIDE);
-        while (!isFreeSpace(randomPos / SQUARE_SIDE, randomPos % SQUARE_SIDE)) {
-            randomPos = generator.nextInt(SQUARE_SIDE * SQUARE_SIDE);
+    private Position2D getRandomFreePosition() {
+        int randomInt = generator.nextInt(SQUARE_SIDE * SQUARE_SIDE);
+        Position2D randomPos = new Position2D(randomInt / SQUARE_SIDE, randomInt % SQUARE_SIDE);
+        while (!isFreeSpace(randomPos)) {
+            randomInt = generator.nextInt(SQUARE_SIDE * SQUARE_SIDE);
+            randomPos = new Position2D(randomInt / SQUARE_SIDE, randomInt % SQUARE_SIDE);
         }
         return randomPos;
     }
 
-    private boolean isFreeSpace(int x, int y) {
+    private boolean isFreeSpace(Position2D position2D) {
+        int x = position2D.x();
+        int y = position2D.y();
         return x < SQUARE_SIDE && y < SQUARE_SIDE &&
                fields[x][y] == EMPTY_SPACE;
     }

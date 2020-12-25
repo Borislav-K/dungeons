@@ -38,7 +38,7 @@ public class Renderer extends JPanel {
         g2d.setFont(new Font("Comic Sans", Font.ITALIC, MAP_FIELD_SIZE));
         for (int i = 0; i < mapFields.length; i++) {
             for (int j = 0; j < mapFields[i].length; j++) {
-                g2d.drawString(String.valueOf(mapFields[i][j]), MAP_FIELD_SIZE * j, MAP_FIELD_SIZE * (i + 1));
+                g2d.drawString(String.valueOf(mapFields[i][j]), MAP_FIELD_SIZE * i, MAP_FIELD_SIZE * (j + 1));
             }
         }
     }

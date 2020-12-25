@@ -16,7 +16,7 @@ public class GameState implements Serializable {
 
     private GameMap gameMap;
 
-    private transient Map<Integer, Integer> players;
+    private transient Map<Integer, Position2D> players;
 
     public GameState() {
         this.players = new HashMap<>();
