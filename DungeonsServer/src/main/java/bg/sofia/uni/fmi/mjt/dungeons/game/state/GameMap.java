@@ -2,15 +2,18 @@ package bg.sofia.uni.fmi.mjt.dungeons.game.state;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Map;
 import java.util.Random;
 
-public class GameMap implements Serializable {
+public class GameMap implements Externalizable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final int SQUARE_SIDE = 20; //TODO increase
+    private static final int MAP_DIMENSIONS = 20; //TODO increase
     private static final int OBSTACLES_COUNT = 30;
 
     private static final char EMPTY_SPACE = '.';
@@ -18,15 +21,15 @@ public class GameMap implements Serializable {
     private static final char TREASURE = 'T'; //TODO generate on bootstrap
     private static final char MINION = 'M'; //TODO generate on bootstrap
 
-    private transient Random generator;
-    private transient Map<Integer, Player> players;
+    private Random generator;
+    private Map<Integer, Player> players;
 
     private char[][] fields;
 
     public GameMap(Map<Integer, Player> players) {
         this.players = players;
         generator = new Random();
-        fields = new char[SQUARE_SIDE][SQUARE_SIDE];
+        fields = new char[MAP_DIMENSIONS][MAP_DIMENSIONS];
         constructGameMap();
     }
 
@@ -70,9 +73,9 @@ public class GameMap implements Serializable {
     }
 
     private void buildBarrier() {
-        for (int i = 0; i < SQUARE_SIDE; i++) {
-            for (int j = 0; j < SQUARE_SIDE; j++) {
-                if (i == 0 || j == 0 || i == SQUARE_SIDE - 1 || j == SQUARE_SIDE - 1) {
+        for (int i = 0; i < MAP_DIMENSIONS; i++) {
+            for (int j = 0; j < MAP_DIMENSIONS; j++) {
+                if (i == 0 || j == 0 || i == MAP_DIMENSIONS - 1 || j == MAP_DIMENSIONS - 1) {
                     fields[i][j] = OBSTACLE;
                 } else {
                     fields[i][j] = EMPTY_SPACE;
@@ -89,11 +92,11 @@ public class GameMap implements Serializable {
     }
 
     private Position2D getRandomFreePosition() {
-        int randomInt = generator.nextInt(SQUARE_SIDE * SQUARE_SIDE);
-        Position2D randomPos = new Position2D(randomInt / SQUARE_SIDE, randomInt % SQUARE_SIDE);
+        int randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
+        Position2D randomPos = new Position2D(randomInt / MAP_DIMENSIONS, randomInt % MAP_DIMENSIONS);
         while (!isFreeSpace(randomPos)) {
-            randomInt = generator.nextInt(SQUARE_SIDE * SQUARE_SIDE);
-            randomPos = new Position2D(randomInt / SQUARE_SIDE, randomInt % SQUARE_SIDE);
+            randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
+            randomPos = new Position2D(randomInt / MAP_DIMENSIONS, randomInt % MAP_DIMENSIONS);
         }
         return randomPos;
     }
@@ -101,7 +104,26 @@ public class GameMap implements Serializable {
     private boolean isFreeSpace(Position2D position2D) {
         int x = position2D.x();
         int y = position2D.y();
-        return x < SQUARE_SIDE && y < SQUARE_SIDE &&
+        return x < MAP_DIMENSIONS && y < MAP_DIMENSIONS &&
                fields[x][y] == EMPTY_SPACE;
     }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        for (int i = 0; i < MAP_DIMENSIONS; i++) {
+            for (int j = 0; j < MAP_DIMENSIONS; j++) {
+                out.writeByte(fields[i][j]);
+            }
+        }
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException {
+        for (int i = 0; i < MAP_DIMENSIONS; i++) {
+            for (int j = 0; j < MAP_DIMENSIONS; j++) {
+                fields[i][j] = (char) in.readByte();
+            }
+        }
+    }
+
 }

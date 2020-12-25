@@ -4,7 +4,10 @@ import bg.sofia.uni.fmi.mjt.dungeons.exceptions.NoSuchPlayerException;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 
 import java.nio.channels.SocketChannel;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 public class PlayerManager {
 
@@ -19,9 +22,8 @@ public class PlayerManager {
         this.freeIDs = new PriorityQueue<>(allowedIds);
     }
 
-    public List<SocketChannel> getAllPlayers() {
-        // The modification of players is done only through the other methods of this class
-        return Collections.unmodifiableList(new LinkedList<>(players.values()));
+    public Map<Integer, SocketChannel> getAllPlayers() {
+        return players;
     }
 
     public SocketChannel getChannelFor(int playerId) throws NoSuchPlayerException {

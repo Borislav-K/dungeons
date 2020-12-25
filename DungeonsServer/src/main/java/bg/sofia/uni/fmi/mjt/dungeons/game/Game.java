@@ -47,6 +47,6 @@ public class Game {
     private void tick() {
         server.fetchPlayerActions();
         playerActionHandler.handleAll();
-        stateDistributor.distributeMap();
+        stateDistributor.distributeState();
     }
 }
