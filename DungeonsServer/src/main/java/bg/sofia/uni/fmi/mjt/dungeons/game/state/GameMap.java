@@ -1,10 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeons.game.state;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
-import bg.sofia.uni.fmi.mjt.dungeons.game.io.PerformantByteArrayOutputStream;
 
-import java.io.*;
-import java.util.HashMap;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Map;
 import java.util.Random;
 
@@ -66,7 +67,7 @@ public class GameMap implements Externalizable {
     public void spawnPlayer(int playerId) {
         Position2D randomPos = getRandomFreePosition();
         fields[randomPos.x()][randomPos.y()] = (char) ('0' + playerId);
-        players.put(playerId, new Player(randomPos,BattleStats.BASE_PLAYER_STATS));
+        players.put(playerId, new Player(randomPos, BattleStats.BASE_PLAYER_STATS));
     }
 
     private void constructGameMap() {

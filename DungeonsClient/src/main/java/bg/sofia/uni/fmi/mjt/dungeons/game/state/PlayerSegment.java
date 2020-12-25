@@ -16,6 +16,10 @@ public class PlayerSegment implements Externalizable {
         return gameMap;
     }
 
+    public Player playerData() {
+        return playerData;
+    }
+
     @Override
     public void writeExternal(ObjectOutput out) {
         throw new UnsupportedOperationException("Player segments should only be read from the server");
@@ -26,4 +30,5 @@ public class PlayerSegment implements Externalizable {
         this.gameMap = (GameMap) in.readObject();
         this.playerData = (Player) in.readObject();
     }
+
 }
