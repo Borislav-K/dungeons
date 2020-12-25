@@ -15,8 +15,7 @@ public class GameState implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private GameMap gameMap;
-
-    private transient Map<Integer, Position2D> players;
+    private transient Map<Integer, Player> players;
 
     public GameState() {
         this.players = new HashMap<>();

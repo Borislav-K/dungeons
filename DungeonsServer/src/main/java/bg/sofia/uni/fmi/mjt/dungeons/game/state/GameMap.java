@@ -19,11 +19,11 @@ public class GameMap implements Serializable {
     private static final char MINION = 'M'; //TODO generate on bootstrap
 
     private transient Random generator;
-    private transient Map<Integer, Position2D> players;
+    private transient Map<Integer, Player> players;
 
     private char[][] fields;
 
-    public GameMap(Map<Integer, Position2D> players) {
+    public GameMap(Map<Integer, Player> players) {
         this.players = players;
         generator = new Random();
         fields = new char[SQUARE_SIDE][SQUARE_SIDE];
@@ -32,7 +32,8 @@ public class GameMap implements Serializable {
 
     // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
     public void movePlayer(int playerId, Direction direction) {
-        Position2D previousPosition = players.get(playerId);
+        Player player = players.get(playerId);
+        Position2D previousPosition = player.getPosition();
         int oldX = previousPosition.x();
         int oldY = previousPosition.y();
 
@@ -43,7 +44,7 @@ public class GameMap implements Serializable {
             case DOWN -> new Position2D(oldX, oldY + 1);
         }; // The start of the coordinate system is the upper left corner of the window
         if (isFreeSpace(newPosition)) {
-            players.put(playerId, newPosition);
+            player.setPosition(newPosition);
             fields[oldX][oldY] = EMPTY_SPACE;
             fields[newPosition.x()][newPosition.y()] = (char) ('0' + playerId);
         }
@@ -51,15 +52,16 @@ public class GameMap implements Serializable {
 
     //Will throw NullPointerException if the player does not exist on the map
     public void despawnPlayer(int playerId) {
-        Position2D currentPosition = players.get(playerId);
+        Position2D currentPosition = players.get(playerId).getPosition();
         fields[currentPosition.x()][currentPosition.y()] = EMPTY_SPACE;
+        players.remove(playerId);
     }
 
     // Spawns the player at a random free position
     public void spawnPlayer(int playerId) {
         Position2D randomPos = getRandomFreePosition();
         fields[randomPos.x()][randomPos.y()] = (char) ('0' + playerId);
-        players.put(playerId, randomPos);
+        players.put(playerId, new Player(randomPos));
     }
 
     private void constructGameMap() {

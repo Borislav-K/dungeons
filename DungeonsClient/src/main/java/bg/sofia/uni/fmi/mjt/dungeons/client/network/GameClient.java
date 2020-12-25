@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.client.network;
 import bg.sofia.uni.fmi.mjt.dungeons.client.SmartBuffer;
 import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -53,6 +54,7 @@ public class GameClient {
 
     private GameState deserializeState(SmartBuffer buffer) {
         byte[] mapBytes = buffer.read();
+        System.out.println("LENGTH: "+mapBytes.length);
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
              ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
             return (GameState) objectInputStream.readObject();
