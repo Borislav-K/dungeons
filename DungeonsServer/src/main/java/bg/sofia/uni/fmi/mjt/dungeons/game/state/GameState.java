@@ -11,26 +11,14 @@ import java.util.Map;
 import java.util.Random;
 
 // Game state holds the current state of the game with all the information inside
-public class GameState implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class GameState {
 
     private GameMap gameMap;
-    private transient Map<Integer, Player> players;
+    private Map<Integer, Player> players;
 
     public GameState() {
         this.players = new HashMap<>();
         this.gameMap = new GameMap(players);
-    }
-
-    public byte[] serialize() {
-        try (PerformantByteArrayOutputStream output = new PerformantByteArrayOutputStream();
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(output)) {
-            objectOutputStream.writeObject(this);
-            return output.getBuf();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not serialize the game state", e);
-        }
     }
 
     // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
@@ -46,6 +34,14 @@ public class GameState implements Serializable {
     // Spawns the player at a random free position
     public void spawnPlayer(int playerId) {
         gameMap.spawnPlayer(playerId);
+    }
+
+    public GameMap gameMap() {
+        return gameMap;
+    }
+
+    public Player getPlayerInfo(int playerId) {
+        return players.get(playerId);
     }
 
 }

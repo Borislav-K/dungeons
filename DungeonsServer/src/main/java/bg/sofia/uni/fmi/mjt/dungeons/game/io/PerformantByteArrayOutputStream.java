@@ -6,10 +6,6 @@ public class PerformantByteArrayOutputStream extends ByteArrayOutputStream {
     public PerformantByteArrayOutputStream() {
     }
 
-    public int getCount() {
-        return count;
-    }
-
     public byte[] getBuf() {
         return buf;
     }

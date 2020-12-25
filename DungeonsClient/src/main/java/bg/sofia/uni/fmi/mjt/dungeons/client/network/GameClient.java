@@ -1,9 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeons.client.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.client.SmartBuffer;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
+import bg.sofia.uni.fmi.mjt.dungeons.game.state.PlayerSegment;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -39,7 +38,7 @@ public class GameClient {
         }
     }
 
-    public GameState fetchStateFromServer() {
+    public PlayerSegment fetchStateFromServer() {
         try {
             int r = buffer.readFromChannel(socketChannel);
             if (r <= 0) {
@@ -52,14 +51,15 @@ public class GameClient {
     }
 
 
-    private GameState deserializeState(SmartBuffer buffer) {
+    private PlayerSegment deserializeState(SmartBuffer buffer) {
         byte[] mapBytes = buffer.read();
-        System.out.println("LENGTH: "+mapBytes.length);
+        System.out.println("LENGTH: " + mapBytes.length); //TODO remove
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
              ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
-            return (GameState) objectInputStream.readObject();
+            PlayerSegment playerSegment = new PlayerSegment();
+            playerSegment.readExternal(objectInputStream);
+            return playerSegment;
         } catch (IOException | ClassNotFoundException e) {
-            //TODO if multiple segments are sent by the server, this will crash - handle it
             throw new RuntimeException("Could not deserialize game state", e);
         }
     }

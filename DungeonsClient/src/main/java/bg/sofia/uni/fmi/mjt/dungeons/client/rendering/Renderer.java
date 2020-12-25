@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.client.rendering;
 
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
+import bg.sofia.uni.fmi.mjt.dungeons.game.state.PlayerSegment;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,15 +9,15 @@ public class Renderer extends JPanel {
 
     private static final int MAP_FIELD_SIZE = 25;
 
-    private GameState gameState;
+    private PlayerSegment currentSegment;
 
 
     public Renderer() {
-        this.gameState = new GameState();
+        this.currentSegment = new PlayerSegment();
     }
 
-    public void updateState(GameState newState) {
-        this.gameState = newState;
+    public void updateState(PlayerSegment newSegment) {
+        this.currentSegment = newSegment;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Renderer extends JPanel {
     }
 
     private void paintMap(Graphics2D g2d) {
-        var mapFields = gameState.GameMap().getFields();
+        var mapFields = currentSegment.GameMap().getFields();
         g2d.setStroke(new BasicStroke(5));
         // TODO see drawBytes
         //Increasing Y -> Moving downwards
