@@ -4,10 +4,24 @@ import java.io.*;
 
 public class Player implements Externalizable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
-    private int experience;
+    private int currentLevel;
+    private int experiencePercentage;
+
     private BattleStats battleStats;
+
+    public int currentLevel() {
+        return currentLevel;
+    }
+
+    public int experiencePercentage() {
+        return experiencePercentage;
+    }
+
+    public BattleStats battleStats() {
+        return battleStats;
+    }
 
     @Override
     public void writeExternal(ObjectOutput out) {
@@ -16,7 +30,8 @@ public class Player implements Externalizable {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        this.experience = in.readInt();
+        this.currentLevel = in.readByte();
+        this.experiencePercentage = in.readInt();
         this.battleStats = (BattleStats) in.readObject();
     }
 }

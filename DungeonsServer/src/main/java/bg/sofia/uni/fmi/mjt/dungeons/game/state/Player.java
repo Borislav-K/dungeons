@@ -16,6 +16,7 @@ public class Player implements Actor, Externalizable {
     public Player(Position2D position, BattleStats battleStats) {
         this.position = position;
         this.battleStats = battleStats; // TODO probably going to have to clone it
+        this.experience = 0;
     }
 
     public Player() {
@@ -31,7 +32,8 @@ public class Player implements Actor, Externalizable {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(experience);
+        out.writeByte(LevelCalculator.getLevelByExperience(experience));
+        out.writeInt(LevelCalculator.getPercentageToNextLevel(experience));
         out.writeObject(battleStats);
     }
 
