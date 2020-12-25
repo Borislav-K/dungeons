@@ -14,7 +14,7 @@ import java.util.Random;
 public class GameState {
 
     private GameMap gameMap;
-    private transient Map<Integer, Player> players;
+    private Map<Integer, Player> players;
 
     public GameState() {
         this.players = new HashMap<>();
@@ -38,6 +38,10 @@ public class GameState {
 
     public GameMap gameMap() {
         return gameMap;
+    }
+
+    public Player getPlayerInfo(int playerId) {
+        return players.get(playerId);
     }
 
 }

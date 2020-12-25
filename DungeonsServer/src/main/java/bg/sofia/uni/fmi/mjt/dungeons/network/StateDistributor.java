@@ -2,7 +2,6 @@ package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
 import bg.sofia.uni.fmi.mjt.dungeons.game.io.PerformantByteArrayOutputStream;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 
 import java.io.IOException;
@@ -26,8 +25,8 @@ public class StateDistributor {
     public void distributeState() {
         for (var player : playerManager.getAllPlayers().entrySet()) {
             SocketChannel channel = player.getValue();
-            byte[] mapBytes = serializeGameMap();
-            buffer.write(mapBytes);
+            byte[] playerPackageBytes = serializePlayerSegment(player.getKey());
+            buffer.write(playerPackageBytes);
             try {
                 buffer.writeIntoChannel(channel); // TODO check if it's necessary to reload every time
             } catch (IOException e) {
@@ -37,11 +36,11 @@ public class StateDistributor {
         }
     }
 
-    private byte[] serializeGameMap() {
-        GameMap gameMap = gameState.gameMap();
+    private byte[] serializePlayerSegment(int playerId) {
+        PlayerSegment playerSegment = new PlayerSegment(gameState.gameMap(), gameState.getPlayerInfo(playerId));
         try (PerformantByteArrayOutputStream fastByteOutputStream = new PerformantByteArrayOutputStream();
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(fastByteOutputStream)) {
-            gameMap.writeExternal(objectOutputStream);
+            playerSegment.writeExternal(objectOutputStream);
             objectOutputStream.flush(); // VERY IMPORTANT!!!
             return fastByteOutputStream.getBuf();
         } catch (IOException e) {

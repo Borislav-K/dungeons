@@ -5,7 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.client.input.KeyboardListener;
 import bg.sofia.uni.fmi.mjt.dungeons.client.network.GameClient;
 import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.GameWindow;
 import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.Renderer;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
+import bg.sofia.uni.fmi.mjt.dungeons.game.state.PlayerSegment;
 
 import java.io.IOException;
 
@@ -64,7 +64,7 @@ public class Game {
 
     private void tick() {
         keyboardEventHandler.handleNext();
-        GameState newState = webClient.fetchStateFromServer();
+        PlayerSegment newState = webClient.fetchStateFromServer();
         if (newState != null) {
             renderer.updateState(newState);
             gameWindow.repaint();

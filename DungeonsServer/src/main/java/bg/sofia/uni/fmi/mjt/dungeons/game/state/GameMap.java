@@ -1,11 +1,10 @@
 package bg.sofia.uni.fmi.mjt.dungeons.game.state;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
+import bg.sofia.uni.fmi.mjt.dungeons.game.io.PerformantByteArrayOutputStream;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -31,6 +30,9 @@ public class GameMap implements Externalizable {
         generator = new Random();
         fields = new char[MAP_DIMENSIONS][MAP_DIMENSIONS];
         constructGameMap();
+    }
+
+    public GameMap() {
     }
 
     // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
@@ -64,7 +66,7 @@ public class GameMap implements Externalizable {
     public void spawnPlayer(int playerId) {
         Position2D randomPos = getRandomFreePosition();
         fields[randomPos.x()][randomPos.y()] = (char) ('0' + playerId);
-        players.put(playerId, new Player(randomPos));
+        players.put(playerId, new Player(randomPos,BattleStats.BASE_PLAYER_STATS));
     }
 
     private void constructGameMap() {
@@ -118,12 +120,8 @@ public class GameMap implements Externalizable {
     }
 
     @Override
-    public void readExternal(ObjectInput in) throws IOException {
-        for (int i = 0; i < MAP_DIMENSIONS; i++) {
-            for (int j = 0; j < MAP_DIMENSIONS; j++) {
-                fields[i][j] = (char) in.readByte();
-            }
-        }
+    public void readExternal(ObjectInput in) {
+        throw new UnsupportedOperationException("Map should only be written to clients");
     }
 
 }
