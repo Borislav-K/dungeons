@@ -144,14 +144,24 @@ public class Renderer extends JPanel {
 
     private void renderXPBar(Graphics2D g2d) {
         g2d.setStroke(new BasicStroke(2));
+
+        String levelLabel = "Level ".concat(String.valueOf(currentSegment.playerData().currentLevel()));
+        int currentXPPercentage = currentSegment.playerData().experiencePercentage();
+
+        //XP Bar progress
+        g2d.setColor(Color.YELLOW);
+        int progressWidth = (int) Math.round(XP_BAR_WIDTH * (currentXPPercentage / 100.0));
+        System.out.printf("PROGRESS: %d\n", progressWidth);
+        g2d.fillRect(XP_BAR_UPPER_CORNER_X, XP_BAR_UPPER_CORNER_Y, progressWidth, XP_BAR_HEIGHT);
+
+        //XP Bar Border
         g2d.setColor(Color.BLUE);
         g2d.drawRect(XP_BAR_UPPER_CORNER_X, XP_BAR_UPPER_CORNER_Y, XP_BAR_WIDTH, XP_BAR_HEIGHT);
 
-        String levelLabel = "Level ".concat(String.valueOf(currentSegment.playerData().currentLevel()));
-        String currentXPPercentage = String.valueOf(currentSegment.playerData().experiencePercentage());
-
-        g2d.drawString(currentXPPercentage, XP_TEXT_LOCATION_X, XP_TEXT_LOCATION_Y);
+        // Level Label
+        g2d.drawString(String.valueOf(currentXPPercentage), XP_TEXT_LOCATION_X, XP_TEXT_LOCATION_Y);
         g2d.drawString(levelLabel, LEVEL_LABEL_LOCATION_X, LEVEL_LABEL_LOCATION_Y);
+
 
     }
 }
