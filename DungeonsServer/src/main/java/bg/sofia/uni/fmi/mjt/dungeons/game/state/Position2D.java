@@ -87,8 +87,8 @@ public class Position2D {
         return !isObstaclePosition && actors.isEmpty();
     }
 
-    //Returns the loser player (if there is such), null otherwise
-    public Player makeActorsFight() {
+    //Returns the actor that loses the battle (if there was a battle)
+    public Actor makeActorsFight() {
         if (isObstaclePosition || actors.size() != MAX_ACTORS_AT_POSITION) {
             return null;
         }
@@ -116,7 +116,7 @@ public class Position2D {
         }
         player.increaseXP(minion.getXPReward());
         removeActor(minion);
-        return null;
+        return minion;
     }
 
     public byte toByte() {

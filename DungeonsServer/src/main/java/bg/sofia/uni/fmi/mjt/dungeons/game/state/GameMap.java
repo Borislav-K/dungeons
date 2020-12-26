@@ -71,9 +71,13 @@ public class GameMap implements Externalizable {
 
     public void handlePlayerAttack(int playerId) {
         Position2D playerPosition = players.get(playerId).getPosition();
-        Player loser = playerPosition.makeActorsFight();
+        Actor loser = playerPosition.makeActorsFight();
         if (loser != null) {
-            players.remove(loser.id());
+            if (loser.getType().equals(ActorType.PLAYER)) {
+                players.remove(((Player) loser).id());
+            } else {
+                spawnMinion();
+            }
         }
     }
 
@@ -81,7 +85,7 @@ public class GameMap implements Externalizable {
     private void constructGameMap() {
         buildBarrier();
         setObstacles();
-        spawnMinions();
+        spawnInitialMinions();
     }
 
     private void buildBarrier() {
@@ -102,11 +106,15 @@ public class GameMap implements Externalizable {
         }
     }
 
-    private void spawnMinions() {
+    private void spawnInitialMinions() {
         for (int i = 1; i <= GameMap.MINIONS_COUNT; i++) {
-            Position2D randomPos = getRandomSpawnablePosition();
-            randomPos.addActor(new Minion());
+            spawnMinion();
         }
+    }
+
+    private void spawnMinion() {
+        Position2D randomPos = getRandomSpawnablePosition();
+        randomPos.addActor(new Minion());
     }
 
     // A spawnable position is one that has no actors

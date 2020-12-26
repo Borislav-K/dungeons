@@ -151,7 +151,6 @@ public class Renderer extends JPanel {
         //XP Bar progress
         g2d.setColor(Color.YELLOW);
         int progressWidth = (int) Math.round(XP_BAR_WIDTH * (currentXPPercentage / 100.0));
-        System.out.printf("PROGRESS: %d\n", progressWidth);
         g2d.fillRect(XP_BAR_UPPER_CORNER_X, XP_BAR_UPPER_CORNER_Y, progressWidth, XP_BAR_HEIGHT);
 
         //XP Bar Border
