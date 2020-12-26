@@ -36,6 +36,10 @@ public class GameState {
         gameMap.spawnPlayer(playerId);
     }
 
+    public void handlePlayerAttack(int playerId) {
+        gameMap.handlePlayerAttack(playerId);
+    }
+
     public GameMap gameMap() {
         return gameMap;
     }
@@ -43,5 +47,6 @@ public class GameState {
     public Player getPlayerInfo(int playerId) {
         return players.get(playerId);
     }
+
 
 }

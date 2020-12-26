@@ -1,9 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
-import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerActionHandler;
-import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerConnect;
-import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerDisconnect;
-import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerMovement;
+import bg.sofia.uni.fmi.mjt.dungeons.game.action.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -62,8 +59,8 @@ public class GameServer {
                         break;
                     }
                     String receivedData = buffer.read();
-                    actionHandler.publish(new PlayerMovement(receivedData, sc));
                     System.out.printf("Received message: %s\n", receivedData);
+                    actionHandler.publish(PlayerAction.of(receivedData, sc));
                 } else if (key.isAcceptable()) {
                     ServerSocketChannel sockChannel = (ServerSocketChannel) key.channel();
                     SocketChannel playerChannel = sockChannel.accept();

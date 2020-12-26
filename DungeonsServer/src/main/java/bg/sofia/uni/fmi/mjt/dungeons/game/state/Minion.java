@@ -23,7 +23,8 @@ public class Minion implements Actor {
     private BattleStats stats;
 
     public Minion() {
-        this.level = generator.nextInt() % (MAX_MINION_LEVEL + 1);
+        this.level = generator.nextInt(MAX_MINION_LEVEL);
+        System.out.printf("Spawning minion with level %d\n", level);
         this.stats = MINION_STATS.get(level);
     }
 

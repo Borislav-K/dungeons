@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.game.state;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
 
+import javax.print.event.PrintJobAttributeListener;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -86,6 +87,38 @@ public class Position2D {
         return !isObstaclePosition && actors.isEmpty();
     }
 
+    //Returns the loser player (if there is such), null otherwise
+    public Player makeActorsFight() {
+        if (isObstaclePosition || actors.size() != MAX_ACTORS_AT_POSITION) {
+            return null;
+        }
+        var actorsIterator = actors.iterator();
+        Actor actor1 = actorsIterator.next();
+        Actor actor2 = actorsIterator.next();
+        if (actor1.getType().equals(ActorType.PLAYER) && actor2.getType().equals(ActorType.PLAYER)) {
+            //TODO impl
+            return null;
+        }
+        Player player;
+        Minion minion;
+        if (actor1.getType().equals(ActorType.PLAYER)) {
+            if (!actor2.getType().equals(ActorType.MINION)) {
+                return null;
+            }
+            player = (Player) actor1;
+            minion = (Minion) actor2;
+        } else {
+            if (!actor1.getType().equals(ActorType.MINION)) {
+                return null;
+            }
+            player = (Player) actor2;
+            minion = (Minion) actor1;
+        }
+        player.increaseXP(minion.getXPReward());
+        removeActor(minion);
+        return null;
+    }
+
     public byte toByte() {
         if (isObstaclePosition) {
             return 1;
@@ -133,5 +166,4 @@ public class Position2D {
     private int getPlayerID(Actor actor) {
         return ((Player) actor).id();
     }
-
 }

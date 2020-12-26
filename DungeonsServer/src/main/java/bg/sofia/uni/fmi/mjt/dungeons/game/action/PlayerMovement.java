@@ -9,11 +9,6 @@ import static bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType.MOVEMENT;
 
 public class PlayerMovement implements PlayerAction {
 
-    private static final String MOVE_UP_CMD = "mvu";
-    private static final String MOVE_DOWN_CMD = "mvd";
-    private static final String MOVE_LEFT_CMD = "mvl";
-    private static final String MOVE_RIGHT_CMD = "mvr";
-
     private Direction direction;
     private SocketChannel initiator;
 

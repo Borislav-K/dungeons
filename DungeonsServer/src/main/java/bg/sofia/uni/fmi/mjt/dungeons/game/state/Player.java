@@ -39,6 +39,16 @@ public class Player implements Actor, Externalizable {
         this.position = position;
     }
 
+    public void increaseXP(int amount) {
+        int previousLevel = LevelCalculator.getLevelByExperience(experience);
+        experience += amount;
+        int currentLevel = LevelCalculator.getLevelByExperience(experience);
+
+        while (currentLevel-- > previousLevel) {
+            this.battleStats.addLevelStats();
+        }
+    }
+
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeByte(LevelCalculator.getLevelByExperience(experience));

@@ -33,10 +33,12 @@ public class PlayerActionHandler {
     }
 
     private void handleAction(PlayerAction action) {
+        System.out.printf("Handling %s action\n", action.getType());
         switch (action.getType()) {
             case PLAYER_CONNECT -> handlePlayerConnect((PlayerConnect) action);
             case PLAYER_DISCONNECT -> handlePlayerDisconnect((PlayerDisconnect) action);
             case MOVEMENT -> handleMovement((PlayerMovement) action);
+            case ATTACK -> handleAttack((PlayerAttack) action);
             default -> System.out.printf("Unknown event type %s\n", action.getType().toString());
 
         }
@@ -66,6 +68,11 @@ public class PlayerActionHandler {
     private void handleMovement(PlayerMovement action) {
         int playerId = playerManager.getPlayerIdByChannel(action.getInitiator());
         gameState.movePlayer(playerId, action.getDirection());
+    }
+
+    private void handleAttack(PlayerAttack action) {
+        int playerId = playerManager.getPlayerIdByChannel(action.getInitiator());
+        gameState.handlePlayerAttack(playerId);
     }
 
 }

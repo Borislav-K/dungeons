@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.game.state;
 
+import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 
 import java.io.Externalizable;
@@ -67,6 +68,15 @@ public class GameMap implements Externalizable {
         randomPos.addActor(new Player(playerId, randomPos, BattleStats.BASE_PLAYER_STATS));
         players.put(playerId, new Player(playerId, randomPos, BattleStats.BASE_PLAYER_STATS));
     }
+
+    public void handlePlayerAttack(int playerId) {
+        Position2D playerPosition = players.get(playerId).getPosition();
+        Player loser = playerPosition.makeActorsFight();
+        if (loser != null) {
+            players.remove(loser.id());
+        }
+    }
+
 
     private void constructGameMap() {
         buildBarrier();
