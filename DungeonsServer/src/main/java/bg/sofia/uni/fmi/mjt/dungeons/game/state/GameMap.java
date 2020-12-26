@@ -13,8 +13,10 @@ public class GameMap implements Externalizable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final int MAP_DIMENSIONS = 20; //TODO increase
+    private static final int MAP_DIMENSIONS = 20;
     private static final int OBSTACLES_COUNT = 30;
+    private static final int MINIONS_COUNT = 10;
+    private static final int BOSSES_COUNT = 5;
 
     private Random generator;
     private Map<Integer, Player> players;
@@ -44,7 +46,7 @@ public class GameMap implements Externalizable {
             case UP -> fields[oldX][oldY - 1];
             case DOWN -> fields[oldX][oldY + 1];
         }; // The start of the coordinate system is the upper left corner of the window
-        if (canMoveActorTo(newPosition)) {
+        if (canMovePlayerTo(newPosition)) {
             player.setPosition(newPosition);
             previousPosition.removeActor(player);
             newPosition.addActor(player);
@@ -69,6 +71,7 @@ public class GameMap implements Externalizable {
     private void constructGameMap() {
         buildBarrier();
         setObstacles();
+        spawnMinions();
     }
 
     private void buildBarrier() {
@@ -89,6 +92,24 @@ public class GameMap implements Externalizable {
         }
     }
 
+    private void spawnMinions() {
+        for (int i = 1; i <= GameMap.MINIONS_COUNT; i++) {
+            Position2D randomPos = getRandomSpawnablePosition();
+            randomPos.addActor(new Minion());
+        }
+    }
+
+    // A spawnable position is one that has no actors
+    private Position2D getRandomSpawnablePosition() {
+        int randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
+        Position2D randomPos = fields[randomInt / MAP_DIMENSIONS][randomInt % MAP_DIMENSIONS];
+        while (!randomPos.isSpawnable()) {
+            randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
+            randomPos = fields[randomInt / MAP_DIMENSIONS][randomInt % MAP_DIMENSIONS];
+        }
+        return randomPos;
+    }
+
     private Position2D getRandomFreePosition() {
         int randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
         Position2D randomPos = fields[randomInt / MAP_DIMENSIONS][randomInt % MAP_DIMENSIONS];
@@ -99,7 +120,7 @@ public class GameMap implements Externalizable {
         return randomPos;
     }
 
-    private boolean canMoveActorTo(Position2D pos) {
+    private boolean canMovePlayerTo(Position2D pos) {
         return pos.x() < MAP_DIMENSIONS && pos.y() < MAP_DIMENSIONS && pos.containsFreeSpace();
     }
 

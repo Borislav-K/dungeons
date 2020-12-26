@@ -82,6 +82,10 @@ public class Position2D {
         return !isObstaclePosition && actors.size() < MAX_ACTORS_AT_POSITION;
     }
 
+    public boolean isSpawnable() {
+        return !isObstaclePosition && actors.isEmpty();
+    }
+
     public byte toByte() {
         if (isObstaclePosition) {
             return 1;
