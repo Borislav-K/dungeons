@@ -16,20 +16,15 @@ public class GameMap implements Externalizable {
     private static final int MAP_DIMENSIONS = 20; //TODO increase
     private static final int OBSTACLES_COUNT = 30;
 
-    private static final char EMPTY_SPACE = '.';
-    private static final char OBSTACLE = '#';
-    private static final char TREASURE = 'T'; //TODO generate on bootstrap
-    private static final char MINION = 'M'; //TODO generate on bootstrap
-
     private Random generator;
     private Map<Integer, Player> players;
 
-    private char[][] fields;
+    private Position2D[][] fields;
 
     public GameMap(Map<Integer, Player> players) {
         this.players = players;
         generator = new Random();
-        fields = new char[MAP_DIMENSIONS][MAP_DIMENSIONS];
+        fields = new Position2D[MAP_DIMENSIONS][MAP_DIMENSIONS];
         constructGameMap();
     }
 
@@ -44,30 +39,31 @@ public class GameMap implements Externalizable {
         int oldY = previousPosition.y();
 
         Position2D newPosition = switch (direction) {
-            case LEFT -> new Position2D(oldX - 1, oldY);
-            case RIGHT -> new Position2D(oldX + 1, oldY);
-            case UP -> new Position2D(oldX, oldY - 1);
-            case DOWN -> new Position2D(oldX, oldY + 1);
+            case LEFT -> fields[oldX - 1][oldY];
+            case RIGHT -> fields[oldX + 1][oldY];
+            case UP -> fields[oldX][oldY - 1];
+            case DOWN -> fields[oldX][oldY + 1];
         }; // The start of the coordinate system is the upper left corner of the window
-        if (isFreeSpace(newPosition)) {
+        if (canMoveActorTo(newPosition)) {
             player.setPosition(newPosition);
-            fields[oldX][oldY] = EMPTY_SPACE;
-            fields[newPosition.x()][newPosition.y()] = (char) ('0' + playerId);
+            previousPosition.removeActor(player);
+            newPosition.addActor(player);
         }
     }
 
     //Will throw NullPointerException if the player does not exist on the map
     public void despawnPlayer(int playerId) {
-        Position2D currentPosition = players.get(playerId).getPosition();
-        fields[currentPosition.x()][currentPosition.y()] = EMPTY_SPACE;
+        Player player = players.get(playerId);
+        Position2D currentPosition = player.getPosition();
+        currentPosition.removeActor(player);
         players.remove(playerId);
     }
 
     // Spawns the player at a random free position
     public void spawnPlayer(int playerId) {
         Position2D randomPos = getRandomFreePosition();
-        fields[randomPos.x()][randomPos.y()] = (char) ('0' + playerId);
-        players.put(playerId, new Player(randomPos, BattleStats.BASE_PLAYER_STATS));
+        randomPos.addActor(new Player(playerId, randomPos, BattleStats.BASE_PLAYER_STATS));
+        players.put(playerId, new Player(playerId, randomPos, BattleStats.BASE_PLAYER_STATS));
     }
 
     private void constructGameMap() {
@@ -78,10 +74,9 @@ public class GameMap implements Externalizable {
     private void buildBarrier() {
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
             for (int j = 0; j < MAP_DIMENSIONS; j++) {
+                fields[i][j] = new Position2D(i, j);
                 if (i == 0 || j == 0 || i == MAP_DIMENSIONS - 1 || j == MAP_DIMENSIONS - 1) {
-                    fields[i][j] = OBSTACLE;
-                } else {
-                    fields[i][j] = EMPTY_SPACE;
+                    fields[i][j].markAsObstacle();
                 }
             }
         }
@@ -90,32 +85,29 @@ public class GameMap implements Externalizable {
     private void setObstacles() {
         for (int i = 1; i <= OBSTACLES_COUNT; i++) {
             Position2D randomPos = getRandomFreePosition();
-            fields[randomPos.x()][randomPos.y()] = OBSTACLE;
+            randomPos.markAsObstacle();
         }
     }
 
     private Position2D getRandomFreePosition() {
         int randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
-        Position2D randomPos = new Position2D(randomInt / MAP_DIMENSIONS, randomInt % MAP_DIMENSIONS);
-        while (!isFreeSpace(randomPos)) {
+        Position2D randomPos = fields[randomInt / MAP_DIMENSIONS][randomInt % MAP_DIMENSIONS];
+        while (!randomPos.containsFreeSpace()) {
             randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
-            randomPos = new Position2D(randomInt / MAP_DIMENSIONS, randomInt % MAP_DIMENSIONS);
+            randomPos = fields[randomInt / MAP_DIMENSIONS][randomInt % MAP_DIMENSIONS];
         }
         return randomPos;
     }
 
-    private boolean isFreeSpace(Position2D position2D) {
-        int x = position2D.x();
-        int y = position2D.y();
-        return x < MAP_DIMENSIONS && y < MAP_DIMENSIONS &&
-               fields[x][y] == EMPTY_SPACE;
+    private boolean canMoveActorTo(Position2D pos) {
+        return pos.x() < MAP_DIMENSIONS && pos.y() < MAP_DIMENSIONS && pos.containsFreeSpace();
     }
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
             for (int j = 0; j < MAP_DIMENSIONS; j++) {
-                out.writeByte(fields[i][j]);
+                out.writeByte(fields[i][j].toByte());
             }
         }
     }

@@ -10,30 +10,26 @@ public class GameMap implements Externalizable {
     private static final long serialVersionUID = 1L;
 
     public static final int MAP_DIMENSIONS = 20;
-    private char[][] fields;
+    private byte[][] fields;
 
     public GameMap() {
-        this.fields = new char[MAP_DIMENSIONS][MAP_DIMENSIONS];
+        this.fields = new byte[MAP_DIMENSIONS][MAP_DIMENSIONS];
     }
 
-    public char[][] getFields() {
+    public byte[][] getFields() {
         return fields;
     }
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        for (int i = 0; i < MAP_DIMENSIONS; i++) {
-            for (int j = 0; j < MAP_DIMENSIONS; j++) {
-                out.writeByte(fields[i][j]);
-            }
-        }
+        throw new UnsupportedOperationException("Clients will only receive the game map");
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException {
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
             for (int j = 0; j < MAP_DIMENSIONS; j++) {
-                fields[i][j] = (char) in.readByte();
+                fields[i][j] = in.readByte();
             }
         }
     }

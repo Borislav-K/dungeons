@@ -1,19 +1,24 @@
 package bg.sofia.uni.fmi.mjt.dungeons.game.state;
 
+import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Objects;
 
 public class Player implements Actor, Externalizable {
 
     private static final long serialVersionUID = 1L;
 
-    private Position2D position;
+    private int id;
     private int experience;
+    private Position2D position;
     private BattleStats battleStats;
 
-    public Player(Position2D position, BattleStats battleStats) {
+    public Player(int id, Position2D position, BattleStats battleStats) {
+        this.id = id;
         this.position = position;
         this.battleStats = battleStats; // TODO probably going to have to clone it
         this.experience = 0;
@@ -22,11 +27,15 @@ public class Player implements Actor, Externalizable {
     public Player() {
     }
 
-    Position2D getPosition() {
+    public int id() {
+        return id;
+    }
+
+    public Position2D getPosition() {
         return this.position;
     }
 
-    void setPosition(Position2D position) {
+    public void setPosition(Position2D position) {
         this.position = position;
     }
 
@@ -41,5 +50,23 @@ public class Player implements Actor, Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         this.experience = in.readInt();
         this.battleStats = (BattleStats) in.readObject();
+    }
+
+    @Override
+    public ActorType getType() {
+        return ActorType.PLAYER;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Player)) return false;
+        Player player = (Player) o;
+        return id == player.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
