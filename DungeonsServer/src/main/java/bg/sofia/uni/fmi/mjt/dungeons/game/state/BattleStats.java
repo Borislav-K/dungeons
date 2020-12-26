@@ -4,13 +4,11 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.HashMap;
 
 public class BattleStats implements Externalizable {
 
     private static final long serialVersionUID = 1;
 
-    public static final BattleStats BASE_PLAYER_STATS = new BattleStats(100, 100, 50, 50);
     private static final int HEALTH_GAIN_PER_LEVEL = 10;
     private static final int MANA_GAIN_PER_LEVEL = 10;
     private static final int ATTACK_GAIN_PER_LEVEL = 50;
@@ -18,23 +16,33 @@ public class BattleStats implements Externalizable {
 
 
     private int health;
+    private int currentHealth;
     private int mana;
+    private int currentMana;
     private int attack;
     private int defense;
 
     public BattleStats(int health, int mana, int attack, int defense) {
         this.health = health;
+        this.currentHealth = health;
         this.mana = mana;
+        this.currentMana = mana;
         this.attack = attack;
         this.defense = defense;
+    }
+
+    public static BattleStats getBasePlayerStats() {
+        return new BattleStats(100, 100, 50, 50);
     }
 
     public BattleStats() {
     }
 
-    public void addLevelStats() {
+    public void levelUp() {
         this.health += HEALTH_GAIN_PER_LEVEL;
+        this.currentHealth = health;
         this.mana += MANA_GAIN_PER_LEVEL;
+        this.currentMana = mana;
         this.attack += ATTACK_GAIN_PER_LEVEL;
         this.defense += DEFENSE_GAIN_PER_LEVEL;
     }
@@ -42,7 +50,9 @@ public class BattleStats implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(health);
+        out.writeInt(currentHealth);
         out.writeInt(mana);
+        out.writeInt(currentMana);
         out.writeInt(attack);
         out.writeInt(defense);
     }

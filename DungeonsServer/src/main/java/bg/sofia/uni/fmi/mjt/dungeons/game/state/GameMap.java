@@ -65,8 +65,9 @@ public class GameMap implements Externalizable {
     // Spawns the player at a random free position
     public void spawnPlayer(int playerId) {
         Position2D randomPos = getRandomFreePosition();
-        randomPos.addActor(new Player(playerId, randomPos, BattleStats.BASE_PLAYER_STATS));
-        players.put(playerId, new Player(playerId, randomPos, BattleStats.BASE_PLAYER_STATS));
+        Player player = new Player(playerId,randomPos,BattleStats.getBasePlayerStats());
+        randomPos.addActor(player);
+        players.put(playerId, player);
     }
 
     public void handlePlayerAttack(int playerId) {

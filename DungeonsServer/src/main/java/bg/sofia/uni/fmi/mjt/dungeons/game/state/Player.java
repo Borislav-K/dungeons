@@ -45,7 +45,7 @@ public class Player implements Actor, Externalizable {
         int currentLevel = LevelCalculator.getLevelByExperience(experience);
 
         while (currentLevel-- > previousLevel) {
-            this.battleStats.addLevelStats();
+            this.battleStats.levelUp();
         }
     }
 
@@ -57,9 +57,8 @@ public class Player implements Actor, Externalizable {
     }
 
     @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        this.experience = in.readInt();
-        this.battleStats = (BattleStats) in.readObject();
+    public void readExternal(ObjectInput in) {
+        throw new UnsupportedOperationException("Player data will be distributed by the server only");
     }
 
     @Override
