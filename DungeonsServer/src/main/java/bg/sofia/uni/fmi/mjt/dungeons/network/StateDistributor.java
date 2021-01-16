@@ -31,6 +31,7 @@ public class StateDistributor {
                 buffer.writeIntoChannel(channel); // TODO check if it's necessary to reload every time
             } catch (IOException e) {
                 System.out.println("Could not distribute the map to a player!");
+                //TODO should probably remove player here -> seems to happen when they close the channel
                 e.printStackTrace();
             }
         }
