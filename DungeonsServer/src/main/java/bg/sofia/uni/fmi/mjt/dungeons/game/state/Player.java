@@ -20,7 +20,7 @@ public class Player implements Actor, Externalizable {
     public Player(int id, Position2D position, BattleStats battleStats) {
         this.id = id;
         this.position = position;
-        this.battleStats = battleStats; // TODO probably going to have to clone it
+        this.battleStats = battleStats;
         this.experience = 0;
     }
 
@@ -31,7 +31,7 @@ public class Player implements Actor, Externalizable {
         return id;
     }
 
-    public Position2D getPosition() {
+    public Position2D position() {
         return this.position;
     }
 
@@ -69,8 +69,7 @@ public class Player implements Actor, Externalizable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Player)) return false;
-        Player player = (Player) o;
+        if (!(o instanceof Player player)) return false;
         return id == player.id;
     }
 

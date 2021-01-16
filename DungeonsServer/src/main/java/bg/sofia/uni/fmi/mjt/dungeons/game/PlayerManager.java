@@ -13,9 +13,8 @@ public class PlayerManager {
 
     private static final List<Integer> allowedIds = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-    Map<Integer, SocketChannel> players;
-
     private PriorityQueue<Integer> freeIDs;
+    private Map<Integer, SocketChannel> players;
 
     public PlayerManager() {
         this.players = new HashMap<>();
@@ -24,14 +23,6 @@ public class PlayerManager {
 
     public Map<Integer, SocketChannel> getAllPlayers() {
         return players;
-    }
-
-    public SocketChannel getChannelFor(int playerId) throws NoSuchPlayerException {
-        SocketChannel playerChannel = players.get(playerId);
-        if (playerChannel == null) {
-            throw new NoSuchPlayerException();
-        }
-        return playerChannel;
     }
 
     public int getPlayerIdByChannel(SocketChannel channel) {
@@ -48,16 +39,6 @@ public class PlayerManager {
         return playerId;
     }
 
-    public void removePlayerById(int playerId) throws NoSuchPlayerException {
-        System.out.printf("Removing player with id %d\n", playerId);
-        if (players.containsKey(playerId)) {
-            players.remove(playerId);
-            freeIDs.add(playerId);
-        } else {
-            throw new NoSuchPlayerException();
-        }
-    }
-
     public int removePlayerByChannel(SocketChannel channel) {
         int playerId = getPlayerIdByChannel(channel);
         System.out.printf("Removing player with id %d\n", playerId);
@@ -65,7 +46,6 @@ public class PlayerManager {
         freeIDs.add(playerId);
         return playerId;
     }
-
 
     private int getNextFreeId() throws PlayerCapacityReachedException {
         Integer nextFreeId = freeIDs.poll();

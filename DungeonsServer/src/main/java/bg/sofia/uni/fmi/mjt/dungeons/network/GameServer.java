@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
+import bg.sofia.uni.fmi.mjt.dungeons.exceptions.IllegalPlayerActionException;
 import bg.sofia.uni.fmi.mjt.dungeons.game.action.*;
 
 import java.io.IOException;
@@ -16,6 +17,9 @@ public class GameServer {
     private static final String HOST = "localhost";
     private static final int PORT = 10_000;
 
+    // All player actions are encoded by a string of 3 characters
+    private static final int ACTION_ENCODING_LENGTH = 3;
+
     private SmartBuffer buffer;
     private PlayerActionHandler actionHandler;
 
@@ -28,8 +32,7 @@ public class GameServer {
 
     public void start() {
         try {
-            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open(); // TODO maybe close sometime
-
+            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.bind(new InetSocketAddress(HOST, PORT));
             serverSocketChannel.configureBlocking(false);
             selector = Selector.open();
@@ -58,21 +61,44 @@ public class GameServer {
                         actionHandler.publish(new PlayerDisconnect(sc));
                         break;
                     }
-                    String receivedData = buffer.read();
-                    System.out.printf("Received message: %s\n", receivedData);
-                    actionHandler.publish(PlayerAction.of(receivedData, sc));
+                    String msg = buffer.read();
+                    publishPlayerActions(msg, sc);
                 } else if (key.isAcceptable()) {
-                    ServerSocketChannel sockChannel = (ServerSocketChannel) key.channel();
-                    SocketChannel playerChannel = sockChannel.accept();
-                    playerChannel.configureBlocking(false);
-                    actionHandler.publish(new PlayerConnect(playerChannel));
-                    playerChannel.register(selector, SelectionKey.OP_READ);
+                    registerNewPlayer(key);
                 }
-
                 keyIterator.remove();
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot fetch player actions", e);
+            throw new IllegalStateException("There was a problem with network communication", e);
+        }
+    }
+
+    private void publishPlayerActions(String playerInput, SocketChannel sc) {
+        if (playerInput.length() % ACTION_ENCODING_LENGTH != 0) {
+            System.out.printf("Player input does not comply with the protocol: %s\n", playerInput);
+            return;
+        }
+        for (int i = 0; i < playerInput.length(); i += ACTION_ENCODING_LENGTH) {
+            String nextActionString = playerInput.substring(i, i + ACTION_ENCODING_LENGTH);
+            System.out.printf("Received player action: %s\n", nextActionString);
+            try {
+                actionHandler.publish(PlayerAction.of(nextActionString, sc));
+            } catch (IllegalPlayerActionException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    private void registerNewPlayer(SelectionKey acceptableKey) {
+        try {
+            ServerSocketChannel sockChannel = (ServerSocketChannel) acceptableKey.channel();
+            SocketChannel playerChannel = sockChannel.accept();
+            playerChannel.configureBlocking(false);
+            actionHandler.publish(new PlayerConnect(playerChannel));
+            playerChannel.register(selector, SelectionKey.OP_READ);
+        } catch (IOException e) {
+            System.out.println("Could not register a new player");
+            e.printStackTrace();
         }
     }
 

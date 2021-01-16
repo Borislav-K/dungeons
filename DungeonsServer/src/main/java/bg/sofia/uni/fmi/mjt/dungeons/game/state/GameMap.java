@@ -37,7 +37,7 @@ public class GameMap implements Externalizable {
     // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
     public void movePlayer(int playerId, Direction direction) {
         Player player = players.get(playerId);
-        Position2D previousPosition = player.getPosition();
+        Position2D previousPosition = player.position();
         int oldX = previousPosition.x();
         int oldY = previousPosition.y();
 
@@ -57,7 +57,7 @@ public class GameMap implements Externalizable {
     //Will throw NullPointerException if the player does not exist on the map
     public void despawnPlayer(int playerId) {
         Player player = players.get(playerId);
-        Position2D currentPosition = player.getPosition();
+        Position2D currentPosition = player.position();
         currentPosition.removeActor(player);
         players.remove(playerId);
     }
@@ -71,7 +71,7 @@ public class GameMap implements Externalizable {
     }
 
     public void handlePlayerAttack(int playerId) {
-        Position2D playerPosition = players.get(playerId).getPosition();
+        Position2D playerPosition = players.get(playerId).position();
         Actor loser = playerPosition.makeActorsFight();
         if (loser != null) {
             if (loser.getType().equals(ActorType.PLAYER)) {

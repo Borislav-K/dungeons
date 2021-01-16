@@ -10,11 +10,11 @@ public class Game {
 
     private static final double FRAME_NANOS = 17000000.0;
 
-    private GameServer server;
-    private GameState gameState;
     private PlayerManager playerManager;
-    private StateDistributor stateDistributor;
+    private GameState gameState;
     private PlayerActionHandler playerActionHandler;
+    private GameServer server;
+    private StateDistributor stateDistributor;
 
     public Game() {
         this.playerManager = new PlayerManager();
