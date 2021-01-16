@@ -1,10 +1,11 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.state;
+package bg.sofia.uni.fmi.mjt.dungeons.game;
 
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
 
-import javax.print.event.PrintJobAttributeListener;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Position2D {
 
@@ -25,15 +26,12 @@ public class Position2D {
      * Since the treasure's type is randomly generated upon its pickup, the player+treasure positions are marked
      * with the bytes xx, where x/10(or x%10) is the ID of the player who is on the position
      * <h2>PLAYER+MINION</h2>
-     * There are 2 types of minions - ordinary minions and bosses.
-     * Bytes 10x mean that there is a weak minion + a player on this position, where X is the player's ID
-     * Bytes 11x mean that there is a BOSS + a player on this position, where X is the player's ID
+     * Bytes 10x mean that there is a minion + a player on this position, where X is the player's ID
      */
 
     private static final byte EMPTY_SPACE_BYTE = 0;
     private static final byte TREASURE_BYTE = 2;
     private static final byte MINION_BYTE = 3;
-    private static final byte BOSS_BYTE = 4;
 
 
     private static final int MAX_ACTORS_AT_POSITION = 2;
@@ -41,14 +39,14 @@ public class Position2D {
     private int x;
     private int y;
 
-    private Set<Actor> actors;
+    private List<Actor> actors;
     private boolean isObstaclePosition;
 
     public Position2D(int x, int y) {
         this.x = x;
         this.y = y;
+        this.actors = new ArrayList<>(MAX_ACTORS_AT_POSITION);
         this.isObstaclePosition = false;
-        this.actors = new HashSet<>(MAX_ACTORS_AT_POSITION);
     }
 
     public int x() {
@@ -59,24 +57,22 @@ public class Position2D {
         return y;
     }
 
+    public List<Actor> actors() {
+        return actors;
+    }
+
     public void markAsObstacle() {
         isObstaclePosition = true;
     }
 
     public void addActor(Actor actor) {
-        if (isObstaclePosition) {
-            throw new RuntimeException(""); //TODO
+        if (!isObstaclePosition && actors.size() < MAX_ACTORS_AT_POSITION) {
+            actors.add(actor);
         }
-        if (actors.size() == MAX_ACTORS_AT_POSITION) {
-            throw new RuntimeException(""); //TODO make a custom exception
-        }
-        actors.add(actor);
     }
 
     public void removeActor(Actor actor) {
-        if (!actors.remove(actor)) {
-            throw new RuntimeException(""); //TODO make a custom exception
-        }
+        actors.remove(actor);
     }
 
     public boolean containsFreeSpace() {
@@ -87,38 +83,6 @@ public class Position2D {
         return !isObstaclePosition && actors.isEmpty();
     }
 
-    //Returns the actor that loses the battle (if there was a battle)
-    public Actor makeActorsFight() {
-        if (isObstaclePosition || actors.size() != MAX_ACTORS_AT_POSITION) {
-            return null;
-        }
-        var actorsIterator = actors.iterator();
-        Actor actor1 = actorsIterator.next();
-        Actor actor2 = actorsIterator.next();
-        if (actor1.getType().equals(ActorType.PLAYER) && actor2.getType().equals(ActorType.PLAYER)) {
-            //TODO impl
-            return null;
-        }
-        Player player;
-        Minion minion;
-        if (actor1.getType().equals(ActorType.PLAYER)) {
-            if (!actor2.getType().equals(ActorType.MINION)) {
-                return null;
-            }
-            player = (Player) actor1;
-            minion = (Minion) actor2;
-        } else {
-            if (!actor1.getType().equals(ActorType.MINION)) {
-                return null;
-            }
-            player = (Player) actor2;
-            minion = (Minion) actor1;
-        }
-        player.increaseXP(minion.getXPReward());
-        removeActor(minion);
-        return minion;
-    }
-
     public byte toByte() {
         if (isObstaclePosition) {
             return 1;
@@ -127,26 +91,24 @@ public class Position2D {
             return EMPTY_SPACE_BYTE;
         }
         if (actors.size() == 1) {
-            Actor actor = actors.stream().findFirst().get();
-            return switch (actor.getType()) {
+            Actor actor = actors.get(0);
+            return switch (actor.type()) {
                 case TREASURE -> TREASURE_BYTE;
                 case MINION -> MINION_BYTE;
-                case BOSS -> BOSS_BYTE;
                 case PLAYER -> (byte) (getPlayerID(actor) * 10);
             };
         }
-        var actorsIterator = actors.iterator();
-        Actor actor1 = actorsIterator.next();
-        Actor actor2 = actorsIterator.next();
+        Actor actor1 = actors.get(0);
+        Actor actor2 = actors.get(1);
         // One of the actors is a player for sure
 
         // Two players case
-        if (actor1.getType().equals(ActorType.PLAYER) && actor2.getType().equals(ActorType.PLAYER)) {
+        if (actor1.type().equals(ActorType.PLAYER) && actor2.type().equals(ActorType.PLAYER)) {
             return (byte) (getPlayerID(actor1) * 10 + getPlayerID(actor2));
         }
 
         // One player case
-        if (actor2.getType().equals(ActorType.PLAYER)) {
+        if (actor2.type().equals(ActorType.PLAYER)) {
             return determineBytePlayerActor(actor2, actor1);
         } else {
             return determineBytePlayerActor(actor1, actor2);
@@ -155,10 +117,9 @@ public class Position2D {
 
     private byte determineBytePlayerActor(Actor player, Actor otherActor) {
         int playerId = getPlayerID(player);
-        return switch (otherActor.getType()) {
+        return switch (otherActor.type()) {
             case TREASURE -> (byte) (playerId * 11);
             case MINION -> (byte) (playerId + 100);
-            case BOSS -> (byte) (playerId + 110);
             default -> throw new IllegalArgumentException("Invalid actor type");
         };
     }

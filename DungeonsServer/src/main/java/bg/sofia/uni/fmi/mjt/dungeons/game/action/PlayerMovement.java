@@ -28,15 +28,16 @@ public class PlayerMovement implements PlayerAction {
     }
 
     @Override
-    public ActionType getType() {
+    public ActionType type() {
         return MOVEMENT;
     }
 
-    public Direction getDirection() {
-        return direction;
+    @Override
+    public SocketChannel initiator() {
+        return this.initiator;
     }
 
-    public SocketChannel getInitiator() {
-        return this.initiator;
+    public Direction direction() {
+        return direction;
     }
 }

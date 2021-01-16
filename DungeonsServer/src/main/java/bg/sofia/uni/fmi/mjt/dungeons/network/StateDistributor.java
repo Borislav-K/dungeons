@@ -1,8 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.game.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
 import bg.sofia.uni.fmi.mjt.dungeons.game.io.PerformantByteArrayOutputStream;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -11,21 +12,21 @@ import java.nio.channels.SocketChannel;
 // StateDistributor distributes only the necessary data (PlayerSegment) to each player
 public class StateDistributor {
 
-    private GameState gameState;
+    private GameMap gameMap;
     private PlayerManager playerManager;
 
     private SmartBuffer buffer;
 
-    public StateDistributor(PlayerManager playerManager, GameState gameState) {
-        this.gameState = gameState;
+    public StateDistributor(PlayerManager playerManager, GameMap gameMap) {
+        this.gameMap = gameMap;
         this.playerManager = playerManager;
         this.buffer = new SmartBuffer();
     }
 
     public void distributeState() {
-        for (var playerEntry : playerManager.getAllPlayers().entrySet()) {
-            SocketChannel channel = playerEntry.getValue();
-            byte[] playerPackageBytes = serializePlayerSegment(playerEntry.getKey());
+        for (Player player : playerManager.getAllPlayers()) {
+            SocketChannel channel = player.channel();
+            byte[] playerPackageBytes = serializePlayerSegment(player);
             buffer.write(playerPackageBytes);
             try {
                 buffer.writeIntoChannel(channel);
@@ -37,8 +38,8 @@ public class StateDistributor {
         }
     }
 
-    private byte[] serializePlayerSegment(int playerId) {
-        PlayerSegment playerSegment = new PlayerSegment(gameState.gameMap(), gameState.getPlayerInfo(playerId));
+    private byte[] serializePlayerSegment(Player player) {
+        PlayerSegment playerSegment = new PlayerSegment(gameMap, player);
         try (var byteArrayOutputStream = new PerformantByteArrayOutputStream();
              var objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
             playerSegment.writeExternal(objectOutputStream);

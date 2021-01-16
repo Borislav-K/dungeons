@@ -13,11 +13,12 @@ public class PlayerAttack implements PlayerAction {
     }
 
     @Override
-    public ActionType getType() {
+    public ActionType type() {
         return ActionType.ATTACK;
     }
 
-    public SocketChannel getInitiator() {
+    @Override
+    public SocketChannel initiator() {
         return initiator;
     }
 }

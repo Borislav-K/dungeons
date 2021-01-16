@@ -1,8 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
-import bg.sofia.uni.fmi.mjt.dungeons.game.Game;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameMap;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.game.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
 
 import java.io.Externalizable;
 import java.io.IOException;

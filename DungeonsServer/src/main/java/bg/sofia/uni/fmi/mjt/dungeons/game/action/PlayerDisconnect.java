@@ -12,11 +12,11 @@ public class PlayerDisconnect implements PlayerAction {
         this.channel = channel;
     }
 
-    public ActionType getType() {
+    public ActionType type() {
         return ActionType.PLAYER_DISCONNECT;
     }
 
-    public SocketChannel getChannel() {
+    public SocketChannel initiator() {
         return channel;
     }
 }

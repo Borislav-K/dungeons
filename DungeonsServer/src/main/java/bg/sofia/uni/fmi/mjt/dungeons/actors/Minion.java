@@ -1,13 +1,15 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.state;
+package bg.sofia.uni.fmi.mjt.dungeons.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.game.BattleStats;
+import bg.sofia.uni.fmi.mjt.dungeons.game.Position2D;
 
 import java.util.Map;
 import java.util.Random;
 
 public class Minion implements Actor {
 
-    private static final int XP_REWARD_PER_MINION_LVL = 100;
+    private static final int XP_REWARD_PER_MINION_LVL = 20;
 
     private static final Map<Integer, BattleStats> MINION_STATS = Map.of(
             1, new BattleStats(50, 0, 25, 20),
@@ -21,6 +23,7 @@ public class Minion implements Actor {
 
     private int level;
     private BattleStats stats;
+    private Position2D position;
 
     public Minion() {
         this.level = generator.nextInt(MAX_MINION_LEVEL) + 1;
@@ -28,12 +31,22 @@ public class Minion implements Actor {
         this.stats = MINION_STATS.get(level);
     }
 
+    public void setPosition(Position2D position) {
+        this.position = position;
+    }
+
     @Override
-    public ActorType getType() {
+    public ActorType type() {
         return ActorType.MINION;
     }
 
-    public int getXPReward() {
-        return this.level * XP_REWARD_PER_MINION_LVL;
+    @Override
+    public int XPReward() {
+        return level * XP_REWARD_PER_MINION_LVL;
+    }
+
+    @Override
+    public Position2D position() {
+        return position;
     }
 }

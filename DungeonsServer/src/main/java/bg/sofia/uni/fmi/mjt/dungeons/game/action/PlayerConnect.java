@@ -6,17 +6,18 @@ import java.nio.channels.SocketChannel;
 
 public class PlayerConnect implements PlayerAction {
 
-    private SocketChannel channel;
+    private SocketChannel initiator;
 
-    public PlayerConnect(SocketChannel channel) {
-        this.channel = channel;
+    public PlayerConnect(SocketChannel initiator) {
+        this.initiator = initiator;
     }
 
-    public ActionType getType() {
+    public ActionType type() {
         return ActionType.PLAYER_CONNECT;
     }
 
-    public SocketChannel getChannel() {
-        return channel;
+    @Override
+    public SocketChannel initiator() {
+        return initiator;
     }
 }

@@ -5,7 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.client.input.KeyboardListener;
 import bg.sofia.uni.fmi.mjt.dungeons.client.network.GameClient;
 import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.GameWindow;
 import bg.sofia.uni.fmi.mjt.dungeons.client.rendering.Renderer;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.PlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerSegment;
 
 import java.io.IOException;
 

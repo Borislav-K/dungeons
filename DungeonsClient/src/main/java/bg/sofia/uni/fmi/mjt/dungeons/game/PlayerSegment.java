@@ -1,5 +1,7 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.state;
+package bg.sofia.uni.fmi.mjt.dungeons.game;
 
+
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
 
 import java.io.Externalizable;
 import java.io.IOException;

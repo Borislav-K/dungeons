@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.game;
 
 import bg.sofia.uni.fmi.mjt.dungeons.game.action.PlayerActionHandler;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
 import bg.sofia.uni.fmi.mjt.dungeons.network.GameServer;
 import bg.sofia.uni.fmi.mjt.dungeons.network.StateDistributor;
 
@@ -11,17 +10,17 @@ public class Game {
     private static final double FRAME_NANOS = 17000000.0;
 
     private PlayerManager playerManager;
-    private GameState gameState;
+    private GameMap gameMap;
     private PlayerActionHandler playerActionHandler;
     private GameServer server;
     private StateDistributor stateDistributor;
 
     public Game() {
         this.playerManager = new PlayerManager();
-        this.gameState = new GameState();
-        this.playerActionHandler = new PlayerActionHandler(playerManager, gameState);
+        this.gameMap = new GameMap();
+        this.playerActionHandler = new PlayerActionHandler(playerManager, gameMap);
         this.server = new GameServer(playerActionHandler);
-        this.stateDistributor = new StateDistributor(playerManager, gameState);
+        this.stateDistributor = new StateDistributor(playerManager, gameMap);
     }
 
     public void start() {
@@ -40,7 +39,6 @@ public class Game {
                 tick();
                 framesElapsed--;
             }
-
         }
     }
 

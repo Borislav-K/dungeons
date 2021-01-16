@@ -75,7 +75,7 @@ public class GameServer {
 
     private void publishPlayerActions(String playerInput, SocketChannel sc) {
         if (playerInput.length() % ACTION_ENCODING_LENGTH != 0) {
-            System.out.printf("Player input does not comply with the protocol: %s\n", playerInput);
+            System.out.printf("Received an input that does not comply with the protocol: %s\n", playerInput);
             return;
         }
         for (int i = 0; i < playerInput.length(); i += ACTION_ENCODING_LENGTH) {
@@ -84,7 +84,7 @@ public class GameServer {
             try {
                 actionHandler.publish(PlayerAction.of(nextActionString, sc));
             } catch (IllegalPlayerActionException e) {
-                System.out.println(e.getMessage());
+
             }
         }
     }

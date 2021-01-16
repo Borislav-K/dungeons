@@ -1,13 +1,14 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.state;
+package bg.sofia.uni.fmi.mjt.dungeons.game;
 
-import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Minion;
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.Map;
 import java.util.Random;
 
 public class GameMap implements Externalizable {
@@ -17,26 +18,35 @@ public class GameMap implements Externalizable {
     private static final int MAP_DIMENSIONS = 20;
     private static final int OBSTACLES_COUNT = 30;
     private static final int MINIONS_COUNT = 10;
-    private static final int BOSSES_COUNT = 5;
 
     private Random generator;
-    private Map<Integer, Player> players;
 
     private Position2D[][] fields;
 
-    public GameMap(Map<Integer, Player> players) {
-        this.players = players;
+    public GameMap() {
         generator = new Random();
         fields = new Position2D[MAP_DIMENSIONS][MAP_DIMENSIONS];
         constructGameMap();
     }
 
-    public GameMap() {
+    // Spawns the player at a random free position
+    public Player spawnPlayer(Player player) {
+        Position2D randomPos = getRandomSpawnablePosition();
+        player.setPosition(randomPos);
+        randomPos.addActor(player);
+        return player;
     }
 
-    // This method should only be called when the player exists - if he is not spawned, use spawnPlayer()
-    public void movePlayer(int playerId, Direction direction) {
-        Player player = players.get(playerId);
+    // Spawns a minion with a random level at a random free position
+    public void spawnMinion() {
+        Position2D randomPos = getRandomSpawnablePosition();
+        Minion minion = new Minion();
+        minion.setPosition(randomPos);
+        randomPos.addActor(minion);
+    }
+
+    // Moves an already spawned player (if the direction leads to a free position)
+    public void movePlayer(Player player, Direction direction) {
         Position2D previousPosition = player.position();
         int oldX = previousPosition.x();
         int oldY = previousPosition.y();
@@ -54,32 +64,9 @@ public class GameMap implements Externalizable {
         }
     }
 
-    //Will throw NullPointerException if the player does not exist on the map
-    public void despawnPlayer(int playerId) {
-        Player player = players.get(playerId);
-        Position2D currentPosition = player.position();
-        currentPosition.removeActor(player);
-        players.remove(playerId);
-    }
-
-    // Spawns the player at a random free position
-    public void spawnPlayer(int playerId) {
-        Position2D randomPos = getRandomFreePosition();
-        Player player = new Player(playerId,randomPos,BattleStats.getBasePlayerStats());
-        randomPos.addActor(player);
-        players.put(playerId, player);
-    }
-
-    public void handlePlayerAttack(int playerId) {
-        Position2D playerPosition = players.get(playerId).position();
-        Actor loser = playerPosition.makeActorsFight();
-        if (loser != null) {
-            if (loser.getType().equals(ActorType.PLAYER)) {
-                players.remove(((Player) loser).id());
-            } else {
-                spawnMinion();
-            }
-        }
+    public void despawnActor(Actor actor) {
+        Position2D actorPosition = actor.position();
+        actorPosition.removeActor(actor);
     }
 
 
@@ -113,10 +100,6 @@ public class GameMap implements Externalizable {
         }
     }
 
-    private void spawnMinion() {
-        Position2D randomPos = getRandomSpawnablePosition();
-        randomPos.addActor(new Minion());
-    }
 
     // A spawnable position is one that has no actors
     private Position2D getRandomSpawnablePosition() {

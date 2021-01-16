@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.state;
+package bg.sofia.uni.fmi.mjt.dungeons.game;
 
 import java.util.Map;
 

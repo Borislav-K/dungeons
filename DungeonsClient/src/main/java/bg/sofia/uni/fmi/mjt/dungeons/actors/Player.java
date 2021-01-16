@@ -1,4 +1,6 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.state;
+package bg.sofia.uni.fmi.mjt.dungeons.actors;
+
+import bg.sofia.uni.fmi.mjt.dungeons.game.BattleStats;
 
 import java.io.*;
 

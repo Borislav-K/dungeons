@@ -13,7 +13,9 @@ public interface PlayerAction {
     String MOVE_RIGHT_CMD = "mvr";
     String ATTACK_CMD = "att";
 
-    ActionType getType();
+    ActionType type();
+
+    SocketChannel initiator();
 
     static PlayerAction of(String clientCommand, SocketChannel initiator) throws IllegalPlayerActionException {
         return switch (clientCommand) {

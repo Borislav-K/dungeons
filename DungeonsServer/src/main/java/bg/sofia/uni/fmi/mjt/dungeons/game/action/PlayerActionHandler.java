@@ -1,26 +1,32 @@
 package bg.sofia.uni.fmi.mjt.dungeons.game.action;
 
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
+import bg.sofia.uni.fmi.mjt.dungeons.fight.Arena;
+import bg.sofia.uni.fmi.mjt.dungeons.fight.FightResult;
+import bg.sofia.uni.fmi.mjt.dungeons.game.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.GameState;
+import bg.sofia.uni.fmi.mjt.dungeons.game.Position2D;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class PlayerActionHandler {
 
     private Queue<PlayerAction> actionQueue;
     private PlayerManager playerManager;
-    private GameState gameState;
+    private GameMap gameMap;
 
-    public PlayerActionHandler(PlayerManager playerManager, GameState gameState) {
+    public PlayerActionHandler(PlayerManager playerManager, GameMap gameMap) {
         this.playerManager = playerManager;
-        this.gameState = gameState;
+        this.gameMap = gameMap;
         this.actionQueue = new LinkedList<>();
     }
-
 
     public void publish(PlayerAction action) {
         actionQueue.add(action);
@@ -33,46 +39,74 @@ public class PlayerActionHandler {
     }
 
     private void handleAction(PlayerAction action) {
-        System.out.printf("Handling %s action\n", action.getType());
-        switch (action.getType()) {
+        System.out.printf("Handling %s action\n", action.type());
+        switch (action.type()) {
             case PLAYER_CONNECT -> handlePlayerConnect((PlayerConnect) action);
             case PLAYER_DISCONNECT -> handlePlayerDisconnect((PlayerDisconnect) action);
             case MOVEMENT -> handleMovement((PlayerMovement) action);
             case ATTACK -> handleAttack((PlayerAttack) action);
-            default -> System.out.printf("Unknown event type %s\n", action.getType().toString());
+            default -> System.out.printf("Unknown event type %s\n", action.type().toString());
 
         }
     }
 
     private void handlePlayerConnect(PlayerConnect connection) {
         try {
-            int playerId = playerManager.addNewPlayer(connection.getChannel());
-            gameState.spawnPlayer(playerId);
+            Player player = playerManager.createNewPlayer(connection.initiator());
+            gameMap.spawnPlayer(player);
         } catch (PlayerCapacityReachedException e) {
             System.out.println("Game is full - cannot add player"); //TODO let the player know as well
         }
     }
 
     private void handlePlayerDisconnect(PlayerDisconnect disconnection) {
-        SocketChannel channel = disconnection.getChannel();
+        SocketChannel channel = disconnection.initiator();
+        Player player = playerManager.getPlayerByChannel(channel);
+        playerManager.removePlayer(player);
+        gameMap.despawnActor(player);
         try {
             channel.close();
         } catch (IOException e) {
             System.out.println("There was a problem when closing the player's channel");
             e.printStackTrace();
         }
-        int playerId = playerManager.removePlayerByChannel(disconnection.getChannel());
-        gameState.despawnPlayer(playerId);
     }
 
     private void handleMovement(PlayerMovement action) {
-        int playerId = playerManager.getPlayerIdByChannel(action.getInitiator());
-        gameState.movePlayer(playerId, action.getDirection());
+        Player player = playerManager.getPlayerByChannel(action.initiator());
+        gameMap.movePlayer(player, action.direction());
     }
 
     private void handleAttack(PlayerAttack action) {
-        int playerId = playerManager.getPlayerIdByChannel(action.getInitiator());
-        gameState.handlePlayerAttack(playerId);
+        Player player = playerManager.getPlayerByChannel(action.initiator());
+
+        Position2D playerPosition = player.position();
+        List<Actor> actorsAtPosition = playerPosition.actors();
+        FightResult fightResult;
+        if (actorsAtPosition.size() != 2) {
+            return;
+        }
+
+        if (actorsAtPosition.get(0).equals(player)) {
+            fightResult = Arena.makeActorsFight(player, actorsAtPosition.get(1));
+        } else {
+            fightResult = Arena.makeActorsFight(player, actorsAtPosition.get(0));
+        }
+
+        handleFightResult(fightResult);
+    }
+
+    private void handleFightResult(FightResult fightResult) {
+        Actor loser = fightResult.loser();
+        gameMap.despawnActor(loser);
+        if (loser.type().equals(ActorType.PLAYER)) {
+            playerManager.removePlayer((Player) loser);
+
+        } else {
+            gameMap.spawnMinion();
+            Player winner = (Player) fightResult.winner();
+            winner.increaseXP(loser.XPReward());
+        }
     }
 
 }

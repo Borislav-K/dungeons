@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.client.rendering;
 
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.PlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.game.BattleStats;
+import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerSegment;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,9 +26,7 @@ public class Renderer extends JPanel {
      * Since the treasure's type is randomly generated upon its pickup, the player+treasure positions are marked
      * with the bytes xx, where x/10(or x%10) is the ID of the player who is on the position
      * <h2>PLAYER+MINION</h2>
-     * There are 2 types of minions - ordinary minions and bosses.
-     * Bytes 10x mean that there is a weak minion + a player on this position, where X is the player's ID
-     * Bytes 11x mean that there is a BOSS + a player on this position, where X is the player's ID
+     * Bytes 10x mean that there is a minion + a player on this position, where X is the player's ID
      */
 
     private static final int MAP_FIELD_SIZE = 25;
@@ -79,19 +77,16 @@ public class Renderer extends JPanel {
     private static final byte OBSTACLE_BYTE = 1;
     private static final byte TREASURE_BYTE = 2;
     private static final byte MINION_BYTE = 3;
-    private static final byte BOSS_BYTE = 4;
     private static final String EMPTY_SPACE_DRAWING = ".";
     private static final String OBSTACLE_DRAWING = "#";
     private static final String TREASURE_DRAWING = "T";
     private static final String MINION_DRAWING = "M";
-    private static final String BOSS_DRAWING = "B";
 
     private static final Map<Byte, String> BASIC_SHAPES = Map.of(
             EMPTY_SPACE_BYTE, EMPTY_SPACE_DRAWING,
             OBSTACLE_BYTE, OBSTACLE_DRAWING,
             TREASURE_BYTE, TREASURE_DRAWING,
-            MINION_BYTE, MINION_DRAWING,
-            BOSS_BYTE, BOSS_DRAWING);
+            MINION_BYTE, MINION_DRAWING);
 
     private static final Font ONE_ACTOR_PER_POSITION_FONT = new Font("Comic Sans", Font.PLAIN, MAP_FIELD_SIZE);
     private static final Font TWO_ACTORS_PER_POSITION_FONT = new Font("Comic Sans", Font.BOLD, MAP_FIELD_SIZE / 2);
@@ -164,17 +159,10 @@ public class Renderer extends JPanel {
         }
 
         // Player+minion
-        if (b < 110) {
-            int playerId = b - 100;
-            g2d.drawString(String.valueOf(playerId), xPos, yPos);
-            g2d.drawString(MINION_DRAWING, xPos + MAP_FIELD_SIZE / 2, yPos);
-            return;
-        }
-
-        // Player+boss
-        int playerId = b - 110;
+        int playerId = b - 100;
         g2d.drawString(String.valueOf(playerId), xPos, yPos);
-        g2d.drawString(BOSS_DRAWING, xPos + MAP_FIELD_SIZE / 2, yPos);
+        g2d.drawString(MINION_DRAWING, xPos + MAP_FIELD_SIZE / 2, yPos);
+
     }
 
     private void renderXPBar(Graphics2D g2d) {

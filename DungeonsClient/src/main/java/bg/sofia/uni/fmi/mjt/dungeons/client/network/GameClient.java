@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.client.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.client.SmartBuffer;
-import bg.sofia.uni.fmi.mjt.dungeons.game.state.PlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerSegment;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class GameClient {
     private static final int SERVER_PORT = 10_000;
     private static final InetSocketAddress SERVER_ADDRESS = new InetSocketAddress(SERVER_HOST, SERVER_PORT);
 
-    private static final int SEGMENT_LENGTH = 948;
+    private static final int SEGMENT_LENGTH = 936;
 
     private SmartBuffer buffer;
     private SocketChannel socketChannel;

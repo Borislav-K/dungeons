@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.state;
+package bg.sofia.uni.fmi.mjt.dungeons.game;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class GameMap implements Externalizable {
     }
 
     @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
+    public void writeExternal(ObjectOutput out) {
         throw new UnsupportedOperationException("Clients will only receive the game map");
     }
 
