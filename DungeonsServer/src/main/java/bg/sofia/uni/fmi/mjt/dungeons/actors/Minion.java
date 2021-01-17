@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
-import bg.sofia.uni.fmi.mjt.dungeons.game.BattleStats;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.game.Position2D;
 
 import java.util.Map;

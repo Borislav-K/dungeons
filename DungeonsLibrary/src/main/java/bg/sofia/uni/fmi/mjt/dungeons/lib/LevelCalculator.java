@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game;
+package bg.sofia.uni.fmi.mjt.dungeons.lib;
 
 import java.util.Map;
 

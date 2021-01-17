@@ -1,11 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
-import bg.sofia.uni.fmi.mjt.dungeons.SmartBuffer;
+
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 

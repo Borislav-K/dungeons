@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.IllegalPlayerActionException;
 import bg.sofia.uni.fmi.mjt.dungeons.game.action.*;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -9,6 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -61,7 +63,7 @@ public class GameServer {
                         actionHandler.publish(new PlayerDisconnect(sc));
                         break;
                     }
-                    String msg = buffer.read();
+                    String msg = new String(buffer.read(), StandardCharsets.UTF_8);
                     publishPlayerActions(msg, sc);
                 } else if (key.isAcceptable()) {
                     registerNewPlayer(key);

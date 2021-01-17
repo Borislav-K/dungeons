@@ -1,10 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
-import bg.sofia.uni.fmi.mjt.dungeons.game.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.game.LevelCalculator;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.game.Position2D;
-import bg.sofia.uni.fmi.mjt.dungeons.game.io.PerformantByteArrayOutputStream;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -66,8 +65,7 @@ public class Player implements Actor {
     }
 
     public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(LevelCalculator.getLevelByExperience(experience));
-        out.writeInt(LevelCalculator.getPercentageToNextLevel(experience));
+        out.writeInt(experience);
         battleStats.serialize(out);
     }
 

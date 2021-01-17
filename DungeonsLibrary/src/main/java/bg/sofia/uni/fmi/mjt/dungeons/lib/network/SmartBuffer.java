@@ -1,10 +1,9 @@
-package bg.sofia.uni.fmi.mjt.dungeons.network;
+package bg.sofia.uni.fmi.mjt.dungeons.lib.network;
 
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 
 public class SmartBuffer {
     private static final int DEFAULT_BUFFER_SIZE = 2048;
@@ -19,11 +18,11 @@ public class SmartBuffer {
         this.buffer = ByteBuffer.allocate(capacity); // TODO think about allocateDirect()
     }
 
-    public String read() {
+    public byte[] read() {
         buffer.flip();
         byte[] destination = new byte[buffer.remaining()];
         buffer.get(destination);
-        return new String(destination, StandardCharsets.UTF_8);
+        return destination;
     }
 
     public void write(String s) {
@@ -47,8 +46,6 @@ public class SmartBuffer {
 
     public void writeIntoChannel(SocketChannel to) throws IOException {
         buffer.flip();
-        while (buffer.hasRemaining()) {
-            to.write(buffer);
-        }
+        to.write(buffer);
     }
 }

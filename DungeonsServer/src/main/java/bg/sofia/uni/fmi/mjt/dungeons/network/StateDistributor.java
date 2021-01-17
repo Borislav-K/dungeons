@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.game.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
 import bg.sofia.uni.fmi.mjt.dungeons.game.io.PerformantByteArrayOutputStream;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
