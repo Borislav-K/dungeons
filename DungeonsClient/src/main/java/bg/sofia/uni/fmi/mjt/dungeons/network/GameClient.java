@@ -1,9 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.SmartBuffer;
-import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerSegment;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
@@ -15,7 +15,7 @@ public class GameClient {
     private static final int SERVER_PORT = 10_000;
     private static final InetSocketAddress SERVER_ADDRESS = new InetSocketAddress(SERVER_HOST, SERVER_PORT);
 
-    private static final int SEGMENT_LENGTH = 936;
+    private static final int SEGMENT_LENGTH = 1024; //TODO change
 
     private SmartBuffer buffer;
     private SocketChannel socketChannel;
@@ -57,11 +57,11 @@ public class GameClient {
         byte[] mapBytes = buffer.read();
         System.out.println("LENGTH: " + mapBytes.length); //TODO remove
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
-             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
+             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
             PlayerSegment playerSegment = new PlayerSegment();
-            playerSegment.readExternal(objectInputStream);
+            playerSegment.deserialize(dataInputStream);
             return playerSegment;
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Could not deserialize game state", e);
         }
     }

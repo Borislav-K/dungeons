@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import bg.sofia.uni.fmi.mjt.dungeons.game.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.network.PlayerSegment;
 
 import javax.swing.*;
 import java.awt.*;

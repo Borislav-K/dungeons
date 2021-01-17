@@ -4,17 +4,14 @@ import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.game.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.game.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.game.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.game.io.PerformantByteArrayOutputStream;
 
-import java.io.Externalizable;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
 
-public class Player implements Actor, Externalizable {
-
-    private static final long serialVersionUID = 1L;
+public class Player implements Actor {
 
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
 
@@ -29,9 +26,6 @@ public class Player implements Actor, Externalizable {
         this.channel = channel;
         this.battleStats = BattleStats.getBasePlayerStats();
         this.experience = 0;
-    }
-
-    public Player() {
     }
 
     public int id() {
@@ -71,16 +65,10 @@ public class Player implements Actor, Externalizable {
         }
     }
 
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeByte(LevelCalculator.getLevelByExperience(experience));
+    public void serialize(DataOutputStream out) throws IOException {
+        out.writeInt(LevelCalculator.getLevelByExperience(experience));
         out.writeInt(LevelCalculator.getPercentageToNextLevel(experience));
-        out.writeObject(battleStats);
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) {
-        throw new UnsupportedOperationException("Player data will be distributed by the server only");
+        battleStats.serialize(out);
     }
 
     @Override

@@ -5,8 +5,8 @@ import bg.sofia.uni.fmi.mjt.dungeons.game.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
 import bg.sofia.uni.fmi.mjt.dungeons.game.io.PerformantByteArrayOutputStream;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.channels.SocketChannel;
 
 // StateDistributor distributes only the necessary data (PlayerSegment) to each player
@@ -41,9 +41,9 @@ public class StateDistributor {
     private byte[] serializePlayerSegment(Player player) {
         PlayerSegment playerSegment = new PlayerSegment(gameMap, player);
         try (var byteArrayOutputStream = new PerformantByteArrayOutputStream();
-             var objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
-            playerSegment.writeExternal(objectOutputStream);
-            objectOutputStream.flush();
+             var dataOutputStream = new DataOutputStream(byteArrayOutputStream)) {
+            playerSegment.serialize(dataOutputStream);
+            dataOutputStream.flush();
             return byteArrayOutputStream.getBuf();
         } catch (IOException e) {
             throw new RuntimeException("Could not serialize game state", e);

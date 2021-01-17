@@ -5,15 +5,13 @@ import bg.sofia.uni.fmi.mjt.dungeons.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 
-import java.io.Externalizable;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Random;
 
-public class GameMap implements Externalizable {
-
-    private static final long serialVersionUID = 1L;
+public class GameMap {
 
     private static final int MAP_DIMENSIONS = 20;
     private static final int OBSTACLES_COUNT = 30;
@@ -126,18 +124,12 @@ public class GameMap implements Externalizable {
         return pos.x() < MAP_DIMENSIONS && pos.y() < MAP_DIMENSIONS && pos.containsFreeSpace();
     }
 
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
+    public void serialize(DataOutputStream out) throws IOException {
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
             for (int j = 0; j < MAP_DIMENSIONS; j++) {
-                out.writeByte(fields[i][j].toByte());
+                out.write(fields[i][j].toByte());
             }
         }
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) {
-        throw new UnsupportedOperationException("Map should only be written to clients");
     }
 
 }
