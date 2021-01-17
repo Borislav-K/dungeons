@@ -7,8 +7,6 @@ import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.Random;
 
 public class GameMap {
@@ -20,10 +18,12 @@ public class GameMap {
     private Random generator;
 
     private Position2D[][] fields;
+    private int[] obstaclePositions;
 
     public GameMap() {
         generator = new Random();
         fields = new Position2D[MAP_DIMENSIONS][MAP_DIMENSIONS];
+        obstaclePositions = new int[OBSTACLES_COUNT];
         constructGameMap();
     }
 
@@ -86,9 +86,11 @@ public class GameMap {
     }
 
     private void setObstacles() {
-        for (int i = 1; i <= OBSTACLES_COUNT; i++) {
+        for (int i = 0; i < OBSTACLES_COUNT; i++) {
             Position2D randomPos = getRandomFreePosition();
             randomPos.markAsObstacle();
+            obstaclePositions[i] = (randomPos.x() * MAP_DIMENSIONS + randomPos.y());
+            System.out.printf("Obstacle at position %d\n", randomPos.x() * MAP_DIMENSIONS + randomPos.y());
         }
     }
 
@@ -125,10 +127,8 @@ public class GameMap {
     }
 
     public void serialize(DataOutputStream out) throws IOException {
-        for (int i = 0; i < MAP_DIMENSIONS; i++) {
-            for (int j = 0; j < MAP_DIMENSIONS; j++) {
-                out.write(fields[i][j].toByte());
-            }
+        for (int i = 0; i < obstaclePositions.length; i++) {
+            out.writeInt(obstaclePositions[i]);
         }
     }
 
