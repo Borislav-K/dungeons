@@ -40,7 +40,7 @@ public class StateDistributor {
     }
 
     private byte[] serializePlayerSegment(Player player) {
-        PlayerSegment playerSegment = new PlayerSegment(gameMap, player);
+        PlayerSegment playerSegment = new PlayerSegment(gameMap.getObstaclePositions(), player);
         try (var byteArrayOutputStream = new PerformantByteArrayOutputStream();
              var dataOutputStream = new DataOutputStream(byteArrayOutputStream)) {
             playerSegment.serialize(dataOutputStream);

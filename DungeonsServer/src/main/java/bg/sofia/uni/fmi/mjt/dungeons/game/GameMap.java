@@ -27,6 +27,10 @@ public class GameMap {
         constructGameMap();
     }
 
+    public int[] getObstaclePositions() {
+        return obstaclePositions;
+    }
+
     // Spawns the player at a random free position
     public Player spawnPlayer(Player player) {
         Position2D randomPos = getRandomSpawnablePosition();
@@ -124,13 +128,6 @@ public class GameMap {
 
     private boolean canMovePlayerTo(Position2D pos) {
         return pos.x() < MAP_DIMENSIONS && pos.y() < MAP_DIMENSIONS && pos.containsFreeSpace();
-    }
-
-    // Used to send the obstacles in an initial player segment
-    public void serialize(DataOutputStream out) throws IOException {
-        for (int i = 0; i < obstaclePositions.length; i++) {
-            out.writeInt(obstaclePositions[i]);
-        }
     }
 
 }
