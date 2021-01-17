@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.client;
+package bg.sofia.uni.fmi.mjt.dungeons;
 
 public class ClientLauncher {
 

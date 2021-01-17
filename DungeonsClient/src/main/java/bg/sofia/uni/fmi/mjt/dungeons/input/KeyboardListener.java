@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.client.input;
+package bg.sofia.uni.fmi.mjt.dungeons.input;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

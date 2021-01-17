@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.client;
+package bg.sofia.uni.fmi.mjt.dungeons;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

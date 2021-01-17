@@ -1,6 +1,6 @@
-package bg.sofia.uni.fmi.mjt.dungeons.client.network;
+package bg.sofia.uni.fmi.mjt.dungeons.network;
 
-import bg.sofia.uni.fmi.mjt.dungeons.client.SmartBuffer;
+import bg.sofia.uni.fmi.mjt.dungeons.SmartBuffer;
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerSegment;
 
 import java.io.ByteArrayInputStream;

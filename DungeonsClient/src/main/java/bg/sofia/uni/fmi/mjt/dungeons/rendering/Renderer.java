@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.client.rendering;
+package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import bg.sofia.uni.fmi.mjt.dungeons.game.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerSegment;

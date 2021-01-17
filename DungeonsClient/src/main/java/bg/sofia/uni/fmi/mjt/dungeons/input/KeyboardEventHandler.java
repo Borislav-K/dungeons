@@ -1,9 +1,8 @@
-package bg.sofia.uni.fmi.mjt.dungeons.client.input;
+package bg.sofia.uni.fmi.mjt.dungeons.input;
 
-import bg.sofia.uni.fmi.mjt.dungeons.client.network.GameClient;
+import bg.sofia.uni.fmi.mjt.dungeons.network.GameClient;
 
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 
 public class KeyboardEventHandler {

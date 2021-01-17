@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.client.rendering;
+package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import javax.swing.*;
 
