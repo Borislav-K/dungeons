@@ -65,6 +65,9 @@ public class Player implements Actor {
     }
 
     public void serialize(DataOutputStream out) throws IOException {
+        out.writeInt(id);
+        out.writeInt(position.x());
+        out.writeInt(position.y());
         out.writeInt(experience);
         battleStats.serialize(out);
     }

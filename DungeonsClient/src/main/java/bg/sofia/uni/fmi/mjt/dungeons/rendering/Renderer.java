@@ -1,12 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
-import bg.sofia.uni.fmi.mjt.dungeons.game.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeons.actors.PlayerData;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.network.PlayerSegment;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 import static bg.sofia.uni.fmi.mjt.dungeons.game.GameMap.MAP_DIMENSIONS;
 
@@ -89,8 +88,10 @@ public class Renderer extends JPanel {
         g2d.setStroke(new BasicStroke(5));
         g2d.setColor(Color.red);
         g2d.setFont(new Font("Comic Sans", Font.PLAIN, MAP_FIELD_SIZE));
+
         drawBarrier(g2d);
         drawObstacles(g2d);
+        drawActors(g2d);
     }
 
     private void drawBarrier(Graphics2D g2d) {
@@ -108,8 +109,13 @@ public class Renderer extends JPanel {
         for (int obstacle : obstacles) {
             int x = obstacle / MAP_DIMENSIONS;
             int y = obstacle % MAP_DIMENSIONS;
-            g2d.drawString(OBSTACLE_DRAWING, x * MAP_FIELD_SIZE, y * MAP_FIELD_SIZE);
+            g2d.drawString(OBSTACLE_DRAWING, x * MAP_FIELD_SIZE, (y+1) * MAP_FIELD_SIZE);
         }
+    }
+
+    private void drawActors(Graphics2D g2d) {
+        PlayerData playerData = currentSegment.playerData();
+        g2d.drawString(Integer.toString(playerData.id()), playerData.posX() * MAP_FIELD_SIZE, (playerData.posY()+1) * MAP_FIELD_SIZE);
     }
 
     private void renderXPBar(Graphics2D g2d) {

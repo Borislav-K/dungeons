@@ -126,6 +126,7 @@ public class GameMap {
         return pos.x() < MAP_DIMENSIONS && pos.y() < MAP_DIMENSIONS && pos.containsFreeSpace();
     }
 
+    // Used to send the obstacles in an initial player segment
     public void serialize(DataOutputStream out) throws IOException {
         for (int i = 0; i < obstaclePositions.length; i++) {
             out.writeInt(obstaclePositions[i]);
