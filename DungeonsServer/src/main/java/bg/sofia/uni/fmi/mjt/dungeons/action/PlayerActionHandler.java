@@ -1,14 +1,15 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.action;
+package bg.sofia.uni.fmi.mjt.dungeons.action;
 
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Actor;
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.Arena;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.FightResult;
-import bg.sofia.uni.fmi.mjt.dungeons.game.GameMap;
-import bg.sofia.uni.fmi.mjt.dungeons.game.PlayerManager;
-import bg.sofia.uni.fmi.mjt.dungeons.game.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.ActorRepository;
+import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;

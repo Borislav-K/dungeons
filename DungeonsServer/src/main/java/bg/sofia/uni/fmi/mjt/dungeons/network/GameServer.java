@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.IllegalPlayerActionException;
-import bg.sofia.uni.fmi.mjt.dungeons.game.action.*;
+import bg.sofia.uni.fmi.mjt.dungeons.action.*;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
 import java.io.IOException;

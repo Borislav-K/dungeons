@@ -1,6 +1,6 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game;
+package bg.sofia.uni.fmi.mjt.dungeons.lib;
 
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 
 import java.util.ArrayList;
 import java.util.List;

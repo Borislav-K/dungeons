@@ -1,9 +1,12 @@
-package bg.sofia.uni.fmi.mjt.dungeons.actors;
+package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
-import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.game.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 
@@ -48,5 +51,19 @@ public class Minion implements Actor {
     @Override
     public Position2D position() {
         return position;
+    }
+
+    @Override
+    public void serialize(DataOutputStream out) throws IOException {
+        out.writeInt(level);
+        out.writeInt(position.x());
+        out.writeInt(position.y());
+    }
+
+    @Override
+    public void deserialize(DataInputStream in) throws IOException {
+        level = in.readInt();
+        position = new Position2D(in.readInt(), in.readInt());
+        stats = MINION_STATS.get(level);
     }
 }

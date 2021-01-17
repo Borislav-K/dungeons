@@ -1,13 +1,14 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
-import bg.sofia.uni.fmi.mjt.dungeons.actors.PlayerData;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.network.PlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static bg.sofia.uni.fmi.mjt.dungeons.game.GameMap.MAP_DIMENSIONS;
+import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.MAP_DIMENSIONS;
+import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.OBSTACLE_POSITIONS;
 
 public class Renderer extends JPanel {
 
@@ -80,8 +81,10 @@ public class Renderer extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         renderMap(g2d);
-        renderXPBar(g2d);
-        renderBattleStats(g2d);
+
+        Player currentPlayer = currentSegment.actorRepository().getPlayerData(currentSegment.playerId());
+        renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
+        renderBattleStats(g2d, currentPlayer.battleStats());
     }
 
     private void renderMap(Graphics2D g2d) {
@@ -98,48 +101,46 @@ public class Renderer extends JPanel {
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
             for (int j = 0; j < MAP_DIMENSIONS; j++) {
                 if (i == 0 || j == 0 || i == MAP_DIMENSIONS - 1 || j == MAP_DIMENSIONS - 1) {
-                    g2d.drawString(OBSTACLE_DRAWING, i * MAP_FIELD_SIZE, (j+1) * MAP_FIELD_SIZE);
+                    g2d.drawString(OBSTACLE_DRAWING, i * MAP_FIELD_SIZE, (j + 1) * MAP_FIELD_SIZE);
                 }
             }
         }
     }
 
     private void drawObstacles(Graphics2D g2d) {
-        int[] obstacles = currentSegment.GameMap().getObstacles();
-        for (int obstacle : obstacles) {
+        for (int obstacle : OBSTACLE_POSITIONS) {
             int x = obstacle / MAP_DIMENSIONS;
             int y = obstacle % MAP_DIMENSIONS;
-            g2d.drawString(OBSTACLE_DRAWING, x * MAP_FIELD_SIZE, (y+1) * MAP_FIELD_SIZE);
+            g2d.drawString(OBSTACLE_DRAWING, x * MAP_FIELD_SIZE, (y + 1) * MAP_FIELD_SIZE);
         }
     }
 
     private void drawActors(Graphics2D g2d) {
-        PlayerData playerData = currentSegment.playerData();
-        g2d.drawString(Integer.toString(playerData.id()), playerData.posX() * MAP_FIELD_SIZE, (playerData.posY()+1) * MAP_FIELD_SIZE);
+        int playerId = currentSegment.playerId();
+        var actorRepository = currentSegment.actorRepository();
+        Player playerData = actorRepository.getPlayerData(playerId);
+        g2d.drawString(Integer.toString(playerId), playerData.position().x() * MAP_FIELD_SIZE, (playerData.position().y() + 1) * MAP_FIELD_SIZE);
     }
 
-    private void renderXPBar(Graphics2D g2d) {
+    private void renderXPBar(Graphics2D g2d, int level, int XPPercentage) {
         g2d.setStroke(new BasicStroke(2));
 
-        String levelLabel = "Level ".concat(String.valueOf(currentSegment.playerData().currentLevel()));
-        int currentXPPercentage = currentSegment.playerData().experiencePercentage();
+        String levelLabel = "Level ".concat(String.valueOf(level));
 
         //XP Bar progress
         g2d.setColor(Color.YELLOW);
-        int progressWidth = (int) Math.round(XP_BAR_WIDTH * (currentXPPercentage / 100.0));
+        int progressWidth = (int) Math.round(XP_BAR_WIDTH * (XPPercentage / 100.0));
         g2d.fillRoundRect(XP_BAR_UPPER_CORNER_X, XP_BAR_UPPER_CORNER_Y, progressWidth, XP_BAR_HEIGHT, XP_BAR_ARC, XP_BAR_ARC);
         //XP Bar Border
         g2d.setColor(Color.BLUE);
         g2d.drawRoundRect(XP_BAR_UPPER_CORNER_X, XP_BAR_UPPER_CORNER_Y, XP_BAR_WIDTH, XP_BAR_HEIGHT, XP_BAR_ARC, XP_BAR_ARC);
         // Level Label
-        g2d.drawString(String.valueOf(currentXPPercentage).concat("%"), XP_LABEL_LOCATION_X, XP_LABEL_LOCATION_Y);
+        g2d.drawString(String.valueOf(XPPercentage).concat("%"), XP_LABEL_LOCATION_X, XP_LABEL_LOCATION_Y);
         g2d.drawString(levelLabel, LEVEL_LABEL_LOCATION_X, LEVEL_LABEL_LOCATION_Y);
 
     }
 
-    private void renderBattleStats(Graphics2D g2d) {
-        BattleStats battleStats = currentSegment.playerData().battleStats();
-
+    private void renderBattleStats(Graphics2D g2d, BattleStats battleStats) {
         g2d.setFont(BATTLESTATS_FONT);
 
         // Health Bar
