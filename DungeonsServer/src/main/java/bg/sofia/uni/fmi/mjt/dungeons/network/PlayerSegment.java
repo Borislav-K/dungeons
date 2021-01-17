@@ -1,8 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.enums.PlayerSegmentType;
 import bg.sofia.uni.fmi.mjt.dungeons.game.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

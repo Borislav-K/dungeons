@@ -35,4 +35,12 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>bg.sofia.uni.fmi.mjt</groupId>
+            <artifactId>DungeonsLibrary</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
 </project>

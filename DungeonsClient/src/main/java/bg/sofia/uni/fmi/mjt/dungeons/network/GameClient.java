@@ -15,7 +15,7 @@ public class GameClient {
     private static final int SERVER_PORT = 10_000;
     private static final InetSocketAddress SERVER_ADDRESS = new InetSocketAddress(SERVER_HOST, SERVER_PORT);
 
-    private static final int SEGMENT_LENGTH = 1024; //TODO change
+    private static final int SEGMENT_LENGTH = 1024;
 
     private SmartBuffer buffer;
     private SocketChannel socketChannel;

@@ -17,6 +17,7 @@
     <modules>
         <module>DungeonsServer</module>
         <module>DungeonsClient</module>
+        <module>DungeonsLibrary</module>
     </modules>
 
 </project>
