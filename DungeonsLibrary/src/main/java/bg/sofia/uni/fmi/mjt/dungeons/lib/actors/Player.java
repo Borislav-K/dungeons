@@ -15,9 +15,9 @@ public class Player implements Actor {
 
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
 
-    private static final int BASE_HEALTH = 100;
-    private static final int BASE_MANA = 100;
-    private static final int BASE_ATTACK = 30;
+    private static final int BASE_HEALTH = 150;
+    private static final int BASE_MANA = 150;
+    private static final int BASE_ATTACK = 40;
     private static final int BASE_DEFENSE = 10;
 
     private static final int HEALTH_GAIN_PER_LEVEL = 20;
