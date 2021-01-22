@@ -1,10 +1,12 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib;
 
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class BattleStats {
+public class BattleStats implements Transmissible {
 
     private static final int HEALTH_GAIN_PER_LEVEL = 10;
     private static final int MANA_GAIN_PER_LEVEL = 10;
@@ -43,16 +45,6 @@ public class BattleStats {
         this.defense += DEFENSE_GAIN_PER_LEVEL;
     }
 
-    public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(health);
-        out.writeInt(currentHealth);
-        out.writeInt(mana);
-        out.writeInt(currentMana);
-        out.writeInt(attack);
-        out.writeInt(defense);
-    }
-
-
     public int health() {
         return health;
     }
@@ -77,6 +69,17 @@ public class BattleStats {
         return defense;
     }
 
+    @Override
+    public void serialize(DataOutputStream out) throws IOException {
+        out.writeInt(health);
+        out.writeInt(currentHealth);
+        out.writeInt(mana);
+        out.writeInt(currentMana);
+        out.writeInt(attack);
+        out.writeInt(defense);
+    }
+
+    @Override
     public void deserialize(DataInputStream in) throws IOException {
         this.health = in.readInt();
         this.currentHealth = in.readInt();

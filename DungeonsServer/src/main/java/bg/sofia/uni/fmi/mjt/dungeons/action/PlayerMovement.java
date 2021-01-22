@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.action;
+package bg.sofia.uni.fmi.mjt.dungeons.action;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 import bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType;

@@ -1,6 +1,6 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game;
+package bg.sofia.uni.fmi.mjt.dungeons;
 
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.NoSuchPlayerException;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 

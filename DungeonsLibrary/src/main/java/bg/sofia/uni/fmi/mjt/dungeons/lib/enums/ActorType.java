@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.enums;
+package bg.sofia.uni.fmi.mjt.dungeons.lib.enums;
 
 public enum ActorType {
     TREASURE,

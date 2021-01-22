@@ -1,21 +1,18 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game;
+package bg.sofia.uni.fmi.mjt.dungeons;
 
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Actor;
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Minion;
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
-public class GameMap {
+import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.*;
 
-    private static final int MAP_DIMENSIONS = 20;
-    private static final int OBSTACLES_COUNT = 30;
-    private static final int MINIONS_COUNT = 10;
+public class GameMap {
 
     private Random generator;
 
@@ -25,6 +22,18 @@ public class GameMap {
         generator = new Random();
         fields = new Position2D[MAP_DIMENSIONS][MAP_DIMENSIONS];
         constructGameMap();
+    }
+
+    public List<Position2D> getPositionsWithActors() {
+        List<Position2D> positions = new LinkedList<>();
+        for (Position2D[] row : fields) {
+            for (Position2D position2D : row) {
+                if (!position2D.actors().isEmpty()) {
+                    positions.add(position2D);
+                }
+            }
+        }
+        return positions;
     }
 
     // Spawns the player at a random free position
@@ -86,18 +95,16 @@ public class GameMap {
     }
 
     private void setObstacles() {
-        for (int i = 1; i <= OBSTACLES_COUNT; i++) {
-            Position2D randomPos = getRandomFreePosition();
-            randomPos.markAsObstacle();
+        for (int position : OBSTACLE_POSITIONS) {
+            fields[position / MAP_DIMENSIONS][position % MAP_DIMENSIONS].markAsObstacle();
         }
     }
 
     private void spawnInitialMinions() {
-        for (int i = 1; i <= GameMap.MINIONS_COUNT; i++) {
+        for (int i = 1; i <= MINIONS_COUNT; i++) {
             spawnMinion();
         }
     }
-
 
     // A spawnable position is one that has no actors
     private Position2D getRandomSpawnablePosition() {
@@ -110,26 +117,8 @@ public class GameMap {
         return randomPos;
     }
 
-    private Position2D getRandomFreePosition() {
-        int randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
-        Position2D randomPos = fields[randomInt / MAP_DIMENSIONS][randomInt % MAP_DIMENSIONS];
-        while (!randomPos.containsFreeSpace()) {
-            randomInt = generator.nextInt(MAP_DIMENSIONS * MAP_DIMENSIONS);
-            randomPos = fields[randomInt / MAP_DIMENSIONS][randomInt % MAP_DIMENSIONS];
-        }
-        return randomPos;
-    }
-
     private boolean canMovePlayerTo(Position2D pos) {
         return pos.x() < MAP_DIMENSIONS && pos.y() < MAP_DIMENSIONS && pos.containsFreeSpace();
-    }
-
-    public void serialize(DataOutputStream out) throws IOException {
-        for (int i = 0; i < MAP_DIMENSIONS; i++) {
-            for (int j = 0; j < MAP_DIMENSIONS; j++) {
-                out.write(fields[i][j].toByte());
-            }
-        }
     }
 
 }

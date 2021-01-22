@@ -1,9 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.fight;
 
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Actor;
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Minion;
-import bg.sofia.uni.fmi.mjt.dungeons.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 
 // Implements Player vs. Player and Player vs. Minion combat
 public class Arena {

@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.game.io;
+package bg.sofia.uni.fmi.mjt.dungeons.io;
 
 import java.io.ByteArrayOutputStream;
 
