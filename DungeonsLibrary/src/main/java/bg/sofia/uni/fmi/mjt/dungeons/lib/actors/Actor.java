@@ -13,4 +13,6 @@ public interface Actor extends Transmissible {
     Position2D position();
 
     BattleStats stats();
+
+    int level();
 }

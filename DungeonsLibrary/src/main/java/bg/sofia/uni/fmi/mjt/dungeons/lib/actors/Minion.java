@@ -65,6 +65,11 @@ public class Minion implements Actor {
     }
 
     @Override
+    public int level() {
+        return level;
+    }
+
+    @Override
     public void serialize(DataOutputStream out) throws IOException {
         out.writeInt(level);
         out.writeInt(position.x());

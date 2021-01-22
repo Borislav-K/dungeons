@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
@@ -15,7 +16,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.MAP_DIMENSIONS;
@@ -68,9 +69,7 @@ public class Renderer extends JPanel {
     private static final int DEFENSE_LABEL_LOCATION_Y = 200;
     private static final int DEFENSE_TEXT_LOCATION_Y = 230;
 
-    private static final String OBSTACLE_DRAWING = "#";
     private static final String TREASURE_DRAWING = "T";
-    private static final String MINION_DRAWING = "M";
 
     private static final Font ONE_ACTOR_PER_POSITION_FONT = new Font("Comic Sans", Font.PLAIN, MAP_FIELD_SIZE);
     private static final Font TWO_ACTORS_PER_POSITION_FONT = new Font("Comic Sans", Font.BOLD, MAP_FIELD_SIZE / 2);
@@ -79,6 +78,7 @@ public class Renderer extends JPanel {
     private PlayerSegment lastReceivedSegment;
 
     private BufferedImage obstacleImage;
+    private List<BufferedImage> minionPictures;
 
     public Renderer() {
         super.setBackground(Color.white);
@@ -87,8 +87,13 @@ public class Renderer extends JPanel {
     }
 
     private void initializeResources() {
+        minionPictures = new ArrayList<>();
         try {
             obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.jpg"));
+            for (int i = 1; i <= 5; i++) {
+                File imageFile = new File("DungeonsClient/src/main/resources/minion_level%d.bmp".formatted(i));
+                minionPictures.add(ImageIO.read(imageFile));
+            }
         } catch (IOException e) {
             throw new IllegalStateException("Could not load a resource", e);
         }
@@ -162,22 +167,28 @@ public class Renderer extends JPanel {
         playerSegmentCast.positionsWithActors().forEach(position -> drawPosition(g2d, position));
     }
 
-    private void drawPosition(Graphics g2d, Position2D pos) {
+    private void drawPosition(Graphics2D g2d, Position2D pos) {
         List<Actor> actors = pos.actors();
-        g2d.setFont(actors.size() == 2 ? TWO_ACTORS_PER_POSITION_FONT : ONE_ACTOR_PER_POSITION_FONT);
-        int xDrawCoords = pos.x() * MAP_FIELD_SIZE;
-        int yDrawCoords = (pos.y() + 1) * MAP_FIELD_SIZE;
+        boolean isAloneActorOnPosition = actors.size() < 2;
+        int x = pos.x() * MAP_FIELD_SIZE;
+        int y = pos.y() * MAP_FIELD_SIZE;
 
-        String stringToDraw = "";
-        for (Actor actor : actors) {
-            String actorDrawing = switch (actor.type()) {
-                case MINION -> MINION_DRAWING;
-                case PLAYER -> String.valueOf(((Player) actor).id());
-                case TREASURE -> TREASURE_DRAWING;
-            };
-            stringToDraw = stringToDraw.concat(actorDrawing);
+        drawActor(g2d, actors.get(0), isAloneActorOnPosition, x, y);
+        if (!isAloneActorOnPosition) {
+            drawActor(g2d, actors.get(1), false, x + MAP_FIELD_SIZE / 2, y);
         }
-        g2d.drawString(stringToDraw, xDrawCoords, yDrawCoords);
+    }
+
+    private void drawActor(Graphics2D g2d, Actor actor, boolean isAloneOnPosition, int x, int y) {
+        BufferedImage imageToDraw = actor.type().equals(ActorType.MINION) ?
+                minionPictures.get(actor.level() - 1) :
+                obstacleImage; // TODO change obstacle image to playerId
+        AffineTransform at = new AffineTransform();
+        at.translate(x, y);
+        if (!isAloneOnPosition) {
+            at.scale(0.5, 1);
+        }
+        g2d.drawImage(imageToDraw, at, null);
     }
 
     private void renderXPBar(Graphics2D g2d, int level, int XPPercentage) {
