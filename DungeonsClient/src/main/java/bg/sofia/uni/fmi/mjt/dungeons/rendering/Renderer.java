@@ -3,6 +3,8 @@ package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
@@ -68,26 +70,39 @@ public class Renderer extends JPanel {
     private static final Font TWO_ACTORS_PER_POSITION_FONT = new Font("Comic Sans", Font.BOLD, MAP_FIELD_SIZE / 2);
     private static final Font BATTLESTATS_FONT = new Font("Comic Sans", Font.BOLD, BATTLESTATS_LABELS_FONT_SIZE);
 
-    private PlayerSegment currentSegment;
+    private PlayerSegment lastReceivedSegment;
 
 
     public Renderer() {
-        this.currentSegment = new PlayerSegment();
+        this.lastReceivedSegment = null;
     }
 
-    public void updateState(PlayerSegment newSegment) {
-        this.currentSegment = newSegment;
+    public void updatePlayerSegment(PlayerSegment newSegment) {
+        this.lastReceivedSegment = newSegment;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        renderMap(g2d);
+        if (lastReceivedSegment == null) {
+            renderNotConnectedMessage(g2d);
+        } else if (lastReceivedSegment.type().equals(PlayerSegmentType.DEATH)) {
+            renderDeathMessage(g2d);
+        } else {
+            Player currentPlayer = ((DefaultPlayerSegment) lastReceivedSegment).player();
+            renderMap(g2d);
+            renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
+            renderBattleStats(g2d, currentPlayer.stats());
+        }
+    }
 
-        Player currentPlayer = currentSegment.player();
-        renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
-        renderBattleStats(g2d, currentPlayer.battleStats());
+    private void renderNotConnectedMessage(Graphics2D g2d) {
+        g2d.drawString("Not connected to the server yet...", 250, 250);
+    }
+
+    private void renderDeathMessage(Graphics2D g2d) {
+        g2d.drawString("YOU DIED", 250, 250);
     }
 
     private void renderMap(Graphics2D g2d) {
@@ -119,7 +134,8 @@ public class Renderer extends JPanel {
     }
 
     private void drawActors(Graphics2D g2d) {
-        currentSegment.positionsWithActors().forEach(position -> drawPosition(g2d, position));
+        DefaultPlayerSegment playerSegmentCast = (DefaultPlayerSegment) lastReceivedSegment;
+        playerSegmentCast.positionsWithActors().forEach(position -> drawPosition(g2d, position));
     }
 
     private void drawPosition(Graphics g2d, Position2D pos) {

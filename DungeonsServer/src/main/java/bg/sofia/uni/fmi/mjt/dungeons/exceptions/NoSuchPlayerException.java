@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.exceptions;
 
-public class NoSuchPlayerException extends RuntimeException {
+public class NoSuchPlayerException extends Exception {
     public NoSuchPlayerException() {
         super();
     }

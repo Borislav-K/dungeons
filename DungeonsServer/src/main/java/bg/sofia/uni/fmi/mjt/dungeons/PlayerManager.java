@@ -35,7 +35,7 @@ public class PlayerManager {
         return players;
     }
 
-    public Player getPlayerByChannel(SocketChannel channel) {
+    public Player getPlayerByChannel(SocketChannel channel) throws NoSuchPlayerException {
         return players.stream()
                 .filter(player -> player.channel().equals(channel))
                 .findFirst().orElseThrow(NoSuchPlayerException::new);

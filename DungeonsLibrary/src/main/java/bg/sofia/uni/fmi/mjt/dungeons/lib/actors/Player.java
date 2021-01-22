@@ -2,8 +2,8 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,20 +15,37 @@ public class Player implements Actor {
 
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
 
+    private static final int BASE_HEALTH = 150;
+    private static final int BASE_MANA = 150;
+    private static final int BASE_ATTACK = 40;
+    private static final int BASE_DEFENSE = 10;
+
+    private static final int HEALTH_GAIN_PER_LEVEL = 20;
+    private static final int MANA_GAIN_PER_LEVEL = 20;
+    private static final int ATTACK_GAIN_PER_LEVEL = 15;
+    private static final int DEFENSE_GAIN_PER_LEVEL = 10;
+
+    private static BattleStats playerStatsForLevel(int level) {
+        return new BattleStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level,
+                BASE_MANA + MANA_GAIN_PER_LEVEL * level,
+                BASE_ATTACK + ATTACK_GAIN_PER_LEVEL * level,
+                BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * level);
+    }
+
     private int id;
     private SocketChannel channel;
     private int experience;
     private Position2D position;
-    private BattleStats battleStats;
+    private BattleStats stats;
 
     public Player() {
-        this.battleStats = new BattleStats();
+        this.stats = new BattleStats();
     }
 
     public Player(int id, SocketChannel channel) {
         this.id = id;
         this.channel = channel;
-        this.battleStats = BattleStats.getBasePlayerStats();
+        this.stats = playerStatsForLevel(1);
         this.experience = 0;
     }
 
@@ -48,8 +65,13 @@ public class Player implements Actor {
         return LevelCalculator.getPercentageToNextLevel(experience);
     }
 
-    public BattleStats battleStats() {
-        return battleStats;
+    public boolean isDead() {
+        return stats.currentHealth() == 0;
+    }
+
+    @Override
+    public BattleStats stats() {
+        return stats;
     }
 
     @Override
@@ -75,9 +97,8 @@ public class Player implements Actor {
         int previousLevel = LevelCalculator.getLevelByExperience(experience);
         experience += amount;
         int currentLevel = LevelCalculator.getLevelByExperience(experience);
-
-        while (currentLevel-- > previousLevel) {
-            this.battleStats.levelUp();
+        if (currentLevel > previousLevel) {
+            stats = playerStatsForLevel(currentLevel);
         }
     }
 
@@ -87,7 +108,7 @@ public class Player implements Actor {
         out.writeInt(position.x());
         out.writeInt(position.y());
         out.writeInt(experience);
-        battleStats.serialize(out);
+        stats.serialize(out);
     }
 
     @Override
@@ -95,7 +116,7 @@ public class Player implements Actor {
         id = in.readInt();
         position = new Position2D(in.readInt(), in.readInt());
         experience = in.readInt();
-        battleStats.deserialize(in);
+        stats.deserialize(in);
     }
 
     @Override
@@ -116,7 +137,7 @@ public class Player implements Actor {
                "id=" + id +
                ", experience=" + experience +
                ", position=" + position +
-               ", battleStats=" + battleStats +
+               ", battleStats=" + stats +
                '}';
     }
 }

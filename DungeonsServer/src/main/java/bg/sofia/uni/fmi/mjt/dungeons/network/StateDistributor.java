@@ -4,6 +4,8 @@ import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
 import bg.sofia.uni.fmi.mjt.dungeons.io.PerformantByteArrayOutputStream;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DeadPlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
@@ -32,14 +34,17 @@ public class StateDistributor {
                 buffer.writeIntoChannel(player.channel());
             } catch (IOException e) {
                 System.out.println("Could not distribute the map to a player!");
-                //TODO should probably remove player here -> seems to happen when they close the channel
-                e.printStackTrace();
+                gameMap.despawnActor(player);
+                playerManager.removePlayer(player);
             }
         }
     }
 
     private byte[] serializePlayerSegment(Player player) {
-        PlayerSegment playerSegment = new PlayerSegment(player, gameMap.getPositionsWithActors());
+        PlayerSegment playerSegment = player.isDead() ?
+                new DeadPlayerSegment() :
+                new DefaultPlayerSegment(player, gameMap.getPositionsWithActors());
+
         try (var byteArrayOutputStream = new PerformantByteArrayOutputStream();
              var dataOutputStream = new DataOutputStream(byteArrayOutputStream)) {
             playerSegment.serialize(dataOutputStream);

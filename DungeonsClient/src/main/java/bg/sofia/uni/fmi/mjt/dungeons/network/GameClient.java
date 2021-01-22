@@ -1,6 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DeadPlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
@@ -28,7 +31,17 @@ public class GameClient {
     public void connect() throws IOException {
         socketChannel = SocketChannel.open();
         socketChannel.connect(SERVER_ADDRESS);
+        socketChannel.configureBlocking(false);
         System.out.println("Connected to the server.");
+    }
+
+    public void disconnect() {
+        try {
+            socketChannel.close();
+            System.out.println("Disconnected from the server");
+        } catch (IOException e) {
+            System.out.println("Could not gracefully terminate connection to the server.");
+        }
     }
 
     public void sendMessage(String msg) {
@@ -44,24 +57,28 @@ public class GameClient {
     public PlayerSegment fetchStateFromServer() {
         try {
             int r = buffer.readFromChannel(socketChannel);
-            if (r <= 0) {
-                return null; //TODO handle this in a better way
-            }
-            return deserializeState(buffer);
+            return r > 0 ? deserializePlayerSegment(buffer) : null;
         } catch (IOException e) {
-            throw new IllegalStateException("Server stopped responding", e);//TODO handle this in a better way
+            return null;
         }
     }
 
-
-    private PlayerSegment deserializeState(SmartBuffer buffer) {
+    private PlayerSegment deserializePlayerSegment(SmartBuffer buffer) {
         byte[] mapBytes = buffer.read();
-        System.out.println("LENGTH: " + mapBytes.length); //TODO remove
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
              DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
-            PlayerSegment playerSegment = new PlayerSegment();
-            playerSegment.deserialize(dataInputStream);
-            return playerSegment;
+            PlayerSegmentType playerSegmentType = PlayerSegmentType.values()[dataInputStream.readInt()];
+            switch (playerSegmentType) {
+                case DEFAULT: {
+                    PlayerSegment playerSegment = new DefaultPlayerSegment();
+                    playerSegment.deserialize(dataInputStream);
+                    return playerSegment;
+                }
+                case DEATH:
+                    return new DeadPlayerSegment();
+                default:
+                    throw new RuntimeException("Unrecognized player segment type");
+            }
         } catch (IOException e) {
             throw new RuntimeException("Could not deserialize game state", e);
         }

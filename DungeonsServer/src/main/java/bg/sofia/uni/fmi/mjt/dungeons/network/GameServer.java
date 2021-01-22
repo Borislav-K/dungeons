@@ -56,15 +56,7 @@ public class GameServer {
             while (keyIterator.hasNext()) {
                 SelectionKey key = keyIterator.next();
                 if (key.isReadable()) {
-                    SocketChannel sc = (SocketChannel) key.channel();
-                    int r = buffer.readFromChannel(sc);
-                    if (r <= 0) {
-                        System.out.println("A player disconnected manually");
-                        actionHandler.publish(new PlayerDisconnect(sc));
-                        break;
-                    }
-                    String msg = new String(buffer.read(), StandardCharsets.UTF_8);
-                    publishPlayerActions(msg, sc);
+                    handlePlayerActions((SocketChannel) key.channel());
                 } else if (key.isAcceptable()) {
                     registerNewPlayer(key);
                 }
@@ -72,6 +64,22 @@ public class GameServer {
             }
         } catch (IOException e) {
             throw new IllegalStateException("There was a problem with network communication", e);
+        }
+    }
+
+    private void handlePlayerActions(SocketChannel sc) {
+        try {
+            int r = buffer.readFromChannel(sc);
+            if (r <= 0) {
+                actionHandler.publish(new PlayerDisconnect(sc));
+                System.out.println("A player disconnected manually");
+                return;
+            }
+            String msg = new String(buffer.read(), StandardCharsets.UTF_8);
+            publishPlayerActions(msg, sc);
+        } catch (IOException e) {
+            actionHandler.publish(new PlayerDisconnect(sc));
+            System.out.println("Corrupted player channel. Publish a disconnect event");
         }
     }
 
@@ -86,7 +94,7 @@ public class GameServer {
             try {
                 actionHandler.publish(PlayerAction.of(nextActionString, sc));
             } catch (IllegalPlayerActionException e) {
-
+                System.out.println(e.getMessage());
             }
         }
     }
