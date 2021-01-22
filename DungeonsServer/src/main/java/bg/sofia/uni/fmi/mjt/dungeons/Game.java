@@ -5,7 +5,6 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.ActorRepository;
 import bg.sofia.uni.fmi.mjt.dungeons.network.GameServer;
 import bg.sofia.uni.fmi.mjt.dungeons.network.StateDistributor;
 
-
 public class Game {
     private static final double FRAME_NANOS = 17000000.0;
 

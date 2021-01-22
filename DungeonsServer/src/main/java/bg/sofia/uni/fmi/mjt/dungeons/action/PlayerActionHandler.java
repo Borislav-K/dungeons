@@ -6,10 +6,9 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.Arena;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.FightResult;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.ActorRepository;
 import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;

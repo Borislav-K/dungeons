@@ -1,12 +1,12 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ActorRepository {
 
@@ -22,6 +22,16 @@ public class ActorRepository {
 
     public void removeActor(Actor actor) {
         actors.remove(actor);
+    }
+
+    public Map<Position2D, List<Actor>> getPositionToActorMap() {
+        Map<Position2D, List<Actor>> positionToActorMap = new HashMap<>();
+        actors.stream()
+                .map(Actor::position)
+                .forEach(position -> positionToActorMap.putIfAbsent(position, new LinkedList<>()));
+        actors.forEach(actor -> positionToActorMap.get(actor.position()).add(actor));
+        positionToActorMap.forEach((position,actors) -> actors.forEach(position::addActor));
+        return positionToActorMap;
     }
 
     public Player getPlayerData(int playerId) {
@@ -53,5 +63,12 @@ public class ActorRepository {
             actor.deserialize(in);
             actors.add(actor);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ActorRepository{" +
+               "actors=" + actors.toString() +
+               '}';
     }
 }

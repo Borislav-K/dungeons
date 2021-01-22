@@ -24,6 +24,10 @@ public class PlayerSegment {
         this.playerSegmentType = PlayerSegmentType.INITIAL;
     }
 
+    public PlayerSegmentType type() {
+        return playerSegmentType;
+    }
+
     public int playerId() {
         return playerId;
     }
@@ -43,5 +47,7 @@ public class PlayerSegment {
         playerSegmentType = PlayerSegmentType.values()[in.readInt()];
         playerId = in.readInt();
         actorRepository.deserialize(in);
+        System.out.printf("Deserialized: type: %s\n%d\n%s\n", playerSegmentType.toString(),
+                playerId, actorRepository.toString());
     }
 }

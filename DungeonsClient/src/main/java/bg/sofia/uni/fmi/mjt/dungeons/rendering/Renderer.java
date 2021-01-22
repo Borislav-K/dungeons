@@ -1,11 +1,15 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
 import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.MAP_DIMENSIONS;
 import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.OBSTACLE_POSITIONS;
@@ -50,13 +54,13 @@ public class Renderer extends JPanel {
     private static final int ATTACK_LABEL_LOCATION_X = 520;
     private static final int ATTACK_LABEL_LOCATION_Y = 150;
     private static final int ATTACK_TEXT_LOCATION_Y = 180;
+
     // Defense Label & text
     private static final String DEFENSE_LABEL = "Defense points";
     private static final int DEFENSE_LABEL_LOCATION_X = 520;
     private static final int DEFENSE_LABEL_LOCATION_Y = 200;
     private static final int DEFENSE_TEXT_LOCATION_Y = 230;
 
-    private static final String EMPTY_SPACE_DRAWING = ".";
     private static final String OBSTACLE_DRAWING = "#";
     private static final String TREASURE_DRAWING = "T";
     private static final String MINION_DRAWING = "M";
@@ -116,10 +120,25 @@ public class Renderer extends JPanel {
     }
 
     private void drawActors(Graphics2D g2d) {
-        int playerId = currentSegment.playerId();
-        var actorRepository = currentSegment.actorRepository();
-        Player playerData = actorRepository.getPlayerData(playerId);
-        g2d.drawString(Integer.toString(playerId), playerData.position().x() * MAP_FIELD_SIZE, (playerData.position().y() + 1) * MAP_FIELD_SIZE);
+        Map<Position2D, List<Actor>> positionToActorMap = currentSegment.actorRepository().getPositionToActorMap();
+        positionToActorMap.forEach((pos, actors) -> drawPosition(g2d, pos, actors));
+    }
+
+    private void drawPosition(Graphics g2d, Position2D position2D, List<Actor> actors) {
+        g2d.setFont(actors.size() == 2 ? TWO_ACTORS_PER_POSITION_FONT : ONE_ACTOR_PER_POSITION_FONT);
+        int xDrawCoords = position2D.x() * MAP_FIELD_SIZE;
+        int yDrawCoords = (position2D.y() + 1) * MAP_FIELD_SIZE;
+
+        String stringToDraw = "";
+        for (Actor actor : actors) {
+            String actorDrawing = switch (actor.type()) {
+                case MINION -> MINION_DRAWING;
+                case PLAYER -> String.valueOf(((Player) actor).id());
+                case TREASURE -> TREASURE_DRAWING;
+            };
+            stringToDraw = stringToDraw.concat(actorDrawing);
+        }
+        g2d.drawString(stringToDraw, xDrawCoords, yDrawCoords);
     }
 
     private void renderXPBar(Graphics2D g2d, int level, int XPPercentage) {
@@ -178,4 +197,6 @@ public class Renderer extends JPanel {
         g2d.drawString(String.valueOf(battleStats.attack()), BATTLESTATS_TEXT_LOCATION_X, ATTACK_TEXT_LOCATION_Y);
         g2d.drawString(String.valueOf(battleStats.defense()), BATTLESTATS_TEXT_LOCATION_X, DEFENSE_TEXT_LOCATION_Y);
     }
+
 }
+

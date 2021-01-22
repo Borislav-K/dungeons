@@ -2,7 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 
 import java.io.DataInputStream;
@@ -10,7 +10,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
-import java.util.logging.Level;
 
 public class Player implements Actor {
 
@@ -109,5 +108,15 @@ public class Player implements Actor {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+               "id=" + id +
+               ", experience=" + experience +
+               ", position=" + position +
+               ", battleStats=" + battleStats +
+               '}';
     }
 }

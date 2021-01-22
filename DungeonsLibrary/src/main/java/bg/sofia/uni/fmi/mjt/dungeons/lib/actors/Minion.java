@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 
 import java.io.DataInputStream;
@@ -65,5 +65,14 @@ public class Minion implements Actor {
         level = in.readInt();
         position = new Position2D(in.readInt(), in.readInt());
         stats = MINION_STATS.get(level);
+    }
+
+    @Override
+    public String toString() {
+        return "Minion{" +
+               "level=" + level +
+               ", stats=" + stats +
+               ", position=" + position +
+               '}';
     }
 }

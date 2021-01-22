@@ -19,10 +19,6 @@ public class GameConfigurator {
         return both;
     }
 
-    public static void main(String[] args) {
-        Arrays.stream(OBSTACLE_POSITIONS).forEach(System.out::println);
-    }
-
     private static int[] buildBarrier() {
         int[] barrierPositions = new int[BARRIER_LENGTH];
         int nextIndex = 0;

@@ -64,9 +64,9 @@ public class Game {
 
     private void tick() {
         keyboardEventHandler.handleNext();
-        PlayerSegment newState = webClient.fetchStateFromServer();
-        if (newState != null) {
-            renderer.updateState(newState);
+        PlayerSegment playerSegment = webClient.fetchStateFromServer();
+        if (playerSegment != null) {
+            renderer.updateState(playerSegment);
             gameWindow.repaint();
         }
     }

@@ -1,9 +1,10 @@
-package bg.sofia.uni.fmi.mjt.dungeons.lib;
+package bg.sofia.uni.fmi.mjt.dungeons.lib.position;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Position2D {
     private static final int MAX_ACTORS_AT_POSITION = 2;
@@ -55,4 +56,25 @@ public class Position2D {
         return !isObstaclePosition && actors.isEmpty();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Position2D that = (Position2D) o;
+        return x == that.x &&
+               y == that.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "Position2D{" +
+               "x=" + x +
+               ", y=" + y +
+               '}';
+    }
 }
