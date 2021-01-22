@@ -8,8 +8,14 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.MAP_DIMENSIONS;
@@ -72,9 +78,20 @@ public class Renderer extends JPanel {
 
     private PlayerSegment lastReceivedSegment;
 
+    private BufferedImage obstacleImage;
 
     public Renderer() {
+        super.setBackground(Color.white);
         this.lastReceivedSegment = null;
+        initializeResources();
+    }
+
+    private void initializeResources() {
+        try {
+            obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.jpg"));
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not load a resource", e);
+        }
     }
 
     public void updatePlayerSegment(PlayerSegment newSegment) {
@@ -119,7 +136,7 @@ public class Renderer extends JPanel {
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
             for (int j = 0; j < MAP_DIMENSIONS; j++) {
                 if (i == 0 || j == 0 || i == MAP_DIMENSIONS - 1 || j == MAP_DIMENSIONS - 1) {
-                    g2d.drawString(OBSTACLE_DRAWING, i * MAP_FIELD_SIZE, (j + 1) * MAP_FIELD_SIZE);
+                    drawObstacle(g2d, i * MAP_FIELD_SIZE, j * MAP_FIELD_SIZE);
                 }
             }
         }
@@ -127,10 +144,17 @@ public class Renderer extends JPanel {
 
     private void drawObstacles(Graphics2D g2d) {
         for (int obstacle : OBSTACLE_POSITIONS) {
-            int x = obstacle / MAP_DIMENSIONS;
-            int y = obstacle % MAP_DIMENSIONS;
-            g2d.drawString(OBSTACLE_DRAWING, x * MAP_FIELD_SIZE, (y + 1) * MAP_FIELD_SIZE);
+            int x = (obstacle / MAP_DIMENSIONS) * MAP_FIELD_SIZE;
+            int y = (obstacle % MAP_DIMENSIONS) * MAP_FIELD_SIZE;
+            drawObstacle(g2d, x, y);
         }
+    }
+
+    private void drawObstacle(Graphics2D g2d, int x, int y) {
+        AffineTransform at = new AffineTransform();
+        at.translate(x, y);
+        at.scale(0.8, 0.7);
+        g2d.drawImage(obstacleImage, at, null);
     }
 
     private void drawActors(Graphics2D g2d) {

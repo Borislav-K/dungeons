@@ -33,7 +33,6 @@ public class KeyboardListener extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        System.out.println(keyCode);
         if (keybinds.containsKey(keyCode)) {
             keyboardEventHandler.publishCommand(keybinds.get(keyCode));
             System.out.printf("Pressed %d, will send %s to the server\n", keyCode, keybinds.get(keyCode));
