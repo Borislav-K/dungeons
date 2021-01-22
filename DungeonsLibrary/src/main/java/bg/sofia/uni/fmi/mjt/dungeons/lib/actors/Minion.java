@@ -37,7 +37,6 @@ public class Minion implements Actor {
 
     public Minion() {
         this.level = generator.nextInt(MAX_MINION_LEVEL) + 1;
-        System.out.printf("Spawning minion with level %d\n", level);
         this.stats = minionStatsForLevel(level);
     }
 

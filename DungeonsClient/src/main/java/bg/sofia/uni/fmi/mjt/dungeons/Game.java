@@ -15,17 +15,19 @@ public class Game {
 
     private static final double FRAME_NANOS = 17000000.0;
 
-    private static final int FRAMES_AFTER_DEATH_BEFORE_TERMINATION = 60 * 5;
+    private static final int FRAMES_AFTER_DEATH_THRESHOLD = 60 * 3;
+    private static final int FRAMES_WITH_NO_RESPONSE_THRESHOLD = 60 * 10;
 
     private GameClient webClient;
     private Renderer renderer;
     private GameWindow gameWindow;
     private KeyboardEventHandler keyboardEventHandler;
 
-    private int framesAfterPlayerDied;
+    private boolean shouldTerminate = false;
+    private int consecutiveFramesWithoutResponse = 0;
+    private int framesAfterPlayerDied = 0;
 
     public Game() {
-        framesAfterPlayerDied = 0;
         webClient = new GameClient();
         renderer = new Renderer();
         gameWindow = new GameWindow(renderer);
@@ -56,7 +58,11 @@ public class Game {
     private void startLoop() {
         double framesElapsed = 0;
         long lastMoment = System.nanoTime();
-        while (true) {
+        while (!shouldTerminate) {
+            if (framesAfterPlayerDied == FRAMES_AFTER_DEATH_THRESHOLD ||
+                consecutiveFramesWithoutResponse == FRAMES_WITH_NO_RESPONSE_THRESHOLD) {
+                terminate();
+            }
             long now = System.nanoTime();
             framesElapsed += (now - lastMoment) / FRAME_NANOS;
             lastMoment = now;
@@ -64,22 +70,28 @@ public class Game {
                 tick();
                 framesElapsed--;
             }
-            if (framesAfterPlayerDied == FRAMES_AFTER_DEATH_BEFORE_TERMINATION) {
-                webClient.disconnect();
-                gameWindow.dispose();
-                return;
-            }
         }
     }
 
     private void tick() {
         keyboardEventHandler.handleNext();
         PlayerSegment playerSegment = webClient.fetchStateFromServer();
+        if (playerSegment == null) {
+            consecutiveFramesWithoutResponse++;
+            return;
+        }
+        consecutiveFramesWithoutResponse = 0;
         if (playerSegment.type().equals(PlayerSegmentType.DEATH)) {
             framesAfterPlayerDied++;
         }
         renderer.updatePlayerSegment(playerSegment);
         gameWindow.repaint();
+    }
+
+    private void terminate() {
+        webClient.disconnect();
+        gameWindow.dispose();
+        shouldTerminate = true;
     }
 
 }

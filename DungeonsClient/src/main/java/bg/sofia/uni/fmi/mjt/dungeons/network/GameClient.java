@@ -31,6 +31,7 @@ public class GameClient {
     public void connect() throws IOException {
         socketChannel = SocketChannel.open();
         socketChannel.connect(SERVER_ADDRESS);
+        socketChannel.configureBlocking(false);
         System.out.println("Connected to the server.");
     }
 
@@ -56,19 +57,14 @@ public class GameClient {
     public PlayerSegment fetchStateFromServer() {
         try {
             int r = buffer.readFromChannel(socketChannel);
-            if (r <= 0) {
-                return null; //TODO handle this in a better way
-            }
-            return deserializePlayerSegment(buffer);
+            return r > 0 ? deserializePlayerSegment(buffer) : null;
         } catch (IOException e) {
-            throw new IllegalStateException("Server stopped responding", e);//TODO handle this in a better way
+            return null;
         }
     }
 
-
     private PlayerSegment deserializePlayerSegment(SmartBuffer buffer) {
         byte[] mapBytes = buffer.read();
-        System.out.println("LENGTH: " + mapBytes.length); //TODO remove
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
              DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
             PlayerSegmentType playerSegmentType = PlayerSegmentType.values()[dataInputStream.readInt()];

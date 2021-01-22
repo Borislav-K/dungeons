@@ -34,8 +34,8 @@ public class StateDistributor {
                 buffer.writeIntoChannel(player.channel());
             } catch (IOException e) {
                 System.out.println("Could not distribute the map to a player!");
-                //TODO should probably remove player here -> seems to happen when they close the channel
-                e.printStackTrace();
+                gameMap.despawnActor(player);
+                playerManager.removePlayer(player);
             }
         }
     }

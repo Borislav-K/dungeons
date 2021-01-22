@@ -71,8 +71,7 @@ public class PlayerActionHandler {
         try {
             channel.close();
         } catch (IOException e) {
-            System.out.println("There was a problem when closing the player's channel");
-            e.printStackTrace();
+            System.out.printf("There was a problem when closing the player %d's channel", player.id());
         }
     }
 
