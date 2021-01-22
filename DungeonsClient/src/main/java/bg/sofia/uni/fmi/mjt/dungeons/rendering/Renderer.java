@@ -70,33 +70,39 @@ public class Renderer extends JPanel {
     private static final Font TWO_ACTORS_PER_POSITION_FONT = new Font("Comic Sans", Font.BOLD, MAP_FIELD_SIZE / 2);
     private static final Font BATTLESTATS_FONT = new Font("Comic Sans", Font.BOLD, BATTLESTATS_LABELS_FONT_SIZE);
 
-    private PlayerSegment currentSegment;
+    private PlayerSegment lastReceivedSegment;
 
 
     public Renderer() {
-        this.currentSegment = new DefaultPlayerSegment();
+        this.lastReceivedSegment = null;
     }
 
-    public void renderNewState(PlayerSegment newSegment) {
-        this.currentSegment = newSegment;
+    public void updatePlayerSegment(PlayerSegment newSegment) {
+        this.lastReceivedSegment = newSegment;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        if (currentSegment.type().equals(PlayerSegmentType.DEATH)) {
+        if (lastReceivedSegment == null) {
+            renderNotConnectedMessage(g2d);
+        } else if (lastReceivedSegment.type().equals(PlayerSegmentType.DEATH)) {
             renderDeathMessage(g2d);
         } else {
-            Player currentPlayer = currentSegment.player();
+            Player currentPlayer = ((DefaultPlayerSegment) lastReceivedSegment).player();
             renderMap(g2d);
             renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
             renderBattleStats(g2d, currentPlayer.stats());
         }
     }
 
+    private void renderNotConnectedMessage(Graphics2D g2d) {
+        g2d.drawString("Not connected to the server yet...", 250, 250);
+    }
+
     private void renderDeathMessage(Graphics2D g2d) {
-        g2d.drawString("YOU DIED", 500, 500);
+        g2d.drawString("YOU DIED", 250, 250);
     }
 
     private void renderMap(Graphics2D g2d) {
@@ -128,7 +134,7 @@ public class Renderer extends JPanel {
     }
 
     private void drawActors(Graphics2D g2d) {
-        DefaultPlayerSegment playerSegmentCast = (DefaultPlayerSegment)currentSegment;
+        DefaultPlayerSegment playerSegmentCast = (DefaultPlayerSegment) lastReceivedSegment;
         playerSegmentCast.positionsWithActors().forEach(position -> drawPosition(g2d, position));
     }
 

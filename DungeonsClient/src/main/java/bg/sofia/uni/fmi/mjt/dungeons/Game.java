@@ -2,7 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons;
 
 import bg.sofia.uni.fmi.mjt.dungeons.input.KeyboardEventHandler;
 import bg.sofia.uni.fmi.mjt.dungeons.input.KeyboardListener;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.network.GameClient;
 import bg.sofia.uni.fmi.mjt.dungeons.rendering.GameWindow;
@@ -15,12 +15,17 @@ public class Game {
 
     private static final double FRAME_NANOS = 17000000.0;
 
+    private static final int FRAMES_AFTER_DEATH_BEFORE_TERMINATION = 60 * 5;
+
     private GameClient webClient;
     private Renderer renderer;
     private GameWindow gameWindow;
     private KeyboardEventHandler keyboardEventHandler;
 
+    private int framesAfterPlayerDied;
+
     public Game() {
+        framesAfterPlayerDied = 0;
         webClient = new GameClient();
         renderer = new Renderer();
         gameWindow = new GameWindow(renderer);
@@ -59,18 +64,22 @@ public class Game {
                 tick();
                 framesElapsed--;
             }
-
+            if (framesAfterPlayerDied == FRAMES_AFTER_DEATH_BEFORE_TERMINATION) {
+                webClient.disconnect();
+                gameWindow.dispose();
+                return;
+            }
         }
     }
 
     private void tick() {
         keyboardEventHandler.handleNext();
         PlayerSegment playerSegment = webClient.fetchStateFromServer();
-
-        if (playerSegment != null) {
-            renderer.renderNewState(playerSegment);
-            gameWindow.repaint();
+        if (playerSegment.type().equals(PlayerSegmentType.DEATH)) {
+            framesAfterPlayerDied++;
         }
+        renderer.updatePlayerSegment(playerSegment);
+        gameWindow.repaint();
     }
 
 }

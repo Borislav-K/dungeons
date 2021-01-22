@@ -42,7 +42,7 @@ public class StateDistributor {
 
     private byte[] serializePlayerSegment(Player player) {
         PlayerSegment playerSegment = player.isDead() ?
-                new DeadPlayerSegment(player) :
+                new DeadPlayerSegment() :
                 new DefaultPlayerSegment(player, gameMap.getPositionsWithActors());
 
         try (var byteArrayOutputStream = new PerformantByteArrayOutputStream();

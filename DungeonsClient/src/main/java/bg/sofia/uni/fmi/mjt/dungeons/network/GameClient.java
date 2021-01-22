@@ -34,6 +34,15 @@ public class GameClient {
         System.out.println("Connected to the server.");
     }
 
+    public void disconnect() {
+        try {
+            socketChannel.close();
+            System.out.println("Disconnected from the server");
+        } catch (IOException e) {
+            System.out.println("Could not gracefully terminate connection to the server.");
+        }
+    }
+
     public void sendMessage(String msg) {
         buffer.write(msg);
         try {

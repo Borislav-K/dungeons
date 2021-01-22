@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-// PlayerSegment contains the data relevant only for a single player
 public class DefaultPlayerSegment implements PlayerSegment {
 
     private Player player;
