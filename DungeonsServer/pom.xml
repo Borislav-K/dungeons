@@ -18,7 +18,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>bg.sofia.uni.fmi.mjt.dungeons.GameLauncher</mainClass>
+                            <mainClass>bg.sofia.uni.fmi.mjt.dungeons.ServerLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

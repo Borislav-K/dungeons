@@ -8,11 +8,6 @@ import java.io.IOException;
 
 public class BattleStats implements Transmissible {
 
-    private static final int HEALTH_GAIN_PER_LEVEL = 10;
-    private static final int MANA_GAIN_PER_LEVEL = 10;
-    private static final int ATTACK_GAIN_PER_LEVEL = 50;
-    private static final int DEFENSE_GAIN_PER_LEVEL = 50;
-
     private int health;
     private int currentHealth;
     private int mana;
@@ -30,19 +25,6 @@ public class BattleStats implements Transmissible {
         this.currentMana = mana;
         this.attack = attack;
         this.defense = defense;
-    }
-
-    public static BattleStats getBasePlayerStats() {
-        return new BattleStats(100, 100, 50, 50);
-    }
-
-    public void levelUp() {
-        this.health += HEALTH_GAIN_PER_LEVEL;
-        this.currentHealth = health;
-        this.mana += MANA_GAIN_PER_LEVEL;
-        this.currentMana = mana;
-        this.attack += ATTACK_GAIN_PER_LEVEL;
-        this.defense += DEFENSE_GAIN_PER_LEVEL;
     }
 
     public int health() {
@@ -69,6 +51,13 @@ public class BattleStats implements Transmissible {
         return defense;
     }
 
+    public void takeDamage(int amount) {
+        int diminishedAmount = amount - defense;
+        if (diminishedAmount > 0) {
+            currentHealth = Math.max(0, currentHealth - diminishedAmount);
+        }
+    }
+
     @Override
     public void serialize(DataOutputStream out) throws IOException {
         out.writeInt(health);
@@ -89,4 +78,15 @@ public class BattleStats implements Transmissible {
         this.defense = in.readInt();
     }
 
+    @Override
+    public String toString() {
+        return "BattleStats{" +
+               "health=" + health +
+               ", currentHealth=" + currentHealth +
+               ", mana=" + mana +
+               ", currentMana=" + currentMana +
+               ", attack=" + attack +
+               ", defense=" + defense +
+               '}';
+    }
 }

@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons;
 
 import bg.sofia.uni.fmi.mjt.dungeons.input.KeyboardEventHandler;
 import bg.sofia.uni.fmi.mjt.dungeons.input.KeyboardListener;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.network.GameClient;
 import bg.sofia.uni.fmi.mjt.dungeons.rendering.GameWindow;
@@ -65,8 +66,9 @@ public class Game {
     private void tick() {
         keyboardEventHandler.handleNext();
         PlayerSegment playerSegment = webClient.fetchStateFromServer();
+
         if (playerSegment != null) {
-            renderer.updateState(playerSegment);
+            renderer.renderNewState(playerSegment);
             gameWindow.repaint();
         }
     }

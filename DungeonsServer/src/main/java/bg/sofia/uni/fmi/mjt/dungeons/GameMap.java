@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.util.LinkedList;
@@ -72,8 +73,10 @@ public class GameMap {
     }
 
     public void despawnActor(Actor actor) {
-        Position2D actorPosition = actor.position();
-        actorPosition.removeActor(actor);
+        actor.position().removeActor(actor);
+        if (actor.type().equals(ActorType.MINION)) {
+            spawnMinion();
+        }
     }
 
 

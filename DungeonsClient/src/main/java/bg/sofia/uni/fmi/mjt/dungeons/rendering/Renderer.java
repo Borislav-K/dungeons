@@ -3,6 +3,8 @@ package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
@@ -72,10 +74,10 @@ public class Renderer extends JPanel {
 
 
     public Renderer() {
-        this.currentSegment = new PlayerSegment();
+        this.currentSegment = new DefaultPlayerSegment();
     }
 
-    public void updateState(PlayerSegment newSegment) {
+    public void renderNewState(PlayerSegment newSegment) {
         this.currentSegment = newSegment;
     }
 
@@ -83,11 +85,18 @@ public class Renderer extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        renderMap(g2d);
+        if (currentSegment.type().equals(PlayerSegmentType.DEATH)) {
+            renderDeathMessage(g2d);
+        } else {
+            Player currentPlayer = currentSegment.player();
+            renderMap(g2d);
+            renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
+            renderBattleStats(g2d, currentPlayer.stats());
+        }
+    }
 
-        Player currentPlayer = currentSegment.player();
-        renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
-        renderBattleStats(g2d, currentPlayer.battleStats());
+    private void renderDeathMessage(Graphics2D g2d) {
+        g2d.drawString("YOU DIED", 500, 500);
     }
 
     private void renderMap(Graphics2D g2d) {
@@ -119,7 +128,8 @@ public class Renderer extends JPanel {
     }
 
     private void drawActors(Graphics2D g2d) {
-        currentSegment.positionsWithActors().forEach(position -> drawPosition(g2d, position));
+        DefaultPlayerSegment playerSegmentCast = (DefaultPlayerSegment)currentSegment;
+        playerSegmentCast.positionsWithActors().forEach(position -> drawPosition(g2d, position));
     }
 
     private void drawPosition(Graphics g2d, Position2D pos) {

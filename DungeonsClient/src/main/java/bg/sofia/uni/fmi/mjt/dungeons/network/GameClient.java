@@ -1,6 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DeadPlayerSegment;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
@@ -47,21 +50,30 @@ public class GameClient {
             if (r <= 0) {
                 return null; //TODO handle this in a better way
             }
-            return deserializeState(buffer);
+            return deserializePlayerSegment(buffer);
         } catch (IOException e) {
             throw new IllegalStateException("Server stopped responding", e);//TODO handle this in a better way
         }
     }
 
 
-    private PlayerSegment deserializeState(SmartBuffer buffer) {
+    private PlayerSegment deserializePlayerSegment(SmartBuffer buffer) {
         byte[] mapBytes = buffer.read();
         System.out.println("LENGTH: " + mapBytes.length); //TODO remove
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
              DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
-            PlayerSegment playerSegment = new PlayerSegment();
-            playerSegment.deserialize(dataInputStream);
-            return playerSegment;
+            PlayerSegmentType playerSegmentType = PlayerSegmentType.values()[dataInputStream.readInt()];
+            switch (playerSegmentType) {
+                case DEFAULT: {
+                    PlayerSegment playerSegment = new DefaultPlayerSegment();
+                    playerSegment.deserialize(dataInputStream);
+                    return playerSegment;
+                }
+                case DEATH:
+                    return new DeadPlayerSegment();
+                default:
+                    throw new RuntimeException("Unrecognized player segment type");
+            }
         } catch (IOException e) {
             throw new RuntimeException("Could not deserialize game state", e);
         }

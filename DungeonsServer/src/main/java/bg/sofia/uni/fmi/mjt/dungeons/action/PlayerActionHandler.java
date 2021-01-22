@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.action;
 
+import bg.sofia.uni.fmi.mjt.dungeons.exceptions.NoSuchPlayerException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
@@ -40,13 +41,16 @@ public class PlayerActionHandler {
 
     private void handleAction(PlayerAction action) {
         System.out.printf("Handling %s action\n", action.type());
-        switch (action.type()) {
-            case PLAYER_CONNECT -> handlePlayerConnect((PlayerConnect) action);
-            case PLAYER_DISCONNECT -> handlePlayerDisconnect((PlayerDisconnect) action);
-            case MOVEMENT -> handleMovement((PlayerMovement) action);
-            case ATTACK -> handleAttack((PlayerAttack) action);
-            default -> System.out.printf("Unknown event type %s\n", action.type().toString());
-
+        try {
+            switch (action.type()) {
+                case PLAYER_CONNECT -> handlePlayerConnect((PlayerConnect) action);
+                case PLAYER_DISCONNECT -> handlePlayerDisconnect((PlayerDisconnect) action);
+                case MOVEMENT -> handleMovement((PlayerMovement) action);
+                case ATTACK -> handleAttack((PlayerAttack) action);
+                default -> System.out.printf("Unknown event type %s\n", action.type().toString());
+            }
+        } catch (NoSuchPlayerException e) {
+            System.out.println("The action was sent by a player that was removed from the player manager");
         }
     }
 
@@ -59,7 +63,7 @@ public class PlayerActionHandler {
         }
     }
 
-    private void handlePlayerDisconnect(PlayerDisconnect disconnection) {
+    private void handlePlayerDisconnect(PlayerDisconnect disconnection) throws NoSuchPlayerException {
         SocketChannel channel = disconnection.initiator();
         Player player = playerManager.getPlayerByChannel(channel);
         playerManager.removePlayer(player);
@@ -72,21 +76,20 @@ public class PlayerActionHandler {
         }
     }
 
-    private void handleMovement(PlayerMovement action) {
+    private void handleMovement(PlayerMovement action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
         gameMap.movePlayer(player, action.direction());
     }
 
-    private void handleAttack(PlayerAttack action) {
+    private void handleAttack(PlayerAttack action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
 
         Position2D playerPosition = player.position();
         List<Actor> actorsAtPosition = playerPosition.actors();
-        FightResult fightResult;
         if (actorsAtPosition.size() != 2) {
             return;
         }
-
+        FightResult fightResult;
         if (actorsAtPosition.get(0).equals(player)) {
             fightResult = Arena.makeActorsFight(player, actorsAtPosition.get(1));
         } else {
@@ -97,15 +100,11 @@ public class PlayerActionHandler {
     }
 
     private void handleFightResult(FightResult fightResult) {
+        Actor winner = fightResult.winner();
         Actor loser = fightResult.loser();
         gameMap.despawnActor(loser);
-        if (loser.type().equals(ActorType.PLAYER)) {
-            playerManager.removePlayer((Player) loser);
-
-        } else {
-            gameMap.spawnMinion();
-            Player winner = (Player) fightResult.winner();
-            winner.increaseXP(loser.XPReward());
+        if (winner.type().equals(ActorType.PLAYER)) {
+            ((Player) winner).increaseXP(loser.XPReward());
         }
     }
 

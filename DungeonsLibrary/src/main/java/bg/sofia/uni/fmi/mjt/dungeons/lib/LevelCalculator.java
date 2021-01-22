@@ -11,14 +11,14 @@ public class LevelCalculator {
     private static final Map<Integer, Double> REQUIRED_XP_FOR_LEVEL = Map.of(
             INITIAL_LEVEL, 0.0,
             2, 100.0,
-            3, 150.0,
-            4, 250.0,
-            5, 400.0,
-            6, 600.0,
-            7, 850.0,
-            8, 1150.0,
-            9, 1400.0,
-            MAX_LEVEL, 2000.0
+            3, 200.0,
+            4, 400.0,
+            5, 650.0,
+            6, 900.0,
+            7, 1200.0,
+            8, 1500.0,
+            9, 2000.0,
+            MAX_LEVEL, 3000.0
     );
 
     public static int getLevelByExperience(int experience) {
