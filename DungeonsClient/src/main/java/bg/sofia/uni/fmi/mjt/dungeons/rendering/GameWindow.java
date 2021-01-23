@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
-import javax.swing.*;
+import javax.swing.JFrame;
 
 public class GameWindow extends JFrame {
 

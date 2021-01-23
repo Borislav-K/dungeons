@@ -10,20 +10,16 @@ public class Arena {
     public static FightResult makeActorsFight(Actor initiator, Actor subject) {
         BattleStats initiatorStats = initiator.stats();
         BattleStats subjectStats = subject.stats();
-        System.out.printf("Fight start: actor1 stats: %s, actor2 stats: %s.\n", initiatorStats.toString(),
-                subjectStats.toString());
-        while (subjectStats.currentHealth() > 0 && initiatorStats.currentHealth() > 0) {
+        while (true) {
             subjectStats.takeDamage(initiatorStats.attack());
+            if (subjectStats.currentHealth() == 0) {
+                return new FightResult(initiator, subject);
+            }
+            if (initiatorStats.currentHealth() == 0) {
+                return new FightResult(subject, initiator);
+            }
             initiatorStats.takeDamage(subjectStats.attack());
         }
-        if(initiatorStats.currentHealth()>0) {
-            System.out.println("Winner is actor1");
-        } else {
-            System.out.println("Winner is actor2");
-        }
-        return initiatorStats.currentHealth() > 0 ?
-                new FightResult(initiator, subject) :
-                new FightResult(subject, initiator);
     }
 
 }
