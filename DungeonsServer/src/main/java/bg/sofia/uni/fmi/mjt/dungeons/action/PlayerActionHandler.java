@@ -48,6 +48,7 @@ public class PlayerActionHandler {
                 case PLAYER_DISCONNECT -> handlePlayerDisconnect((PlayerDisconnect) action);
                 case MOVEMENT -> handleMovement((PlayerMovement) action);
                 case ATTACK -> handleAttack((PlayerAttack) action);
+                case TREASURE_PICKUP -> handleTreasurePickup((TreasurePickup) action);
                 default -> System.out.printf("Unknown event type %s\n", action.type().toString());
             }
         } catch (NoSuchPlayerException e) {
@@ -84,8 +85,7 @@ public class PlayerActionHandler {
     private void handleAttack(PlayerAttack action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
 
-        Position2D playerPosition = player.position();
-        List<Actor> actorsAtPosition = playerPosition.actors();
+        List<Actor> actorsAtPosition = player.position().actors();
         if (actorsAtPosition.size() != 2) {
             return;
         }
@@ -111,6 +111,24 @@ public class PlayerActionHandler {
         if (winner.type().equals(ActorType.PLAYER)) {
             ((Player) winner).increaseXP(loser.XPReward());
         }
+    }
+
+    private void handleTreasurePickup(TreasurePickup action) throws NoSuchPlayerException {
+        Player player = playerManager.getPlayerByChannel(action.initiator());
+        // TODO add item to player's inventory
+
+        Position2D playerPosition = player.position();
+        if (playerPosition.actors().size() != 2) {
+            return; // If player is alone there is no treasure to pick
+        }
+        Actor actor1 = playerPosition.actors().get(0);
+        Actor actor2 = playerPosition.actors().get(1);
+        if (player.equals(actor1)) {
+            gameMap.despawnActor(actor2);
+        } else {
+            gameMap.despawnActor(actor1);
+        }
+
     }
 
 }

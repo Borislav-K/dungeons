@@ -11,6 +11,7 @@ public class KeyboardListener extends KeyAdapter {
     private static final String MOVE_UP_CMD = "mvu";
     private static final String MOVE_DOWN_CMD = "mvd";
     private static final String FIGHT_CMD = "att";
+    private static final String PICKUP_CMD = "pck";
 
     private static final Map<Integer, String> keybinds = Map.of(
             37, MOVE_LEFT_CMD,
@@ -21,7 +22,8 @@ public class KeyboardListener extends KeyAdapter {
             38, MOVE_UP_CMD,
             83, MOVE_DOWN_CMD,
             40, MOVE_DOWN_CMD,
-            70, FIGHT_CMD
+            70, FIGHT_CMD,
+            84, PICKUP_CMD
     );
 
     private KeyboardEventHandler keyboardEventHandler;

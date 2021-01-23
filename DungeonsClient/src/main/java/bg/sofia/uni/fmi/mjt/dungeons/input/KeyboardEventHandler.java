@@ -7,9 +7,7 @@ import java.util.Queue;
 
 public class KeyboardEventHandler {
 
-    private Queue<String> commands; // Needed, otherwise 2 commands can be sent per frame, crashing the server
-
-
+    private Queue<String> commands;
     private GameClient webClient;
 
     public KeyboardEventHandler(GameClient webClient) {
