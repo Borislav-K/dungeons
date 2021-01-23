@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
 
-public class Player implements Actor {
+public class Player implements FightableActor {
 
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
 

@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.action;
 
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.NoSuchPlayerException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
@@ -88,19 +89,24 @@ public class PlayerActionHandler {
         if (actorsAtPosition.size() != 2) {
             return;
         }
+        Actor actor1 = actorsAtPosition.get(0);
+        Actor actor2 = actorsAtPosition.get(1);
+        if (actor1.type().equals(ActorType.TREASURE) || actor2.type().equals(ActorType.TREASURE)) {
+            return;
+        }
         FightResult fightResult;
-        if (actorsAtPosition.get(0).equals(player)) {
-            fightResult = Arena.makeActorsFight(player, actorsAtPosition.get(1));
+        if (actor1.equals(player)) {
+            fightResult = Arena.makeActorsFight(player, (FightableActor) actor2);
         } else {
-            fightResult = Arena.makeActorsFight(player, actorsAtPosition.get(0));
+            fightResult = Arena.makeActorsFight(player, (FightableActor) actor1);
         }
 
         handleFightResult(fightResult);
     }
 
     private void handleFightResult(FightResult fightResult) {
-        Actor winner = fightResult.winner();
-        Actor loser = fightResult.loser();
+        FightableActor winner = fightResult.winner();
+        FightableActor loser = fightResult.loser();
         gameMap.despawnActor(loser);
         if (winner.type().equals(ActorType.PLAYER)) {
             ((Player) winner).increaseXP(loser.XPReward());

@@ -2,6 +2,8 @@ package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
@@ -73,6 +75,7 @@ public class Renderer extends JPanel {
     private PlayerSegment lastReceivedSegment;
 
     private BufferedImage obstacleImage;
+    private BufferedImage treasureImage;
     private List<BufferedImage> minionPictures;
     private List<BufferedImage> playerPictures;
 
@@ -87,6 +90,7 @@ public class Renderer extends JPanel {
         playerPictures = new ArrayList<>();
         try {
             obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.bmp"));
+            treasureImage = ImageIO.read(new File("DungeonsClient/src/main/resources/treasure.bmp"));
             for (int i = 1; i <= 5; i++) {
                 File imageFile = new File("DungeonsClient/src/main/resources/minion_level%d.bmp".formatted(i));
                 minionPictures.add(ImageIO.read(imageFile));
@@ -174,9 +178,11 @@ public class Renderer extends JPanel {
     }
 
     private void drawActor(Graphics2D g2d, Actor actor, boolean isAloneOnPosition, int x, int y) {
-        BufferedImage imageToDraw = actor.type().equals(ActorType.MINION) ?
-                minionPictures.get(actor.level() - 1) :
-                playerPictures.get(((Player) actor).id() - 1);
+        BufferedImage imageToDraw = switch (actor.type()) {
+            case TREASURE -> treasureImage;
+            case MINION -> minionPictures.get(((Minion) actor).level() - 1);
+            case PLAYER -> playerPictures.get(((Player) actor).id() - 1);
+        };
         AffineTransform at = new AffineTransform();
         at.translate(x, y);
         if (!isAloneOnPosition) {
