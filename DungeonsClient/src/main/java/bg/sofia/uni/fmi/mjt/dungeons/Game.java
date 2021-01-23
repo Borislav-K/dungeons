@@ -22,6 +22,7 @@ public class Game {
     private Renderer renderer;
     private GameWindow gameWindow;
     private KeyboardEventHandler keyboardEventHandler;
+    private KeyboardListener keyboardListener;
 
     private boolean shouldTerminate = false;
     private int consecutiveFramesWithoutResponse = 0;
@@ -32,11 +33,12 @@ public class Game {
         renderer = new Renderer();
         gameWindow = new GameWindow(renderer);
         keyboardEventHandler = new KeyboardEventHandler(webClient);
+        keyboardListener = new KeyboardListener(keyboardEventHandler);
     }
 
     public void start() {
         connectToServer();
-        addKeyboardListener();
+        gameWindow.addKeyListener(keyboardListener);
         startLoop();
     }
 
@@ -48,11 +50,6 @@ public class Game {
             e.printStackTrace();
             gameWindow.dispose(); // Will terminate the application
         }
-    }
-
-    private void addKeyboardListener() {
-        KeyboardListener k = new KeyboardListener(keyboardEventHandler);
-        gameWindow.addKeyListener(k);
     }
 
     private void startLoop() {
@@ -82,6 +79,9 @@ public class Game {
         }
         consecutiveFramesWithoutResponse = 0;
         if (playerSegment.type().equals(PlayerSegmentType.DEATH)) {
+            if (framesAfterPlayerDied == 0) {
+                gameWindow.removeKeyListener(keyboardListener);
+            }
             framesAfterPlayerDied++;
         }
         renderer.updatePlayerSegment(playerSegment);

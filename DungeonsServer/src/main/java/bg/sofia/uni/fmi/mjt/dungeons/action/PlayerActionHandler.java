@@ -51,7 +51,8 @@ public class PlayerActionHandler {
                 case MOVEMENT -> handleMovement((PlayerMovement) action);
                 case ATTACK -> handleAttack((PlayerAttack) action);
                 case TREASURE_PICKUP -> handleTreasurePickup((TreasurePickup) action);
-                default -> System.out.printf("Unknown event type %s\n", action.type().toString());
+                case ITEM_USAGE -> handleItemUsage((ItemUsage) action);
+                default -> System.out.printf("Unknown action type %s\n", action.type().toString());
             }
         } catch (NoSuchPlayerException e) {
             System.out.println("The action was sent by a player that was removed from the player manager");
@@ -135,4 +136,8 @@ public class PlayerActionHandler {
 
     }
 
+    private void handleItemUsage(ItemUsage action) throws NoSuchPlayerException {
+        Player player = playerManager.getPlayerByChannel(action.initiator());
+        player.useItemFromInventory(action.itemNumber() - 1);
+    }
 }

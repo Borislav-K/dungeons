@@ -4,21 +4,14 @@ import bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType;
 
 import java.nio.channels.SocketChannel;
 
-public class PlayerAttack implements PlayerAction {
-
-    private SocketChannel initiator;
+public class PlayerAttack extends AbstractPlayerAction {
 
     public PlayerAttack(SocketChannel initiator) {
-        this.initiator = initiator;
+        super(initiator);
     }
 
     @Override
     public ActionType type() {
         return ActionType.ATTACK;
-    }
-
-    @Override
-    public SocketChannel initiator() {
-        return initiator;
     }
 }

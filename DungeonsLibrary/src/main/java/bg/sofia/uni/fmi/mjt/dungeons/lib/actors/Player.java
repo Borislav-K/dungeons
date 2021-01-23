@@ -3,7 +3,9 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.HealthPotion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.ManaPotion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
@@ -83,9 +85,14 @@ public class Player implements FightableActor {
         }
     }
 
-    public void removeItemFromInventory(int index) {
-        if (index < inventory.size()) {
-            inventory.remove(index);
+    public void useItemFromInventory(int index) {
+        if (index >= inventory.size()) {
+            return;
+        }
+        Item itemToUse = inventory.remove(index);
+        switch (itemToUse.type()) {
+            case HEALTH_POTION -> stats.heal(((HealthPotion) itemToUse).healingAmount());
+            case MANA_POTION -> stats.replenish(((ManaPotion) itemToUse).replenishmentAmount());
         }
     }
 
@@ -162,7 +169,7 @@ public class Player implements FightableActor {
                ", experience=" + experience +
                ", position=" + position +
                ", battleStats=" + stats +
-               ", inventory= " + inventory.toString()+
+               ", inventory= " + inventory.toString() +
                '}';
     }
 }
