@@ -5,6 +5,7 @@ public enum ActionType {
     ATTACK,
     TREASURE_PICKUP,
     ITEM_USAGE,
+    ITEM_GRANT,
     PLAYER_CONNECT,
     PLAYER_DISCONNECT
 }

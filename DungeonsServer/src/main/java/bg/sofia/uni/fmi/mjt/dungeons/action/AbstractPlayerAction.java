@@ -14,4 +14,5 @@ public abstract class AbstractPlayerAction implements PlayerAction {
     public SocketChannel initiator() {
         return initiator;
     }
+
 }

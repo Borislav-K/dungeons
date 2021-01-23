@@ -3,9 +3,11 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.HealthPotion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Item;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.ManaPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
@@ -28,10 +30,8 @@ public class Player implements FightableActor {
     private static final int HEALTH_GAIN_PER_LEVEL = 20;
     private static final int MANA_GAIN_PER_LEVEL = 20;
     private static final int ATTACK_GAIN_PER_LEVEL = 15;
-    private static final int DEFENSE_GAIN_PER_LEVEL = 10;
+    private static final int DEFENSE_GAIN_PER_LEVEL = 5;
 
-
-    private static final int INVENTORY_SIZE = 9;
 
     private static BattleStats playerStatsForLevel(int level) {
         return new BattleStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level,
@@ -45,12 +45,12 @@ public class Player implements FightableActor {
     private int experience;
     private Position2D position;
     private BattleStats stats;
-    private List<Item> inventory;
+    private Inventory inventory;
 
     public Player() {
         this.experience = 0;
         this.stats = playerStatsForLevel(1);
-        this.inventory = new ArrayList<>(INVENTORY_SIZE);
+        this.inventory = new Inventory();
     }
 
     public Player(int id, SocketChannel channel) {
@@ -80,20 +80,19 @@ public class Player implements FightableActor {
     }
 
     public void addItemToInventory(Item item) {
-        if (inventory.size() < INVENTORY_SIZE) {
-            inventory.add(item);
-        }
+        inventory.addItemToInventory(item);
     }
 
-    public void useItemFromInventory(int index) {
-        if (index >= inventory.size()) {
-            return;
-        }
-        Item itemToUse = inventory.remove(index);
+    public void useItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
+        Item itemToUse = inventory.removeItem(itemNumber);
         switch (itemToUse.type()) {
             case HEALTH_POTION -> stats.heal(((HealthPotion) itemToUse).healingAmount());
             case MANA_POTION -> stats.replenish(((ManaPotion) itemToUse).replenishmentAmount());
         }
+    }
+
+    public Item removeItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
+        return inventory.removeItem(itemNumber);
     }
 
     @Override
@@ -116,7 +115,7 @@ public class Player implements FightableActor {
         return LevelCalculator.getLevelByExperience(experience) * XP_REWARD_PER_PLAYER_LVL;
     }
 
-    public List<Item> inventory() {
+    public Inventory inventory() {
         return inventory;
     }
 
