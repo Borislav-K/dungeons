@@ -25,7 +25,7 @@ import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.OBSTACLE_POSITI
 public class Renderer extends JPanel {
 
     private static final int MAP_FIELD_SIZE = 25;
-    private static final int BATTLESTATS_LABELS_FONT_SIZE = 20;
+    private static final Font BATTLESTATS_FONT = new Font("Comic Sans", Font.BOLD, 20);
 
     // Experience and bar
     private static final int XP_LABEL_LOCATION_X = 220;
@@ -69,16 +69,12 @@ public class Renderer extends JPanel {
     private static final int DEFENSE_LABEL_LOCATION_Y = 200;
     private static final int DEFENSE_TEXT_LOCATION_Y = 230;
 
-    private static final String TREASURE_DRAWING = "T";
-
-    private static final Font ONE_ACTOR_PER_POSITION_FONT = new Font("Comic Sans", Font.PLAIN, MAP_FIELD_SIZE);
-    private static final Font TWO_ACTORS_PER_POSITION_FONT = new Font("Comic Sans", Font.BOLD, MAP_FIELD_SIZE / 2);
-    private static final Font BATTLESTATS_FONT = new Font("Comic Sans", Font.BOLD, BATTLESTATS_LABELS_FONT_SIZE);
 
     private PlayerSegment lastReceivedSegment;
 
     private BufferedImage obstacleImage;
     private List<BufferedImage> minionPictures;
+    private List<BufferedImage> playerPictures;
 
     public Renderer() {
         super.setBackground(Color.white);
@@ -88,11 +84,16 @@ public class Renderer extends JPanel {
 
     private void initializeResources() {
         minionPictures = new ArrayList<>();
+        playerPictures = new ArrayList<>();
         try {
-            obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.jpg"));
+            obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.bmp"));
             for (int i = 1; i <= 5; i++) {
                 File imageFile = new File("DungeonsClient/src/main/resources/minion_level%d.bmp".formatted(i));
                 minionPictures.add(ImageIO.read(imageFile));
+            }
+            for (int i = 1; i <= 9; i++) {
+                File imageFile = new File("DungeonsClient/src/main/resources/player%d.bmp".formatted(i));
+                playerPictures.add(ImageIO.read(imageFile));
             }
         } catch (IOException e) {
             throw new IllegalStateException("Could not load a resource", e);
@@ -141,7 +142,7 @@ public class Renderer extends JPanel {
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
             for (int j = 0; j < MAP_DIMENSIONS; j++) {
                 if (i == 0 || j == 0 || i == MAP_DIMENSIONS - 1 || j == MAP_DIMENSIONS - 1) {
-                    drawObstacle(g2d, i * MAP_FIELD_SIZE, j * MAP_FIELD_SIZE);
+                    g2d.drawImage(obstacleImage, i * MAP_FIELD_SIZE, j * MAP_FIELD_SIZE, null);
                 }
             }
         }
@@ -151,15 +152,8 @@ public class Renderer extends JPanel {
         for (int obstacle : OBSTACLE_POSITIONS) {
             int x = (obstacle / MAP_DIMENSIONS) * MAP_FIELD_SIZE;
             int y = (obstacle % MAP_DIMENSIONS) * MAP_FIELD_SIZE;
-            drawObstacle(g2d, x, y);
+            g2d.drawImage(obstacleImage, x, y, null);
         }
-    }
-
-    private void drawObstacle(Graphics2D g2d, int x, int y) {
-        AffineTransform at = new AffineTransform();
-        at.translate(x, y);
-        at.scale(0.8, 0.7);
-        g2d.drawImage(obstacleImage, at, null);
     }
 
     private void drawActors(Graphics2D g2d) {
@@ -182,7 +176,7 @@ public class Renderer extends JPanel {
     private void drawActor(Graphics2D g2d, Actor actor, boolean isAloneOnPosition, int x, int y) {
         BufferedImage imageToDraw = actor.type().equals(ActorType.MINION) ?
                 minionPictures.get(actor.level() - 1) :
-                obstacleImage; // TODO change obstacle image to playerId
+                playerPictures.get(((Player) actor).id() - 1);
         AffineTransform at = new AffineTransform();
         at.translate(x, y);
         if (!isAloneOnPosition) {
