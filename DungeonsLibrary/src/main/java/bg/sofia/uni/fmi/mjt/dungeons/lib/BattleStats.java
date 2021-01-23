@@ -58,6 +58,14 @@ public class BattleStats implements Transmissible {
         }
     }
 
+    public void heal(int amount) {
+        currentHealth = Math.min(health, currentHealth + amount);
+    }
+
+    public void replenish(int amount) {
+        currentMana = Math.min(mana, currentMana + amount);
+    }
+
     @Override
     public void serialize(DataOutputStream out) throws IOException {
         out.writeInt(health);

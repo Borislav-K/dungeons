@@ -4,7 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.util.LinkedList;
@@ -38,19 +38,23 @@ public class GameMap {
     }
 
     // Spawns the player at a random free position
-    public Player spawnPlayer(Player player) {
+    public void spawnPlayer(Player player) {
         Position2D randomPos = getRandomSpawnablePosition();
         player.setPosition(randomPos);
         randomPos.addActor(player);
-        return player;
     }
 
     // Spawns a minion with a random level at a random free position
     public void spawnMinion() {
         Position2D randomPos = getRandomSpawnablePosition();
-        Minion minion = new Minion();
-        minion.setPosition(randomPos);
+        Minion minion = new Minion(randomPos);
         randomPos.addActor(minion);
+    }
+
+    public void spawnTreasure() {
+        Position2D randomPos = getRandomSpawnablePosition();
+        Treasure treasure = new Treasure(randomPos);
+        randomPos.addActor(treasure);
     }
 
     // Moves an already spawned player (if the direction leads to a free position)
@@ -74,8 +78,9 @@ public class GameMap {
 
     public void despawnActor(Actor actor) {
         actor.position().removeActor(actor);
-        if (actor.type().equals(ActorType.MINION)) {
-            spawnMinion();
+        switch (actor.type()) {
+            case MINION -> spawnMinion();
+            case TREASURE -> spawnTreasure();
         }
     }
 
@@ -84,6 +89,7 @@ public class GameMap {
         buildBarrier();
         setObstacles();
         spawnInitialMinions();
+        spawnInitialTreasures();
     }
 
     private void buildBarrier() {
@@ -106,6 +112,12 @@ public class GameMap {
     private void spawnInitialMinions() {
         for (int i = 1; i <= MINIONS_COUNT; i++) {
             spawnMinion();
+        }
+    }
+
+    private void spawnInitialTreasures() {
+        for (int i = 1; i <= TREASURES_COUNT; i++) {
+            spawnTreasure();
         }
     }
 

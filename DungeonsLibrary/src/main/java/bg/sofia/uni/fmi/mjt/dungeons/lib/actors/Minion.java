@@ -9,7 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-public class Minion implements Actor {
+public class Minion implements FightableActor {
 
     private static final int XP_REWARD_PER_MINION_LVL = 20;
 
@@ -35,13 +35,11 @@ public class Minion implements Actor {
     private BattleStats stats;
     private Position2D position;
 
-    public Minion() {
+    public Minion() {}
+    public Minion(Position2D position) {
+        this.position = position;
         this.level = generator.nextInt(MAX_MINION_LEVEL) + 1;
         this.stats = minionStatsForLevel(level);
-    }
-
-    public void setPosition(Position2D position) {
-        this.position = position;
     }
 
     @Override

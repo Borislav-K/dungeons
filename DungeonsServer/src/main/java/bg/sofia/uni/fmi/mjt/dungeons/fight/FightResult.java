@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.fight;
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
 
-public record FightResult(Actor winner, Actor loser) {
+public record FightResult(FightableActor winner, FightableActor loser) {
 
 }

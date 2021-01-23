@@ -3,15 +3,20 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.HealthPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.ManaPotion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public class Player implements Actor {
+public class Player implements FightableActor {
 
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
 
@@ -25,6 +30,9 @@ public class Player implements Actor {
     private static final int ATTACK_GAIN_PER_LEVEL = 15;
     private static final int DEFENSE_GAIN_PER_LEVEL = 10;
 
+
+    private static final int INVENTORY_SIZE = 9;
+
     private static BattleStats playerStatsForLevel(int level) {
         return new BattleStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level,
                 BASE_MANA + MANA_GAIN_PER_LEVEL * level,
@@ -37,16 +45,18 @@ public class Player implements Actor {
     private int experience;
     private Position2D position;
     private BattleStats stats;
+    private List<Item> inventory;
 
     public Player() {
-        this.stats = new BattleStats();
+        this.experience = 0;
+        this.stats = playerStatsForLevel(1);
+        this.inventory = new ArrayList<>(INVENTORY_SIZE);
     }
 
     public Player(int id, SocketChannel channel) {
+        this();
         this.id = id;
         this.channel = channel;
-        this.stats = playerStatsForLevel(1);
-        this.experience = 0;
     }
 
     public int id() {
@@ -69,6 +79,23 @@ public class Player implements Actor {
         return stats.currentHealth() == 0;
     }
 
+    public void addItemToInventory(Item item) {
+        if (inventory.size() < INVENTORY_SIZE) {
+            inventory.add(item);
+        }
+    }
+
+    public void useItemFromInventory(int index) {
+        if (index >= inventory.size()) {
+            return;
+        }
+        Item itemToUse = inventory.remove(index);
+        switch (itemToUse.type()) {
+            case HEALTH_POTION -> stats.heal(((HealthPotion) itemToUse).healingAmount());
+            case MANA_POTION -> stats.replenish(((ManaPotion) itemToUse).replenishmentAmount());
+        }
+    }
+
     @Override
     public BattleStats stats() {
         return stats;
@@ -87,6 +114,10 @@ public class Player implements Actor {
     @Override
     public int XPReward() {
         return LevelCalculator.getLevelByExperience(experience) * XP_REWARD_PER_PLAYER_LVL;
+    }
+
+    public List<Item> inventory() {
+        return inventory;
     }
 
     public void setPosition(Position2D position) {
@@ -138,6 +169,7 @@ public class Player implements Actor {
                ", experience=" + experience +
                ", position=" + position +
                ", battleStats=" + stats +
+               ", inventory= " + inventory.toString() +
                '}';
     }
 }

@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 public class GameConfigurator {
     public static final int MAP_DIMENSIONS = 20;
-    public static final int OBSTACLES_COUNT = 40;
     public static final int MINIONS_COUNT = 10;
+    public static final int TREASURES_COUNT = 3;
 
     private static final int BARRIER_LENGTH = 4 * (MAP_DIMENSIONS - 1);
 

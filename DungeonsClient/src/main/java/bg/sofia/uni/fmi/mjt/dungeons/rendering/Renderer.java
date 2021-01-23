@@ -1,10 +1,10 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.*;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
@@ -73,6 +73,9 @@ public class Renderer extends JPanel {
     private PlayerSegment lastReceivedSegment;
 
     private BufferedImage obstacleImage;
+    private BufferedImage treasureImage;
+    private BufferedImage healthPotionImage;
+    private BufferedImage manaPotionImage;
     private List<BufferedImage> minionPictures;
     private List<BufferedImage> playerPictures;
 
@@ -87,6 +90,9 @@ public class Renderer extends JPanel {
         playerPictures = new ArrayList<>();
         try {
             obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.bmp"));
+            treasureImage = ImageIO.read(new File("DungeonsClient/src/main/resources/treasure.bmp"));
+            healthPotionImage = ImageIO.read(new File("DungeonsClient/src/main/resources/health_potion.bmp"));
+            manaPotionImage = ImageIO.read(new File("DungeonsClient/src/main/resources/mana_potion.bmp"));
             for (int i = 1; i <= 5; i++) {
                 File imageFile = new File("DungeonsClient/src/main/resources/minion_level%d.bmp".formatted(i));
                 minionPictures.add(ImageIO.read(imageFile));
@@ -117,6 +123,7 @@ public class Renderer extends JPanel {
             renderMap(g2d);
             renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
             renderBattleStats(g2d, currentPlayer.stats());
+            renderInventory(g2d, currentPlayer.inventory());
         }
     }
 
@@ -174,9 +181,11 @@ public class Renderer extends JPanel {
     }
 
     private void drawActor(Graphics2D g2d, Actor actor, boolean isAloneOnPosition, int x, int y) {
-        BufferedImage imageToDraw = actor.type().equals(ActorType.MINION) ?
-                minionPictures.get(actor.level() - 1) :
-                playerPictures.get(((Player) actor).id() - 1);
+        BufferedImage imageToDraw = switch (actor.type()) {
+            case TREASURE -> treasureImage;
+            case MINION -> minionPictures.get(((Minion) actor).level() - 1);
+            case PLAYER -> playerPictures.get(((Player) actor).id() - 1);
+        };
         AffineTransform at = new AffineTransform();
         at.translate(x, y);
         if (!isAloneOnPosition) {
@@ -240,6 +249,30 @@ public class Renderer extends JPanel {
         // Attack and defense points
         g2d.drawString(String.valueOf(battleStats.attack()), BATTLESTATS_TEXT_LOCATION_X, ATTACK_TEXT_LOCATION_Y);
         g2d.drawString(String.valueOf(battleStats.defense()), BATTLESTATS_TEXT_LOCATION_X, DEFENSE_TEXT_LOCATION_Y);
+    }
+
+    private void renderInventory(Graphics2D g2d, List<Item> inventory) {
+        // Inventory grid
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(550, 300, 90, 90);
+        g2d.setColor(Color.black);
+        g2d.drawRect(550, 300, 90, 90);
+        g2d.drawRect(550, 300, 30, 30);
+        g2d.drawRect(580, 330, 30, 30);
+        g2d.drawRect(610, 360, 30, 30);
+        g2d.drawRect(550, 360, 30, 30);
+        g2d.drawRect(610, 300, 30, 30);
+
+        for (int i = 0; i < inventory.size(); i++) {
+            int x = 550 + (i % 3) * 30;
+            int y = 300 + (i / 3) * 30;
+            Item currentItem = inventory.get(i);
+            BufferedImage imageToDraw = switch (currentItem.type()) {
+                case HEALTH_POTION -> healthPotionImage;
+                case MANA_POTION -> manaPotionImage;
+            };
+            g2d.drawImage(imageToDraw, x, y, null);
+        }
     }
 
 }

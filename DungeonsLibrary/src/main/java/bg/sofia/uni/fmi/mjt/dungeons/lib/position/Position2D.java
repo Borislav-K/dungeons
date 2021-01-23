@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.position;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 
@@ -104,7 +105,7 @@ public class Position2D implements Transmissible {
             Actor actor = switch (actorType) {
                 case PLAYER -> new Player();
                 case MINION -> new Minion();
-                default -> throw new RuntimeException("Unknown actor type received from server");
+                case TREASURE -> new Treasure();
             };
             actor.deserialize(in);
             actors.add(actor);

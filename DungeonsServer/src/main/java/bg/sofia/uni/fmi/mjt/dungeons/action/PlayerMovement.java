@@ -1,19 +1,18 @@
 package bg.sofia.uni.fmi.mjt.dungeons.action;
 
-import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 import bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType;
+import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 
 import java.nio.channels.SocketChannel;
 
 import static bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType.MOVEMENT;
 
-public class PlayerMovement implements PlayerAction {
+public class PlayerMovement extends AbstractPlayerAction {
 
     private Direction direction;
-    private SocketChannel initiator;
 
     public PlayerMovement(String clientCommand, SocketChannel initiator) {
-        this.initiator = initiator;
+        super(initiator);
         this.direction = determineDirection(clientCommand);
     }
 
@@ -30,11 +29,6 @@ public class PlayerMovement implements PlayerAction {
     @Override
     public ActionType type() {
         return MOVEMENT;
-    }
-
-    @Override
-    public SocketChannel initiator() {
-        return this.initiator;
     }
 
     public Direction direction() {

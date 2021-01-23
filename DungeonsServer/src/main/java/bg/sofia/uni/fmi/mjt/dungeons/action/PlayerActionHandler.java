@@ -2,13 +2,16 @@ package bg.sofia.uni.fmi.mjt.dungeons.action;
 
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.NoSuchPlayerException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.Arena;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.FightResult;
 import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.ItemFactory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.IOException;
@@ -47,7 +50,9 @@ public class PlayerActionHandler {
                 case PLAYER_DISCONNECT -> handlePlayerDisconnect((PlayerDisconnect) action);
                 case MOVEMENT -> handleMovement((PlayerMovement) action);
                 case ATTACK -> handleAttack((PlayerAttack) action);
-                default -> System.out.printf("Unknown event type %s\n", action.type().toString());
+                case TREASURE_PICKUP -> handleTreasurePickup((TreasurePickup) action);
+                case ITEM_USAGE -> handleItemUsage((ItemUsage) action);
+                default -> System.out.printf("Unknown action type %s\n", action.type().toString());
             }
         } catch (NoSuchPlayerException e) {
             System.out.println("The action was sent by a player that was removed from the player manager");
@@ -83,28 +88,56 @@ public class PlayerActionHandler {
     private void handleAttack(PlayerAttack action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
 
-        Position2D playerPosition = player.position();
-        List<Actor> actorsAtPosition = playerPosition.actors();
+        List<Actor> actorsAtPosition = player.position().actors();
         if (actorsAtPosition.size() != 2) {
             return;
         }
+        Actor actor1 = actorsAtPosition.get(0);
+        Actor actor2 = actorsAtPosition.get(1);
+        if (actor1.type().equals(ActorType.TREASURE) || actor2.type().equals(ActorType.TREASURE)) {
+            return;
+        }
         FightResult fightResult;
-        if (actorsAtPosition.get(0).equals(player)) {
-            fightResult = Arena.makeActorsFight(player, actorsAtPosition.get(1));
+        if (actor1.equals(player)) {
+            fightResult = Arena.makeActorsFight(player, (FightableActor) actor2);
         } else {
-            fightResult = Arena.makeActorsFight(player, actorsAtPosition.get(0));
+            fightResult = Arena.makeActorsFight(player, (FightableActor) actor1);
         }
 
         handleFightResult(fightResult);
     }
 
     private void handleFightResult(FightResult fightResult) {
-        Actor winner = fightResult.winner();
-        Actor loser = fightResult.loser();
+        FightableActor winner = fightResult.winner();
+        FightableActor loser = fightResult.loser();
         gameMap.despawnActor(loser);
         if (winner.type().equals(ActorType.PLAYER)) {
             ((Player) winner).increaseXP(loser.XPReward());
         }
     }
 
+    private void handleTreasurePickup(TreasurePickup action) throws NoSuchPlayerException {
+        Player player = playerManager.getPlayerByChannel(action.initiator());
+
+        Position2D playerPosition = player.position();
+        if (playerPosition.actors().size() != 2) {
+            return; // If player is alone there is no treasure to pick
+        }
+        Actor actor1 = playerPosition.actors().get(0);
+        Actor actor2 = playerPosition.actors().get(1);
+        if (player.equals(actor1) && actor2.type().equals(ActorType.TREASURE)) {
+            gameMap.despawnActor(actor2);
+            ((Player) actor1).addItemToInventory(ItemFactory.random());
+
+        } else if (actor1.type().equals(ActorType.TREASURE)) {
+            gameMap.despawnActor(actor1);
+            ((Player) actor2).addItemToInventory(ItemFactory.random());
+        }
+
+    }
+
+    private void handleItemUsage(ItemUsage action) throws NoSuchPlayerException {
+        Player player = playerManager.getPlayerByChannel(action.initiator());
+        player.useItemFromInventory(action.itemNumber() - 1);
+    }
 }

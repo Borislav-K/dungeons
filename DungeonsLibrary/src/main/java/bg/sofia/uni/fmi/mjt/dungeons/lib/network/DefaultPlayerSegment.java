@@ -1,7 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.HealthPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.ManaPotion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
@@ -39,8 +43,18 @@ public class DefaultPlayerSegment implements PlayerSegment {
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
+        // Segment Type
         out.writeInt(PlayerSegmentType.DEFAULT.ordinal());
+
+        // Player data
         player.serialize(out);
+        List<Item> playerInventory = player.inventory();
+        out.writeInt(playerInventory.size());
+        for (Item item : playerInventory) {
+            out.writeInt(item.type().ordinal());
+        }
+
+        // Positions with actors
         out.writeInt(positions.size());
         for (Position2D position : positions) {
             position.serialize(out);
@@ -49,7 +63,16 @@ public class DefaultPlayerSegment implements PlayerSegment {
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
+        // Player data
         player.deserialize(in);
+        int inventorySize = in.readInt();
+        for (int i = 1; i <= inventorySize; i++) {
+            ItemType itemType = ItemType.values()[in.readInt()];
+            player.addItemToInventory(switch (itemType) {
+                case HEALTH_POTION -> new HealthPotion();
+                case MANA_POTION -> new ManaPotion();
+            });
+        }
         int positionsCount = in.readInt();
         for (int i = 1; i <= positionsCount; i++) {
             Position2D position = new Position2D();
