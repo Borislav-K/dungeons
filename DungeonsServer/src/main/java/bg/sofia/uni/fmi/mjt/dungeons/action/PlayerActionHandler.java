@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.exceptions.NoSuchPlayerException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.Arena;
@@ -115,7 +116,6 @@ public class PlayerActionHandler {
 
     private void handleTreasurePickup(TreasurePickup action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
-        // TODO add item to player's inventory
 
         Position2D playerPosition = player.position();
         if (playerPosition.actors().size() != 2) {
@@ -123,10 +123,13 @@ public class PlayerActionHandler {
         }
         Actor actor1 = playerPosition.actors().get(0);
         Actor actor2 = playerPosition.actors().get(1);
-        if (player.equals(actor1)) {
+        if (player.equals(actor1) && actor2.type().equals(ActorType.TREASURE)) {
             gameMap.despawnActor(actor2);
-        } else {
+            ((Player) actor1).addTreasureToInventory((Treasure) actor2);
+
+        } else if (actor1.type().equals(ActorType.TREASURE)) {
             gameMap.despawnActor(actor1);
+            ((Player) actor2).addTreasureToInventory((Treasure) actor1);
         }
 
     }

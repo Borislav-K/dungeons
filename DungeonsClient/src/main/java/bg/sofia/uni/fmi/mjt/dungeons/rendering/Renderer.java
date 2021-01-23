@@ -1,10 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.*;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
@@ -121,6 +118,7 @@ public class Renderer extends JPanel {
             renderMap(g2d);
             renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
             renderBattleStats(g2d, currentPlayer.stats());
+            renderInventory(g2d, currentPlayer.inventory());
         }
     }
 
@@ -246,6 +244,25 @@ public class Renderer extends JPanel {
         // Attack and defense points
         g2d.drawString(String.valueOf(battleStats.attack()), BATTLESTATS_TEXT_LOCATION_X, ATTACK_TEXT_LOCATION_Y);
         g2d.drawString(String.valueOf(battleStats.defense()), BATTLESTATS_TEXT_LOCATION_X, DEFENSE_TEXT_LOCATION_Y);
+    }
+
+    private void renderInventory(Graphics2D g2d, List<Treasure> inventory) {
+        // Inventory grid
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(550, 300, 90, 90);
+        g2d.setColor(Color.black);
+        g2d.drawRect(550, 300, 90, 90);
+        g2d.drawRect(550, 300, 30, 30);
+        g2d.drawRect(580, 330, 30, 30);
+        g2d.drawRect(610, 360, 30, 30);
+        g2d.drawRect(550, 360, 30, 30);
+        g2d.drawRect(610, 300, 30, 30);
+
+        for (int i = 0; i < inventory.size(); i++) {
+            int x = 550 + (i%3) * 30;
+            int y = 300 + (i/3)*30;
+            g2d.drawImage(treasureImage,x,y,null);
+        }
     }
 
 }
