@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
@@ -42,7 +43,7 @@ public class Player implements FightableActor {
     private int experience;
     private Position2D position;
     private BattleStats stats;
-    private List<Treasure> inventory;
+    private List<Item> inventory;
 
     public Player() {
         this.experience = 0;
@@ -76,13 +77,13 @@ public class Player implements FightableActor {
         return stats.currentHealth() == 0;
     }
 
-    public void addTreasureToInventory(Treasure treasure) {
+    public void addItemToInventory(Item item) {
         if (inventory.size() < INVENTORY_SIZE) {
-            inventory.add(treasure);
+            inventory.add(item);
         }
     }
 
-    public void removeTreasureFromInventory(int index) {
+    public void removeItemFromInventory(int index) {
         if (index < inventory.size()) {
             inventory.remove(index);
         }
@@ -108,7 +109,7 @@ public class Player implements FightableActor {
         return LevelCalculator.getLevelByExperience(experience) * XP_REWARD_PER_PLAYER_LVL;
     }
 
-    public List<Treasure> inventory() {
+    public List<Item> inventory() {
         return inventory;
     }
 

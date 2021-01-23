@@ -11,6 +11,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.fight.Arena;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.FightResult;
 import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.ItemFactory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.IOException;
@@ -125,11 +126,11 @@ public class PlayerActionHandler {
         Actor actor2 = playerPosition.actors().get(1);
         if (player.equals(actor1) && actor2.type().equals(ActorType.TREASURE)) {
             gameMap.despawnActor(actor2);
-            ((Player) actor1).addTreasureToInventory((Treasure) actor2);
+            ((Player) actor1).addItemToInventory(ItemFactory.random());
 
         } else if (actor1.type().equals(ActorType.TREASURE)) {
             gameMap.despawnActor(actor1);
-            ((Player) actor2).addTreasureToInventory((Treasure) actor1);
+            ((Player) actor2).addItemToInventory(ItemFactory.random());
         }
 
     }

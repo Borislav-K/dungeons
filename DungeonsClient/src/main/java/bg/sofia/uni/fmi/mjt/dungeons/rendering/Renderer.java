@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.*;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
@@ -73,6 +74,8 @@ public class Renderer extends JPanel {
 
     private BufferedImage obstacleImage;
     private BufferedImage treasureImage;
+    private BufferedImage healthPotionImage;
+    private BufferedImage manaPotionImage;
     private List<BufferedImage> minionPictures;
     private List<BufferedImage> playerPictures;
 
@@ -88,6 +91,8 @@ public class Renderer extends JPanel {
         try {
             obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.bmp"));
             treasureImage = ImageIO.read(new File("DungeonsClient/src/main/resources/treasure.bmp"));
+            healthPotionImage = ImageIO.read(new File("DungeonsClient/src/main/resources/health_potion.bmp"));
+            manaPotionImage = ImageIO.read(new File("DungeonsClient/src/main/resources/mana_potion.bmp"));
             for (int i = 1; i <= 5; i++) {
                 File imageFile = new File("DungeonsClient/src/main/resources/minion_level%d.bmp".formatted(i));
                 minionPictures.add(ImageIO.read(imageFile));
@@ -246,7 +251,7 @@ public class Renderer extends JPanel {
         g2d.drawString(String.valueOf(battleStats.defense()), BATTLESTATS_TEXT_LOCATION_X, DEFENSE_TEXT_LOCATION_Y);
     }
 
-    private void renderInventory(Graphics2D g2d, List<Treasure> inventory) {
+    private void renderInventory(Graphics2D g2d, List<Item> inventory) {
         // Inventory grid
         g2d.setColor(Color.WHITE);
         g2d.fillRect(550, 300, 90, 90);
@@ -259,9 +264,14 @@ public class Renderer extends JPanel {
         g2d.drawRect(610, 300, 30, 30);
 
         for (int i = 0; i < inventory.size(); i++) {
-            int x = 550 + (i%3) * 30;
-            int y = 300 + (i/3)*30;
-            g2d.drawImage(treasureImage,x,y,null);
+            int x = 550 + (i % 3) * 30;
+            int y = 300 + (i / 3) * 30;
+            Item currentItem = inventory.get(i);
+            BufferedImage imageToDraw = switch (currentItem.type()) {
+                case HEALTH_POTION -> healthPotionImage;
+                case MANA_POTION -> manaPotionImage;
+            };
+            g2d.drawImage(imageToDraw, x, y, null);
         }
     }
 
