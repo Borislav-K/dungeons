@@ -91,8 +91,8 @@ public class Player implements FightableActor {
         }
     }
 
-    public void removeItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
-        inventory.removeItem(itemNumber);
+    public Item removeItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
+        return inventory.removeItem(itemNumber);
     }
 
     @Override

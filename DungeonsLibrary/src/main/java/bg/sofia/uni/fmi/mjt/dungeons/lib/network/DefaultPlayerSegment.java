@@ -62,6 +62,8 @@ public class DefaultPlayerSegment implements PlayerSegment {
         // Player data
         player.deserialize(in);
         player.inventory().deserialize(in);
+
+        // Positions with actors
         int positionsCount = in.readInt();
         for (int i = 1; i <= positionsCount; i++) {
             Position2D position = new Position2D();

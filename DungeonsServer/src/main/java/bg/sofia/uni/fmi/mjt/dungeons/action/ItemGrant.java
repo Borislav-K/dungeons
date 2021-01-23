@@ -10,6 +10,7 @@ public class ItemGrant extends AbstractPlayerAction {
 
     protected ItemGrant(SocketChannel initiator, int itemNumber) {
         super(initiator);
+        this.itemNumber = itemNumber;
     }
 
     @Override
