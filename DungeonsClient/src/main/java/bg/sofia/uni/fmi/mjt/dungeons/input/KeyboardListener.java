@@ -46,7 +46,7 @@ public class KeyboardListener extends KeyAdapter {
                 40, MOVE_DOWN_CMD, // S
                 70, FIGHT_CMD, // F
                 84, PICKUP_CMD)); // T
-        for (int i = 1; i < 9; i++) {
+        for (int i = 1; i <= 9; i++) {
             keybinds.put(48 + i, USE_ITEM_CMD_FORMAT.formatted(i)); // 1-9
             keybinds.put(111 + i, GIVE_ITEM_CMD_FORMAT.formatted(i)); // F1-F9
         }

@@ -1,10 +1,13 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.*;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
@@ -16,7 +19,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.MAP_DIMENSIONS;
@@ -251,7 +254,7 @@ public class Renderer extends JPanel {
         g2d.drawString(String.valueOf(battleStats.defense()), BATTLESTATS_TEXT_LOCATION_X, DEFENSE_TEXT_LOCATION_Y);
     }
 
-    private void renderInventory(Graphics2D g2d, List<Item> inventory) {
+    private void renderInventory(Graphics2D g2d, Inventory inventory) {
         // Inventory grid
         g2d.setColor(Color.WHITE);
         g2d.fillRect(550, 300, 90, 90);
@@ -263,15 +266,19 @@ public class Renderer extends JPanel {
         g2d.drawRect(550, 360, 30, 30);
         g2d.drawRect(610, 300, 30, 30);
 
-        for (int i = 0; i < inventory.size(); i++) {
-            int x = 550 + (i % 3) * 30;
-            int y = 300 + (i / 3) * 30;
-            Item currentItem = inventory.get(i);
-            BufferedImage imageToDraw = switch (currentItem.type()) {
-                case HEALTH_POTION -> healthPotionImage;
-                case MANA_POTION -> manaPotionImage;
-            };
-            g2d.drawImage(imageToDraw, x, y, null);
+        for (int i = 1; i <= inventory.currentSize(); i++) {
+            int x = 550 + ((i-1) % 3) * 30;
+            int y = 300 + ((i-1) / 3) * 30;
+            try {
+                Item currentItem = inventory.getItem(i);
+                BufferedImage imageToDraw = switch (currentItem.type()) {
+                    case HEALTH_POTION -> healthPotionImage;
+                    case MANA_POTION -> manaPotionImage;
+                };
+                g2d.drawImage(imageToDraw, x, y, null);
+            } catch (ItemNumberOutOfBoundsException e) {
+                throw new RuntimeException("Inconsistent relation between inventory size and actual items count");
+            }
         }
     }
 

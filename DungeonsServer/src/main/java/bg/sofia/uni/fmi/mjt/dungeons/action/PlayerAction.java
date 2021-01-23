@@ -14,6 +14,7 @@ public interface PlayerAction {
     String ATTACK_CMD = "att";
     String TREASURE_PICKUP_CMD = "pck";
     String ITEM_USAGE_REGEX = "us[0-9]";
+    String ITEM_GRANT_REGEX = "gv[0-9]";
 
     ActionType type();
 
@@ -22,6 +23,9 @@ public interface PlayerAction {
     static PlayerAction of(String clientCommand, SocketChannel initiator) throws IllegalPlayerActionException {
         if (clientCommand.matches(ITEM_USAGE_REGEX)) {
             return new ItemUsage(initiator, clientCommand.charAt(2) - '0');
+        }
+        if (clientCommand.matches(ITEM_GRANT_REGEX)) {
+            return new ItemGrant(initiator, clientCommand.charAt(2) - '0');
         }
         return switch (clientCommand) {
             case MOVE_DOWN_CMD, MOVE_LEFT_CMD, MOVE_RIGHT_CMD, MOVE_UP_CMD -> new PlayerMovement(clientCommand, initiator);

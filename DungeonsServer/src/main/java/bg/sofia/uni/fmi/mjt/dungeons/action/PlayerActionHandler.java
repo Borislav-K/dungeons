@@ -1,17 +1,17 @@
 package bg.sofia.uni.fmi.mjt.dungeons.action;
 
+import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.NoSuchPlayerException;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.Arena;
 import bg.sofia.uni.fmi.mjt.dungeons.fight.FightResult;
-import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
-import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.ItemFactory;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ItemFactory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.IOException;
@@ -52,6 +52,7 @@ public class PlayerActionHandler {
                 case ATTACK -> handleAttack((PlayerAttack) action);
                 case TREASURE_PICKUP -> handleTreasurePickup((TreasurePickup) action);
                 case ITEM_USAGE -> handleItemUsage((ItemUsage) action);
+                case ITEM_GRANT -> handleItemGrant((ItemGrant) action);
                 default -> System.out.printf("Unknown action type %s\n", action.type().toString());
             }
         } catch (NoSuchPlayerException e) {
@@ -138,6 +139,15 @@ public class PlayerActionHandler {
 
     private void handleItemUsage(ItemUsage action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
-        player.useItemFromInventory(action.itemNumber() - 1);
+        try {
+            player.useItemFromInventory(action.itemNumber());
+        } catch (ItemNumberOutOfBoundsException e) {
+            System.out.printf("Player %d tried to use an item with number out of bounds", player.id());
+        }
+    }
+
+    private void handleItemGrant(ItemGrant action) throws NoSuchPlayerException {
+        Player player = playerManager.getPlayerByChannel(action.initiator());
+
     }
 }
