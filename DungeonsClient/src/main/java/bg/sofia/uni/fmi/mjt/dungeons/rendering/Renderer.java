@@ -8,6 +8,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
@@ -60,27 +61,18 @@ public class Renderer extends JPanel {
     private static final int MANA_TEXT_LOCATION_Y = 120;
     private static final int MANA_BAR_LOCATION_Y = 105;
 
-    // Attack Label & text
-    private static final String ATTACK_LABEL = "Attack Points";
-    private static final int ATTACK_LABEL_LOCATION_X = 520;
-    private static final int ATTACK_LABEL_LOCATION_Y = 150;
-    private static final int ATTACK_TEXT_LOCATION_Y = 180;
-
-    // Defense Label & text
-    private static final String DEFENSE_LABEL = "Defense points";
-    private static final int DEFENSE_LABEL_LOCATION_X = 520;
-    private static final int DEFENSE_LABEL_LOCATION_Y = 200;
-    private static final int DEFENSE_TEXT_LOCATION_Y = 230;
-
-
     private PlayerSegment lastReceivedSegment;
 
+    private BufferedImage attackPointsIcon;
+    private BufferedImage defensePointsIcon;
     private BufferedImage obstacleImage;
     private BufferedImage treasureImage;
     private BufferedImage healthPotionImage;
     private BufferedImage manaPotionImage;
     private List<BufferedImage> minionPictures;
     private List<BufferedImage> playerPictures;
+    private BufferedImage weaponLevel3Picture;
+    private BufferedImage weaponLevel5Picture;
 
     public Renderer() {
         super.setBackground(Color.white);
@@ -92,6 +84,8 @@ public class Renderer extends JPanel {
         minionPictures = new ArrayList<>();
         playerPictures = new ArrayList<>();
         try {
+            attackPointsIcon = ImageIO.read(new File("DungeonsClient/src/main/resources/attack_points_icon.bmp"));
+            defensePointsIcon = ImageIO.read(new File("DungeonsClient/src/main/resources/defense_points_icon.bmp"));
             obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.bmp"));
             treasureImage = ImageIO.read(new File("DungeonsClient/src/main/resources/treasure.bmp"));
             healthPotionImage = ImageIO.read(new File("DungeonsClient/src/main/resources/health_potion.bmp"));
@@ -104,6 +98,8 @@ public class Renderer extends JPanel {
                 File imageFile = new File("DungeonsClient/src/main/resources/player%d.bmp".formatted(i));
                 playerPictures.add(ImageIO.read(imageFile));
             }
+            weaponLevel3Picture = ImageIO.read(new File("DungeonsClient/src/main/resources/weapon_level3.bmp"));
+            weaponLevel5Picture = ImageIO.read(new File("DungeonsClient/src/main/resources/weapon_level5.bmp"));
         } catch (IOException e) {
             throw new IllegalStateException("Could not load a resource", e);
         }
@@ -125,7 +121,7 @@ public class Renderer extends JPanel {
             Player currentPlayer = ((DefaultPlayerSegment) lastReceivedSegment).player();
             renderMap(g2d);
             renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
-            renderBattleStats(g2d, currentPlayer.stats());
+            renderBattleStats(g2d, currentPlayer.stats(), currentPlayer.weapon());
             renderInventory(g2d, currentPlayer.inventory());
         }
     }
@@ -215,7 +211,7 @@ public class Renderer extends JPanel {
 
     }
 
-    private void renderBattleStats(Graphics2D g2d, BattleStats battleStats) {
+    private void renderBattleStats(Graphics2D g2d, BattleStats battleStats, Weapon weapon) {
         g2d.setFont(BATTLESTATS_FONT);
 
         // Health Bar
@@ -244,14 +240,19 @@ public class Renderer extends JPanel {
                 .concat(String.valueOf(battleStats.mana()));
         g2d.drawString(manaText, BATTLESTATS_TEXT_LOCATION_X, MANA_TEXT_LOCATION_Y);
 
-        // Attack and defense labels
+        // Attack and defense icons
         g2d.setColor(Color.black);
-        g2d.drawString(ATTACK_LABEL, ATTACK_LABEL_LOCATION_X, ATTACK_LABEL_LOCATION_Y);
-        g2d.drawString(DEFENSE_LABEL, DEFENSE_LABEL_LOCATION_X, DEFENSE_LABEL_LOCATION_Y);
+        g2d.drawImage(attackPointsIcon, 520, 150, null);
+        g2d.drawImage(defensePointsIcon, 520, 200, null);
 
         // Attack and defense points
-        g2d.drawString(String.valueOf(battleStats.attack()), BATTLESTATS_TEXT_LOCATION_X, ATTACK_TEXT_LOCATION_Y);
-        g2d.drawString(String.valueOf(battleStats.defense()), BATTLESTATS_TEXT_LOCATION_X, DEFENSE_TEXT_LOCATION_Y);
+        g2d.drawString(String.valueOf(battleStats.attack()), 550, 170);
+        g2d.drawString(String.valueOf(battleStats.defense()), 550, 220);
+
+        if (weapon != null) {
+            g2d.setColor(Color.GREEN);
+            g2d.drawString("+%d".formatted(weapon.attack()), 590, 170);
+        }
     }
 
     private void renderInventory(Graphics2D g2d, Inventory inventory) {
@@ -267,13 +268,14 @@ public class Renderer extends JPanel {
         g2d.drawRect(610, 300, 30, 30);
 
         for (int i = 1; i <= inventory.currentSize(); i++) {
-            int x = 550 + ((i-1) % 3) * 30;
-            int y = 300 + ((i-1) / 3) * 30;
+            int x = 550 + ((i - 1) % 3) * 30;
+            int y = 300 + ((i - 1) / 3) * 30;
             try {
                 Item currentItem = inventory.getItem(i);
                 BufferedImage imageToDraw = switch (currentItem.type()) {
                     case HEALTH_POTION -> healthPotionImage;
                     case MANA_POTION -> manaPotionImage;
+                    case WEAPON -> ((Weapon)currentItem).level()==3 ? weaponLevel3Picture : weaponLevel5Picture;
                 };
                 g2d.drawImage(imageToDraw, x, y, null);
             } catch (ItemNumberOutOfBoundsException e) {

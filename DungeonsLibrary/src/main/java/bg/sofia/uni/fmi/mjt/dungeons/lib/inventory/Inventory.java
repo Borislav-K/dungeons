@@ -5,6 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsExcepti
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 
 import java.io.DataInputStream;
@@ -62,11 +63,26 @@ public class Inventory implements Transmissible {
     public void deserialize(DataInputStream in) throws IOException {
         int itemsCount = in.readInt();
         for (int i = 1; i <= itemsCount; i++) {
-            ItemType itemType = ItemType.values()[in.readInt()];
-            items.add(switch (itemType) {
-                case HEALTH_POTION -> new HealthPotion();
-                case MANA_POTION -> new ManaPotion();
-            });
+            items.add(deserializeSingleItem(in));
         }
+    }
+
+    private Item deserializeSingleItem(DataInputStream in) throws IOException {
+        ItemType itemType = ItemType.values()[in.readInt()];
+        Item item = null;
+        switch (itemType) {
+            case HEALTH_POTION -> {
+                item = new HealthPotion();
+            }
+            case MANA_POTION -> {
+                item = new ManaPotion();
+            }
+            case WEAPON -> {
+                Weapon weapon = new Weapon();
+                weapon.deserialize(in);
+                item = weapon;
+            }
+        }
+        return item;
     }
 }

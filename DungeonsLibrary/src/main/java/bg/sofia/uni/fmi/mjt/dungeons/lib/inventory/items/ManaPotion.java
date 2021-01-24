@@ -4,7 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
 
 import java.util.Random;
 
-public class ManaPotion extends Item {
+public class ManaPotion implements Item {
 
 
     private static final Random random = new Random();
