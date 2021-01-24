@@ -5,10 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
@@ -46,6 +43,7 @@ public class Player implements FightableActor {
     private BattleStats stats;
     private Inventory inventory;
     private Weapon weapon;
+    private Spell spell;
 
     public Player() {
         this.experience = 0;
@@ -88,20 +86,42 @@ public class Player implements FightableActor {
     }
 
     public void useItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
-        Item itemToUse = inventory.removeItem(itemNumber);
-        switch (itemToUse.type()) {
-            case HEALTH_POTION -> stats.heal(((HealthPotion) itemToUse).healingAmount());
-            case MANA_POTION -> stats.replenish(((ManaPotion) itemToUse).replenishmentAmount());
+        Item itemToUse = inventory.getItem(itemNumber);
+        boolean itemUsed = switch (itemToUse.type()) {
+            case HEALTH_POTION -> drinkHealthPotion((HealthPotion) itemToUse);
+            case MANA_POTION -> drinkManaPotion((ManaPotion) itemToUse);
             case WEAPON -> equipWeapon((Weapon) itemToUse);
+            case SPELL -> learnSpell((Spell) itemToUse);
+        };
+        if (itemUsed) {
+            inventory.removeItem(itemNumber);
         }
     }
 
-    private void equipWeapon(Weapon weapon) {
+    private boolean drinkHealthPotion(HealthPotion potion) {
+        stats.heal(potion.healingAmount());
+        return true;
+    }
+
+    private boolean drinkManaPotion(ManaPotion potion) {
+        stats.replenish(potion.replenishmentAmount());
+        return true;
+    }
+
+    private boolean equipWeapon(Weapon weapon) {
         if (weapon.level() <= LevelCalculator.getLevelByExperience(experience)) {
             this.weapon = weapon;
-        } else {
-            inventory.addItemToInventory(weapon);
+            return true;
         }
+        return false;
+    }
+
+    private boolean learnSpell(Spell spell) {
+        if (spell.level() <= LevelCalculator.getLevelByExperience(experience)) {
+            this.spell = spell;
+            return true;
+        }
+        return false;
     }
 
     public Item removeItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
@@ -158,6 +178,12 @@ public class Player implements FightableActor {
             out.writeBoolean(true);
             weapon.serialize(out);
         }
+        if (spell == null) {
+            out.writeBoolean(false);
+        } else {
+            out.writeBoolean(true);
+            spell.serialize(out);
+        }
     }
 
     @Override
@@ -171,6 +197,11 @@ public class Player implements FightableActor {
             weapon = new Weapon();
             weapon.deserialize(in);
         }
+        boolean knowsSpell = in.readBoolean();
+        if (knowsSpell) {
+            spell = new Spell();
+            spell.deserialize(in);
+        }
     }
 
     @Override
@@ -183,16 +214,5 @@ public class Player implements FightableActor {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Player{" +
-                "id=" + id +
-                ", experience=" + experience +
-                ", position=" + position +
-                ", battleStats=" + stats +
-                ", inventory= " + inventory.toString() +
-                '}';
     }
 }

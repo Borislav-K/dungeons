@@ -8,6 +8,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
@@ -73,6 +74,9 @@ public class Renderer extends JPanel {
     private List<BufferedImage> playerPictures;
     private BufferedImage weaponLevel3Picture;
     private BufferedImage weaponLevel5Picture;
+    private BufferedImage fireballPicture;
+    private BufferedImage poisonousBoltPicture;
+    private BufferedImage cosmicBlastPicture;
 
     public Renderer() {
         super.setBackground(Color.white);
@@ -100,6 +104,9 @@ public class Renderer extends JPanel {
             }
             weaponLevel3Picture = ImageIO.read(new File("DungeonsClient/src/main/resources/weapon_level3.bmp"));
             weaponLevel5Picture = ImageIO.read(new File("DungeonsClient/src/main/resources/weapon_level5.bmp"));
+            fireballPicture = ImageIO.read(new File("DungeonsClient/src/main/resources/fireball.bmp"));
+            poisonousBoltPicture = ImageIO.read(new File("DungeonsClient/src/main/resources/poisonous_bolt.bmp"));
+            cosmicBlastPicture = ImageIO.read(new File("DungeonsClient/src/main/resources/cosmic_blast.bmp"));
         } catch (IOException e) {
             throw new IllegalStateException("Could not load a resource", e);
         }
@@ -275,13 +282,27 @@ public class Renderer extends JPanel {
                 BufferedImage imageToDraw = switch (currentItem.type()) {
                     case HEALTH_POTION -> healthPotionImage;
                     case MANA_POTION -> manaPotionImage;
-                    case WEAPON -> ((Weapon)currentItem).level()==3 ? weaponLevel3Picture : weaponLevel5Picture;
+                    case WEAPON -> getAppropriateWeaponImage((Weapon) currentItem);
+                    case SPELL -> getAppropriateSpellImage((Spell) currentItem);
                 };
                 g2d.drawImage(imageToDraw, x, y, null);
             } catch (ItemNumberOutOfBoundsException e) {
                 throw new RuntimeException("Inconsistent relation between inventory size and actual items count");
             }
         }
+    }
+
+    private BufferedImage getAppropriateWeaponImage(Weapon weapon) {
+        return weapon.level() == 3 ? weaponLevel3Picture : weaponLevel5Picture;
+    }
+
+    private BufferedImage getAppropriateSpellImage(Spell spell) {
+        return switch (spell.level()) {
+            case 2 -> fireballPicture;
+            case 5 -> poisonousBoltPicture;
+            case 8 -> cosmicBlastPicture;
+            default -> throw new RuntimeException("Cannot render picture - unknown spell %d".formatted(spell.level()));
+        };
     }
 
 }

@@ -6,41 +6,49 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Weapon implements Item {
+public class Spell implements Item {
 
     private int level;
-    private int attack;
+    private int damage;
+    private int manaCost;
 
-    public Weapon() {
+    public Spell() {
     }
 
-    public Weapon(int level, int attack) {
+    public Spell(int level, int damage, int manaCost) {
         this.level = level;
-        this.attack = attack;
+        this.damage = damage;
+        this.manaCost = manaCost;
     }
 
     @Override
     public ItemType type() {
-        return ItemType.WEAPON;
+        return ItemType.SPELL;
     }
 
     public int level() {
         return level;
     }
 
-    public int attack() {
-        return attack;
+    public int damage() {
+        return damage;
+    }
+
+    public int manaCost() {
+        return manaCost;
     }
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
         out.writeInt(level);
-        out.writeInt(attack);
+        out.writeInt(damage);
+        out.writeInt(manaCost);
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
         level = in.readInt();
-        attack = in.readInt();
+        damage = in.readInt();
+        manaCost = in.readInt();
     }
 }
