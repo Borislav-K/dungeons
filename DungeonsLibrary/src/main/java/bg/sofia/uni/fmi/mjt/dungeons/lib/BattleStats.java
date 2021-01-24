@@ -58,6 +58,10 @@ public class BattleStats implements Transmissible {
         }
     }
 
+    public void drainMana(int amount) {
+        currentMana -= Math.max(0, amount);
+    }
+
     public void heal(int amount) {
         currentHealth = Math.min(health, currentHealth + amount);
     }
@@ -89,12 +93,12 @@ public class BattleStats implements Transmissible {
     @Override
     public String toString() {
         return "BattleStats{" +
-               "health=" + health +
-               ", currentHealth=" + currentHealth +
-               ", mana=" + mana +
-               ", currentMana=" + currentMana +
-               ", attack=" + attack +
-               ", defense=" + defense +
-               '}';
+                "health=" + health +
+                ", currentHealth=" + currentHealth +
+                ", mana=" + mana +
+                ", currentMana=" + currentMana +
+                ", attack=" + attack +
+                ", defense=" + defense +
+                '}';
     }
 }

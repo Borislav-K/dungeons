@@ -8,6 +8,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
@@ -73,6 +74,9 @@ public class Renderer extends JPanel {
     private List<BufferedImage> playerPictures;
     private BufferedImage weaponLevel3Picture;
     private BufferedImage weaponLevel5Picture;
+    private BufferedImage fireballPicture;
+    private BufferedImage poisonousBoltPicture;
+    private BufferedImage cosmicBlastPicture;
 
     public Renderer() {
         super.setBackground(Color.white);
@@ -100,6 +104,9 @@ public class Renderer extends JPanel {
             }
             weaponLevel3Picture = ImageIO.read(new File("DungeonsClient/src/main/resources/weapon_level3.bmp"));
             weaponLevel5Picture = ImageIO.read(new File("DungeonsClient/src/main/resources/weapon_level5.bmp"));
+            fireballPicture = ImageIO.read(new File("DungeonsClient/src/main/resources/fireball.bmp"));
+            poisonousBoltPicture = ImageIO.read(new File("DungeonsClient/src/main/resources/poisonous_bolt.bmp"));
+            cosmicBlastPicture = ImageIO.read(new File("DungeonsClient/src/main/resources/cosmic_blast.bmp"));
         } catch (IOException e) {
             throw new IllegalStateException("Could not load a resource", e);
         }
@@ -121,7 +128,7 @@ public class Renderer extends JPanel {
             Player currentPlayer = ((DefaultPlayerSegment) lastReceivedSegment).player();
             renderMap(g2d);
             renderXPBar(g2d, currentPlayer.level(), currentPlayer.XPPercentage());
-            renderBattleStats(g2d, currentPlayer.stats(), currentPlayer.weapon());
+            renderBattleStats(g2d, currentPlayer);
             renderInventory(g2d, currentPlayer.inventory());
         }
     }
@@ -211,33 +218,34 @@ public class Renderer extends JPanel {
 
     }
 
-    private void renderBattleStats(Graphics2D g2d, BattleStats battleStats, Weapon weapon) {
+    private void renderBattleStats(Graphics2D g2d, Player player) {
         g2d.setFont(BATTLESTATS_FONT);
 
+        BattleStats stats = player.stats();
         // Health Bar
         g2d.setColor(Color.GREEN);
         g2d.drawRect(BATTLESTATS_BAR_LOCATION_X, HEALTH_BAR_LOCATION_Y, BATTLESTATS_BARS_WIDTH, BATTLESTATS_BARS_HEIGHT);
-        int barWidth = BATTLESTATS_BARS_WIDTH * battleStats.currentHealth() / battleStats.health();
+        int barWidth = BATTLESTATS_BARS_WIDTH * stats.currentHealth() / stats.health();
         g2d.fillRect(BATTLESTATS_BAR_LOCATION_X, HEALTH_BAR_LOCATION_Y, barWidth, BATTLESTATS_BARS_HEIGHT);
 
         g2d.setColor(Color.black);
         g2d.drawString(HEALTH_LABEL, BATTLESTATS_LABEL_LOCATION_X, HEALTH_LABEL_LOCATION_Y);
-        String healthText = String.valueOf(battleStats.currentHealth())
+        String healthText = String.valueOf(stats.currentHealth())
                 .concat("/")
-                .concat(String.valueOf(battleStats.health()));
+                .concat(String.valueOf(stats.health()));
         g2d.drawString(healthText, BATTLESTATS_TEXT_LOCATION_X, HEALTH_TEXT_LOCATION_Y);
 
         // Mana bar
         g2d.setColor(Color.BLUE);
         g2d.drawRect(BATTLESTATS_BAR_LOCATION_X, MANA_BAR_LOCATION_Y, BATTLESTATS_BARS_WIDTH, BATTLESTATS_BARS_HEIGHT);
-        barWidth = BATTLESTATS_BARS_WIDTH * battleStats.currentMana() / battleStats.mana();
+        barWidth = BATTLESTATS_BARS_WIDTH * stats.currentMana() / stats.mana();
         g2d.fillRect(BATTLESTATS_BAR_LOCATION_X, MANA_BAR_LOCATION_Y, barWidth, BATTLESTATS_BARS_HEIGHT);
 
         g2d.setColor(Color.black);
         g2d.drawString(MANA_LABEL, BATTLESTATS_LABEL_LOCATION_X, MANA_LABEL_LOCATION_Y);
-        String manaText = String.valueOf(battleStats.currentMana())
+        String manaText = String.valueOf(stats.currentMana())
                 .concat("/")
-                .concat(String.valueOf(battleStats.mana()));
+                .concat(String.valueOf(stats.mana()));
         g2d.drawString(manaText, BATTLESTATS_TEXT_LOCATION_X, MANA_TEXT_LOCATION_Y);
 
         // Attack and defense icons
@@ -246,12 +254,31 @@ public class Renderer extends JPanel {
         g2d.drawImage(defensePointsIcon, 520, 200, null);
 
         // Attack and defense points
-        g2d.drawString(String.valueOf(battleStats.attack()), 550, 170);
-        g2d.drawString(String.valueOf(battleStats.defense()), 550, 220);
+        g2d.drawString(String.valueOf(stats.attack()), 550, 170);
+        g2d.drawString(String.valueOf(stats.defense()), 550, 220);
+
+        Weapon weapon = player.weapon();
+        Spell spell = player.spell();
+
+        int weaponDamage = weapon == null ? 0 : weapon.attack();
+        int spellDamage = spell == null ? 0 : spell.damage();
+
+        boolean willFightWithSpell = spell != null
+                && spell.manaCost() <= stats.currentMana()
+                && spellDamage > weaponDamage;
+        if (willFightWithSpell) {
+            g2d.setColor(Color.BLUE);
+            g2d.drawString("+%d".formatted(spellDamage), 590, 170);
+        } else {
+            g2d.setColor(Color.GREEN);
+            g2d.drawString("+%d".formatted(weaponDamage), 590, 170);
+        }
 
         if (weapon != null) {
-            g2d.setColor(Color.GREEN);
-            g2d.drawString("+%d".formatted(weapon.attack()), 590, 170);
+            g2d.drawImage(getAppropriateWeaponImage(weapon), 625, 150, null);
+        }
+        if (spell != null) {
+            g2d.drawImage(getAppropriateSpellImage(spell), 650, 150, null);
         }
     }
 
@@ -267,6 +294,7 @@ public class Renderer extends JPanel {
         g2d.drawRect(550, 360, 30, 30);
         g2d.drawRect(610, 300, 30, 30);
 
+        // Items
         for (int i = 1; i <= inventory.currentSize(); i++) {
             int x = 550 + ((i - 1) % 3) * 30;
             int y = 300 + ((i - 1) / 3) * 30;
@@ -275,13 +303,27 @@ public class Renderer extends JPanel {
                 BufferedImage imageToDraw = switch (currentItem.type()) {
                     case HEALTH_POTION -> healthPotionImage;
                     case MANA_POTION -> manaPotionImage;
-                    case WEAPON -> ((Weapon)currentItem).level()==3 ? weaponLevel3Picture : weaponLevel5Picture;
+                    case WEAPON -> getAppropriateWeaponImage((Weapon) currentItem);
+                    case SPELL -> getAppropriateSpellImage((Spell) currentItem);
                 };
                 g2d.drawImage(imageToDraw, x, y, null);
             } catch (ItemNumberOutOfBoundsException e) {
                 throw new RuntimeException("Inconsistent relation between inventory size and actual items count");
             }
         }
+    }
+
+    private BufferedImage getAppropriateWeaponImage(Weapon weapon) {
+        return weapon.level() == 3 ? weaponLevel3Picture : weaponLevel5Picture;
+    }
+
+    private BufferedImage getAppropriateSpellImage(Spell spell) {
+        return switch (spell.level()) {
+            case 2 -> fireballPicture;
+            case 5 -> poisonousBoltPicture;
+            case 8 -> cosmicBlastPicture;
+            default -> throw new RuntimeException("Cannot render picture - unknown spell %d".formatted(spell.level()));
+        };
     }
 
 }

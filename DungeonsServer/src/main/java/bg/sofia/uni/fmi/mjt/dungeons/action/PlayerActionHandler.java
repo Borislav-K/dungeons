@@ -123,14 +123,13 @@ public class PlayerActionHandler {
 
         Position2D playerPosition = player.position();
         if (playerPosition.actors().size() != 2) {
-            return; // If player is alone there is no treasure to pick
+            return; // If the player is alone there is no treasure to pick
         }
         Actor actor1 = playerPosition.actors().get(0);
         Actor actor2 = playerPosition.actors().get(1);
         if (player.equals(actor1) && actor2.type().equals(ActorType.TREASURE)) {
             gameMap.despawnActor(actor2);
             ((Player) actor1).addItemToInventory(ItemFactory.random());
-
         } else if (actor1.type().equals(ActorType.TREASURE)) {
             gameMap.despawnActor(actor1);
             ((Player) actor2).addItemToInventory(ItemFactory.random());

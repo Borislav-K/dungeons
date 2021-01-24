@@ -35,11 +35,18 @@ public class Minion implements FightableActor {
     private BattleStats stats;
     private Position2D position;
 
-    public Minion() {}
+    public Minion() {
+    }
+
     public Minion(Position2D position) {
         this.position = position;
         this.level = generator.nextInt(MAX_MINION_LEVEL) + 1;
         this.stats = minionStatsForLevel(level);
+    }
+
+    @Override
+    public int dealDamage() {
+        return stats.attack();
     }
 
     @Override
@@ -79,14 +86,5 @@ public class Minion implements FightableActor {
         level = in.readInt();
         position = new Position2D(in.readInt(), in.readInt());
         stats = minionStatsForLevel(level);
-    }
-
-    @Override
-    public String toString() {
-        return "Minion{" +
-               "level=" + level +
-               ", stats=" + stats +
-               ", position=" + position +
-               '}';
     }
 }

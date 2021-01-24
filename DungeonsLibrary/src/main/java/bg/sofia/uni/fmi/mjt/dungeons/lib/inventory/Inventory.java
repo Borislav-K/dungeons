@@ -2,10 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.inventory;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 
 import java.io.DataInputStream;
@@ -71,16 +68,17 @@ public class Inventory implements Transmissible {
         ItemType itemType = ItemType.values()[in.readInt()];
         Item item = null;
         switch (itemType) {
-            case HEALTH_POTION -> {
-                item = new HealthPotion();
-            }
-            case MANA_POTION -> {
-                item = new ManaPotion();
-            }
+            case HEALTH_POTION -> item = new HealthPotion();
+            case MANA_POTION -> item = new ManaPotion();
             case WEAPON -> {
                 Weapon weapon = new Weapon();
                 weapon.deserialize(in);
                 item = weapon;
+            }
+            case SPELL -> {
+                Spell spell = new Spell();
+                spell.deserialize(in);
+                item = spell;
             }
         }
         return item;
