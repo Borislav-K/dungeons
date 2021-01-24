@@ -81,6 +81,7 @@ public class Renderer extends JPanel {
     private BufferedImage manaPotionImage;
     private List<BufferedImage> minionPictures;
     private List<BufferedImage> playerPictures;
+    private List<BufferedImage> weaponPictures;
 
     public Renderer() {
         super.setBackground(Color.white);
@@ -91,6 +92,7 @@ public class Renderer extends JPanel {
     private void initializeResources() {
         minionPictures = new ArrayList<>();
         playerPictures = new ArrayList<>();
+        weaponPictures = new ArrayList<>();
         try {
             obstacleImage = ImageIO.read(new File("DungeonsClient/src/main/resources/obstacle.bmp"));
             treasureImage = ImageIO.read(new File("DungeonsClient/src/main/resources/treasure.bmp"));
@@ -103,6 +105,11 @@ public class Renderer extends JPanel {
             for (int i = 1; i <= 9; i++) {
                 File imageFile = new File("DungeonsClient/src/main/resources/player%d.bmp".formatted(i));
                 playerPictures.add(ImageIO.read(imageFile));
+            }
+
+            for (int i = 1; i <= 1; i++) {
+                File imageFile = new File("DungeonsClient/src/main/resources/weapon%d.bmp".formatted(i));
+                weaponPictures.add(ImageIO.read(imageFile));
             }
         } catch (IOException e) {
             throw new IllegalStateException("Could not load a resource", e);
@@ -267,13 +274,14 @@ public class Renderer extends JPanel {
         g2d.drawRect(610, 300, 30, 30);
 
         for (int i = 1; i <= inventory.currentSize(); i++) {
-            int x = 550 + ((i-1) % 3) * 30;
-            int y = 300 + ((i-1) / 3) * 30;
+            int x = 550 + ((i - 1) % 3) * 30;
+            int y = 300 + ((i - 1) / 3) * 30;
             try {
                 Item currentItem = inventory.getItem(i);
                 BufferedImage imageToDraw = switch (currentItem.type()) {
                     case HEALTH_POTION -> healthPotionImage;
                     case MANA_POTION -> manaPotionImage;
+                    case WEAPON -> weaponPictures.get(0);
                 };
                 g2d.drawImage(imageToDraw, x, y, null);
             } catch (ItemNumberOutOfBoundsException e) {
