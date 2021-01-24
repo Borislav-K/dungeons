@@ -8,14 +8,13 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Player implements FightableActor {
@@ -46,6 +45,7 @@ public class Player implements FightableActor {
     private Position2D position;
     private BattleStats stats;
     private Inventory inventory;
+    private Weapon weapon;
 
     public Player() {
         this.experience = 0;
@@ -79,6 +79,10 @@ public class Player implements FightableActor {
         return stats.currentHealth() == 0;
     }
 
+    public Weapon weapon() {
+        return weapon;
+    }
+
     public void addItemToInventory(Item item) {
         inventory.addItemToInventory(item);
     }
@@ -88,6 +92,15 @@ public class Player implements FightableActor {
         switch (itemToUse.type()) {
             case HEALTH_POTION -> stats.heal(((HealthPotion) itemToUse).healingAmount());
             case MANA_POTION -> stats.replenish(((ManaPotion) itemToUse).replenishmentAmount());
+            case WEAPON -> equipWeapon((Weapon) itemToUse);
+        }
+    }
+
+    private void equipWeapon(Weapon weapon) {
+        if (weapon.level() <= LevelCalculator.getLevelByExperience(experience)) {
+            this.weapon = weapon;
+        } else {
+            inventory.addItemToInventory(weapon);
         }
     }
 
@@ -139,6 +152,12 @@ public class Player implements FightableActor {
         out.writeInt(position.y());
         out.writeInt(experience);
         stats.serialize(out);
+        if (weapon == null) {
+            out.writeBoolean(false);
+        } else {
+            out.writeBoolean(true);
+            weapon.serialize(out);
+        }
     }
 
     @Override
@@ -147,6 +166,11 @@ public class Player implements FightableActor {
         position = new Position2D(in.readInt(), in.readInt());
         experience = in.readInt();
         stats.deserialize(in);
+        boolean hasWeaponEquipped = in.readBoolean();
+        if (hasWeaponEquipped) {
+            weapon = new Weapon();
+            weapon.deserialize(in);
+        }
     }
 
     @Override
@@ -164,11 +188,11 @@ public class Player implements FightableActor {
     @Override
     public String toString() {
         return "Player{" +
-               "id=" + id +
-               ", experience=" + experience +
-               ", position=" + position +
-               ", battleStats=" + stats +
-               ", inventory= " + inventory.toString() +
-               '}';
+                "id=" + id +
+                ", experience=" + experience +
+                ", position=" + position +
+                ", battleStats=" + stats +
+                ", inventory= " + inventory.toString() +
+                '}';
     }
 }
