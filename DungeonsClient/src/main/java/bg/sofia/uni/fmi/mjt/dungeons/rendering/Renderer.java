@@ -274,11 +274,14 @@ public class Renderer extends JPanel {
             g2d.drawString("+%d".formatted(weaponDamage), 590, 170);
         }
 
+        g2d.setColor(Color.BLACK);
+        g2d.drawString("Weapon", 525, 250);
+        g2d.drawString("Spell", 525, 275);
         if (weapon != null) {
-            g2d.drawImage(getAppropriateWeaponImage(weapon), 625, 150, null);
+            g2d.drawImage(getAppropriateWeaponImage(weapon), 605, 230, null);
         }
         if (spell != null) {
-            g2d.drawImage(getAppropriateSpellImage(spell), 650, 150, null);
+            g2d.drawImage(getAppropriateSpellImage(spell), 580, 255, null);
         }
     }
 
