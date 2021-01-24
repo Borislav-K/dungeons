@@ -54,6 +54,7 @@ public class PlayerActionHandler {
                 case TREASURE_PICKUP -> handleTreasurePickup((TreasurePickup) action);
                 case ITEM_USAGE -> handleItemUsage((ItemUsage) action);
                 case ITEM_GRANT -> handleItemGrant((ItemGrant) action);
+                case ITEM_THROW -> handleItemThrow((ItemThrow) action);
                 default -> System.out.printf("Unknown action type %s\n", action.type().toString());
             }
         } catch (NoSuchPlayerException e) {
@@ -169,6 +170,15 @@ public class PlayerActionHandler {
             receiver.addItemToInventory(itemToGive);
         } catch (ItemNumberOutOfBoundsException e) {
             System.out.printf("Player %d tried to give an item with number out of bounds\n", sender.id());
+        }
+    }
+
+    private void handleItemThrow(ItemThrow action) throws NoSuchPlayerException {
+        Player player = playerManager.getPlayerByChannel(action.initiator());
+        try {
+            player.removeItemFromInventory(action.itemNumber());
+        } catch (ItemNumberOutOfBoundsException e) {
+            System.out.printf("Player %d tried to use an item with number out of bounds\n", player.id());
         }
     }
 }

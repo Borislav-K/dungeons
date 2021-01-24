@@ -15,8 +15,10 @@ public class KeyboardListener extends KeyAdapter {
     private static final String PICKUP_CMD = "pck";
     private static final String USE_ITEM_CMD_FORMAT = "us%d";
     private static final String GIVE_ITEM_CMD_FORMAT = "gv%d";
+    private static final String THROW_ITEM_CMD_FORMAT = "th%d";
 
     private static final Map<Integer, String> keybinds = getKeybinds();
+    private static final Map<Integer, String> keybindsWithShift = getShiftKeybinds();
 
     private KeyboardEventHandler keyboardEventHandler;
 
@@ -27,7 +29,10 @@ public class KeyboardListener extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        if (keybinds.containsKey(keyCode)) {
+        if (e.isShiftDown() && keybindsWithShift.containsKey(keyCode)) {
+            keyboardEventHandler.publishCommand(keybindsWithShift.get(e.getKeyCode()));
+            System.out.printf("Pressed shift+%d, will send %s to the server\n", keyCode, keybindsWithShift.get(keyCode));
+        } else if (keybinds.containsKey(keyCode)) {
             keyboardEventHandler.publishCommand(keybinds.get(keyCode));
             System.out.printf("Pressed %d, will send %s to the server\n", keyCode, keybinds.get(keyCode));
         }
@@ -51,5 +56,13 @@ public class KeyboardListener extends KeyAdapter {
             keybinds.put(111 + i, GIVE_ITEM_CMD_FORMAT.formatted(i)); // F1-F9
         }
         return keybinds;
+    }
+
+    private static Map<Integer, String> getShiftKeybinds() {
+        Map<Integer, String> shiftKeybinds = new HashMap<>();
+        for (int i = 1; i <= 9; i++) {
+            shiftKeybinds.put(48 + i, THROW_ITEM_CMD_FORMAT.formatted(i)); // shift+1, ..., shift+9
+        }
+        return shiftKeybinds;
     }
 }
