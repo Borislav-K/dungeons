@@ -8,4 +8,6 @@ public interface FightableActor extends Actor {
     BattleStats stats();
 
     int level();
+
+    int dealDamage();
 }

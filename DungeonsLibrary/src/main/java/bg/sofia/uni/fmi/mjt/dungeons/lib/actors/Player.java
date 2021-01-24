@@ -148,6 +148,21 @@ public class Player implements FightableActor {
         return LevelCalculator.getLevelByExperience(experience) * XP_REWARD_PER_PLAYER_LVL;
     }
 
+    @Override
+    public int dealDamage() {
+        int spellDamage = spell == null ? 0 : spell.damage();
+        int weaponDamage = weapon == null ? 0 : weapon.attack();
+
+        if (spellDamage > weaponDamage && stats.currentMana() >= spell.manaCost()) {
+            stats.drainMana(spell.manaCost());
+        }
+        return stats.attack() + Math.max(spellDamage, weaponDamage);
+    }
+
+    public Spell spell() {
+        return spell;
+    }
+
     public Inventory inventory() {
         return inventory;
     }

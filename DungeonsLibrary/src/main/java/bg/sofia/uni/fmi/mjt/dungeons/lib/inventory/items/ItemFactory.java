@@ -13,9 +13,9 @@ public class ItemFactory {
     private static final List<Weapon> ALL_WEAPONS = List.of(HAMMER, SWORD);
 
     // Spells
-    private static final Spell FIREBALL = new Spell(2, 120, 80);
-    private static final Spell POISONOUS_BOLT = new Spell(5, 150, 100);
-    private static final Spell COSMIC_BLAST = new Spell(8, 250, 150);
+    private static final Spell FIREBALL = new Spell(2, 40, 80);
+    private static final Spell POISONOUS_BOLT = new Spell(5, 60, 100);
+    private static final Spell COSMIC_BLAST = new Spell(8, 100, 150);
     private static final List<Spell> ALL_SPELLS = List.of(FIREBALL, POISONOUS_BOLT, COSMIC_BLAST);
 
     private static Random random = new Random();
