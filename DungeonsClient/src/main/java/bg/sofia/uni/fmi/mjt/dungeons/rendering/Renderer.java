@@ -71,7 +71,8 @@ public class Renderer extends JPanel {
     private BufferedImage manaPotionImage;
     private List<BufferedImage> minionPictures;
     private List<BufferedImage> playerPictures;
-    private List<BufferedImage> weaponPictures;
+    private BufferedImage weaponLevel3Picture;
+    private BufferedImage weaponLevel5Picture;
 
     public Renderer() {
         super.setBackground(Color.white);
@@ -82,7 +83,6 @@ public class Renderer extends JPanel {
     private void initializeResources() {
         minionPictures = new ArrayList<>();
         playerPictures = new ArrayList<>();
-        weaponPictures = new ArrayList<>();
         try {
             attackPointsIcon = ImageIO.read(new File("DungeonsClient/src/main/resources/attack_points_icon.bmp"));
             defensePointsIcon = ImageIO.read(new File("DungeonsClient/src/main/resources/defense_points_icon.bmp"));
@@ -98,11 +98,8 @@ public class Renderer extends JPanel {
                 File imageFile = new File("DungeonsClient/src/main/resources/player%d.bmp".formatted(i));
                 playerPictures.add(ImageIO.read(imageFile));
             }
-
-            for (int i = 1; i <= 1; i++) {
-                File imageFile = new File("DungeonsClient/src/main/resources/weapon%d.bmp".formatted(i));
-                weaponPictures.add(ImageIO.read(imageFile));
-            }
+            weaponLevel3Picture = ImageIO.read(new File("DungeonsClient/src/main/resources/weapon_level3.bmp"));
+            weaponLevel5Picture = ImageIO.read(new File("DungeonsClient/src/main/resources/weapon_level5.bmp"));
         } catch (IOException e) {
             throw new IllegalStateException("Could not load a resource", e);
         }
@@ -278,7 +275,7 @@ public class Renderer extends JPanel {
                 BufferedImage imageToDraw = switch (currentItem.type()) {
                     case HEALTH_POTION -> healthPotionImage;
                     case MANA_POTION -> manaPotionImage;
-                    case WEAPON -> weaponPictures.get(0);
+                    case WEAPON -> ((Weapon)currentItem).level()==3 ? weaponLevel3Picture : weaponLevel5Picture;
                 };
                 g2d.drawImage(imageToDraw, x, y, null);
             } catch (ItemNumberOutOfBoundsException e) {
