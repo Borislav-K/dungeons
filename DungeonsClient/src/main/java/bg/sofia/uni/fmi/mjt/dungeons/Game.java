@@ -2,7 +2,6 @@ package bg.sofia.uni.fmi.mjt.dungeons;
 
 import bg.sofia.uni.fmi.mjt.dungeons.input.KeyboardEventHandler;
 import bg.sofia.uni.fmi.mjt.dungeons.input.KeyboardListener;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.network.GameClient;
 import bg.sofia.uni.fmi.mjt.dungeons.rendering.GameWindow;
@@ -15,7 +14,6 @@ public class Game {
 
     private static final double FRAME_NANOS = 17000000.0;
 
-    private static final int FRAMES_AFTER_DEATH_THRESHOLD = 60 * 3;
     private static final int FRAMES_WITH_NO_RESPONSE_THRESHOLD = 60 * 10;
 
     private GameClient webClient;
@@ -26,7 +24,6 @@ public class Game {
 
     private boolean shouldTerminate = false;
     private int consecutiveFramesWithoutResponse = 0;
-    private int framesAfterPlayerDied = 0;
 
     public Game() {
         webClient = new GameClient();
@@ -47,8 +44,7 @@ public class Game {
             webClient.connect();
         } catch (IOException e) {
             System.out.println("Startup failed: could not connect to the game server.");
-            e.printStackTrace();
-            gameWindow.dispose(); // Will terminate the application
+            terminate(); //TODO render a proper message
         }
     }
 
@@ -56,8 +52,7 @@ public class Game {
         double framesElapsed = 0;
         long lastMoment = System.nanoTime();
         while (!shouldTerminate) {
-            if (framesAfterPlayerDied == FRAMES_AFTER_DEATH_THRESHOLD ||
-                consecutiveFramesWithoutResponse == FRAMES_WITH_NO_RESPONSE_THRESHOLD) {
+            if (consecutiveFramesWithoutResponse == FRAMES_WITH_NO_RESPONSE_THRESHOLD) {
                 terminate();
             }
             long now = System.nanoTime();
@@ -78,12 +73,6 @@ public class Game {
             return;
         }
         consecutiveFramesWithoutResponse = 0;
-        if (playerSegment.type().equals(PlayerSegmentType.DEATH)) {
-            if (framesAfterPlayerDied == 0) {
-                gameWindow.removeKeyListener(keyboardListener);
-            }
-            framesAfterPlayerDied++;
-        }
         renderer.updatePlayerSegment(playerSegment);
         gameWindow.repaint();
     }

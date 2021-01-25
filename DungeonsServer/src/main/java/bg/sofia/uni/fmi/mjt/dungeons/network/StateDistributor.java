@@ -4,8 +4,6 @@ import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
 import bg.sofia.uni.fmi.mjt.dungeons.io.PerformantByteArrayOutputStream;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DeadPlayerSegment;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
@@ -41,10 +39,7 @@ public class StateDistributor {
     }
 
     private byte[] serializePlayerSegment(Player player) {
-        PlayerSegment playerSegment = player.isDead() ?
-                new DeadPlayerSegment() :
-                new DefaultPlayerSegment(player, gameMap.getPositionsWithActors());
-
+        PlayerSegment playerSegment = new PlayerSegment(player, gameMap.getPositionsWithActors());
         try (var byteArrayOutputStream = new PerformantByteArrayOutputStream();
              var dataOutputStream = new DataOutputStream(byteArrayOutputStream)) {
             playerSegment.serialize(dataOutputStream);
