@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
@@ -65,31 +64,30 @@ public class PlayerDataRenderer {
     private static void renderBattleStats(Graphics2D g2d, Player player) {
         g2d.setFont(new Font("Comic Sans", Font.BOLD, 20));
 
-        BattleStats stats = player.stats();
         // Health Bar
         g2d.setColor(Color.GREEN);
         g2d.drawRect(BATTLESTATS_BAR_LOCATION_X, HEALTH_BAR_LOCATION_Y, BATTLESTATS_BARS_WIDTH, BATTLESTATS_BARS_HEIGHT);
-        int barWidth = BATTLESTATS_BARS_WIDTH * stats.currentHealth() / stats.health();
+        int barWidth = BATTLESTATS_BARS_WIDTH * player.currentHealth() / player.health();
         g2d.fillRect(BATTLESTATS_BAR_LOCATION_X, HEALTH_BAR_LOCATION_Y, barWidth, BATTLESTATS_BARS_HEIGHT);
 
         g2d.setColor(Color.black);
         g2d.drawString("Health", BATTLESTATS_LABEL_LOCATION_X, HEALTH_LABEL_LOCATION_Y);
-        String healthText = String.valueOf(stats.currentHealth())
+        String healthText = String.valueOf(player.currentHealth())
                 .concat("/")
-                .concat(String.valueOf(stats.health()));
+                .concat(String.valueOf(player.health()));
         g2d.drawString(healthText, BATTLESTATS_TEXT_LOCATION_X, HEALTH_TEXT_LOCATION_Y);
 
         // Mana bar
         g2d.setColor(Color.BLUE);
         g2d.drawRect(BATTLESTATS_BAR_LOCATION_X, MANA_BAR_LOCATION_Y, BATTLESTATS_BARS_WIDTH, BATTLESTATS_BARS_HEIGHT);
-        barWidth = BATTLESTATS_BARS_WIDTH * stats.currentMana() / stats.mana();
+        barWidth = BATTLESTATS_BARS_WIDTH * player.currentMana() / player.mana();
         g2d.fillRect(BATTLESTATS_BAR_LOCATION_X, MANA_BAR_LOCATION_Y, barWidth, BATTLESTATS_BARS_HEIGHT);
 
         g2d.setColor(Color.black);
         g2d.drawString("Mana", BATTLESTATS_LABEL_LOCATION_X, MANA_LABEL_LOCATION_Y);
-        String manaText = String.valueOf(stats.currentMana())
+        String manaText = String.valueOf(player.currentMana())
                 .concat("/")
-                .concat(String.valueOf(stats.mana()));
+                .concat(String.valueOf(player.mana()));
         g2d.drawString(manaText, BATTLESTATS_TEXT_LOCATION_X, MANA_TEXT_LOCATION_Y);
 
         // Attack and defense icons
@@ -98,8 +96,8 @@ public class PlayerDataRenderer {
         g2d.drawImage(imageRepository.defensePointsIcon(), 520, 200, null);
 
         // Attack and defense points
-        g2d.drawString(String.valueOf(stats.attack()), 550, 170);
-        g2d.drawString(String.valueOf(stats.defense()), 550, 220);
+        g2d.drawString(String.valueOf(player.attack()), 550, 170);
+        g2d.drawString(String.valueOf(player.defense()), 550, 220);
 
         Weapon weapon = player.weapon();
         Spell spell = player.spell();
@@ -108,7 +106,7 @@ public class PlayerDataRenderer {
         int spellDamage = spell == null ? 0 : spell.damage();
 
         boolean willFightWithSpell = spell != null
-                && spell.manaCost() <= stats.currentMana()
+                && spell.manaCost() <= player.currentMana()
                 && spellDamage > weaponDamage;
         if (willFightWithSpell) {
             g2d.setColor(Color.BLUE);

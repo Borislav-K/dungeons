@@ -27,6 +27,11 @@ public class Treasure implements Actor {
         return position;
     }
 
+    @Override
+    public void setPosition(Position2D position) {
+        this.position=position;
+    }
+
     // Treasures' data does not need to be sent to the clients. Their only important characteristic is their actor type
     @Override
     public void serialize(DataOutputStream out) {

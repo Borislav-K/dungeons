@@ -47,7 +47,8 @@ public class GameMap {
     // Spawns a minion with a random level at a random free position
     public void spawnMinion() {
         Position2D randomPos = getRandomSpawnablePosition();
-        Minion minion = new Minion(randomPos);
+        Minion minion = new Minion();
+        minion.setPosition(randomPos);
         randomPos.addActor(minion);
     }
 
