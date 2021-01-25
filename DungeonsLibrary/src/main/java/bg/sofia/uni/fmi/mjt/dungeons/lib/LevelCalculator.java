@@ -8,17 +8,17 @@ public class LevelCalculator {
 
     private static final int RATIO_TO_PERCENTAGE_COEF = 100;
 
-    private static final Map<Integer, Double> REQUIRED_XP_FOR_LEVEL = Map.of(
-            INITIAL_LEVEL, 0.0,
-            2, 100.0,
-            3, 200.0,
-            4, 400.0,
-            5, 650.0,
-            6, 900.0,
-            7, 1200.0,
-            8, 1500.0,
-            9, 2000.0,
-            MAX_LEVEL, 3000.0
+    public static final Map<Integer, Integer> REQUIRED_XP_FOR_LEVEL = Map.of(
+            INITIAL_LEVEL, 0,
+            2, 100,
+            3, 200,
+            4, 400,
+            5, 650,
+            6, 900,
+            7, 1200,
+            8, 1500,
+            9, 2000,
+            MAX_LEVEL, 3000
     );
 
     public static int getLevelByExperience(int experience) {
@@ -35,11 +35,11 @@ public class LevelCalculator {
         if (currentLevel == MAX_LEVEL) {
             return 0;
         }
-        double currentLevelXPLowerBound = REQUIRED_XP_FOR_LEVEL.get(currentLevel);
-        double currentLevelXPUpperBound = REQUIRED_XP_FOR_LEVEL.get(currentLevel + 1);
-        return (int) Math.round((experience - currentLevelXPLowerBound)
-                                / (currentLevelXPUpperBound - currentLevelXPLowerBound)
-                                * RATIO_TO_PERCENTAGE_COEF);
+        int currentLevelXPLowerBound = REQUIRED_XP_FOR_LEVEL.get(currentLevel);
+        int currentLevelXPUpperBound = REQUIRED_XP_FOR_LEVEL.get(currentLevel + 1);
+        return (int) Math.round((double) (experience - currentLevelXPLowerBound)
+                / (double) (currentLevelXPUpperBound - currentLevelXPLowerBound)
+                * RATIO_TO_PERCENTAGE_COEF);
     }
 
 }

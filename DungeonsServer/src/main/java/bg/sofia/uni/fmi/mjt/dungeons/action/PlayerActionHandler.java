@@ -10,7 +10,6 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.FightableActor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ItemFactory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
@@ -117,6 +116,11 @@ public class PlayerActionHandler {
         if (winner.type().equals(ActorType.PLAYER)) {
             ((Player) winner).increaseXP(loser.XPReward());
         }
+        if (loser.type().equals(ActorType.PLAYER)) {
+            Player player = (Player) loser;
+            player.respawnAfterDeath();
+            gameMap.spawnPlayer(player);
+        }
     }
 
     private void handleTreasurePickup(TreasurePickup action) throws NoSuchPlayerException {
@@ -140,11 +144,7 @@ public class PlayerActionHandler {
 
     private void handleItemUsage(ItemUsage action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
-        try {
-            player.useItemFromInventory(action.itemNumber());
-        } catch (ItemNumberOutOfBoundsException e) {
-            System.out.printf("Player %d tried to use an item with number out of bounds\n", player.id());
-        }
+        player.useItemFromInventory(action.itemNumber());
     }
 
     private void handleItemGrant(ItemGrant action) throws NoSuchPlayerException {
@@ -165,20 +165,14 @@ public class PlayerActionHandler {
     }
 
     private void giveItemTo(Player sender, Player receiver, int itemNumber) {
-        try {
-            Item itemToGive = sender.removeItemFromInventory(itemNumber);
+        Item itemToGive = sender.removeItemFromInventory(itemNumber);
+        if (itemToGive != null) {
             receiver.addItemToInventory(itemToGive);
-        } catch (ItemNumberOutOfBoundsException e) {
-            System.out.printf("Player %d tried to give an item with number out of bounds\n", sender.id());
         }
     }
 
     private void handleItemThrow(ItemThrow action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
-        try {
-            player.removeItemFromInventory(action.itemNumber());
-        } catch (ItemNumberOutOfBoundsException e) {
-            System.out.printf("Player %d tried to use an item with number out of bounds\n", player.id());
-        }
+        player.removeItemFromInventory(action.itemNumber());
     }
 }

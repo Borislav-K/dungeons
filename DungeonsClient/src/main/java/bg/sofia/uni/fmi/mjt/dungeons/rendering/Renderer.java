@@ -1,8 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 
 import javax.swing.*;
@@ -26,13 +24,10 @@ public class Renderer extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         if (lastReceivedSegment == null) {
             renderNotConnectedMessage(g2d);
-        } else if (lastReceivedSegment.type().equals(PlayerSegmentType.DEATH)) {
-            renderDeathMessage(g2d);
         } else {
-            DefaultPlayerSegment defaultPlayerSegment = (DefaultPlayerSegment) lastReceivedSegment;
-            Player currentPlayer = defaultPlayerSegment.player();
+            Player currentPlayer = lastReceivedSegment.player();
 
-            MapRenderer.renderMap(g2d, defaultPlayerSegment.positionsWithActors());
+            MapRenderer.renderMap(g2d, lastReceivedSegment.positionsWithActors());
             PlayerDataRenderer.renderPlayerStats(g2d, currentPlayer);
             InventoryRenderer.renderInventory(g2d, currentPlayer.inventory());
         }
@@ -40,10 +35,6 @@ public class Renderer extends JPanel {
 
     private void renderNotConnectedMessage(Graphics2D g2d) {
         g2d.drawString("Not connected to the server yet...", 250, 250);
-    }
-
-    private void renderDeathMessage(Graphics2D g2d) {
-        g2d.drawString("YOU DIED", 250, 250);
     }
 
 }

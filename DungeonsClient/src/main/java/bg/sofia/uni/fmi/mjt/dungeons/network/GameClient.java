@@ -1,9 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.PlayerSegmentType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DeadPlayerSegment;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.network.DefaultPlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
@@ -67,18 +64,9 @@ public class GameClient {
         byte[] mapBytes = buffer.read();
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
              DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
-            PlayerSegmentType playerSegmentType = PlayerSegmentType.values()[dataInputStream.readInt()];
-            switch (playerSegmentType) {
-                case DEFAULT: {
-                    PlayerSegment playerSegment = new DefaultPlayerSegment();
-                    playerSegment.deserialize(dataInputStream);
-                    return playerSegment;
-                }
-                case DEATH:
-                    return new DeadPlayerSegment();
-                default:
-                    throw new RuntimeException("Unrecognized player segment type");
-            }
+            PlayerSegment playerSegment = new PlayerSegment();
+            playerSegment.deserialize(dataInputStream);
+            return playerSegment;
         } catch (IOException e) {
             throw new RuntimeException("Could not deserialize game state", e);
         }

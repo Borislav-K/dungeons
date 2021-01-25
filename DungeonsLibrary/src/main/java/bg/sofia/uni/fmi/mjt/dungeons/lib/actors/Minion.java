@@ -1,15 +1,13 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-public class Minion implements FightableActor {
+public class Minion extends FightableActor {
 
     private static final int XP_REWARD_PER_MINION_LVL = 20;
 
@@ -22,36 +20,26 @@ public class Minion implements FightableActor {
     private static final int DEFENSE_GAIN_PER_LEVEL = 10;
 
     // Minions have no mana as they use no spells
-    private static BattleStats minionStatsForLevel(int level) {
-        return new BattleStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level, 0,
+    private void setMinionStatsForLevel(int level) {
+        setStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level,
+                0,
                 BASE_ATTACK + ATTACK_GAIN_PER_LEVEL * level,
                 BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * level);
     }
 
-    private static final Random generator = new Random();
     private static final int MAX_MINION_LEVEL = 5;
+    private static final Random generator = new Random();
 
     private int level;
-    private BattleStats stats;
-    private Position2D position;
 
     public Minion() {
-    }
-
-    public Minion(Position2D position) {
-        this.position = position;
         this.level = generator.nextInt(MAX_MINION_LEVEL) + 1;
-        this.stats = minionStatsForLevel(level);
+        setMinionStatsForLevel(level);
     }
 
     @Override
-    public int dealDamage() {
-        return stats.attack();
-    }
-
-    @Override
-    public BattleStats stats() {
-        return stats;
+    public void dealDamage(FightableActor other) {
+        other.takeDamage(attack);
     }
 
     @Override
@@ -65,26 +53,19 @@ public class Minion implements FightableActor {
     }
 
     @Override
-    public Position2D position() {
-        return position;
-    }
-
-    @Override
     public int level() {
         return level;
     }
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
+        super.serialize(out);
         out.writeInt(level);
-        out.writeInt(position.x());
-        out.writeInt(position.y());
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
+        super.deserialize(in);
         level = in.readInt();
-        position = new Position2D(in.readInt(), in.readInt());
-        stats = minionStatsForLevel(level);
     }
 }

@@ -1,12 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.BattleStats;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,7 +11,7 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
 
-public class Player implements FightableActor {
+public class Player extends FightableActor {
 
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
 
@@ -29,25 +26,23 @@ public class Player implements FightableActor {
     private static final int DEFENSE_GAIN_PER_LEVEL = 5;
 
 
-    private static BattleStats playerStatsForLevel(int level) {
-        return new BattleStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level,
+    private void setPlayerStatsForLevel(int level) {
+        setStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level,
                 BASE_MANA + MANA_GAIN_PER_LEVEL * level,
                 BASE_ATTACK + ATTACK_GAIN_PER_LEVEL * level,
                 BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * level);
     }
 
     private int id;
-    private SocketChannel channel;
+    private transient SocketChannel channel;
     private int experience;
-    private Position2D position;
-    private BattleStats stats;
     private Inventory inventory;
     private Weapon weapon;
     private Spell spell;
 
     public Player() {
+        super(BASE_HEALTH, BASE_MANA, BASE_ATTACK, BASE_DEFENSE);
         this.experience = 0;
-        this.stats = playerStatsForLevel(1);
         this.inventory = new Inventory();
     }
 
@@ -73,10 +68,6 @@ public class Player implements FightableActor {
         return LevelCalculator.getPercentageToNextLevel(experience);
     }
 
-    public boolean isDead() {
-        return stats.currentHealth() == 0;
-    }
-
     public Weapon weapon() {
         return weapon;
     }
@@ -85,8 +76,11 @@ public class Player implements FightableActor {
         inventory.addItemToInventory(item);
     }
 
-    public void useItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
+    public void useItemFromInventory(int itemNumber) {
         Item itemToUse = inventory.getItem(itemNumber);
+        if (itemToUse == null) {
+            return;
+        }
         boolean itemUsed = switch (itemToUse.type()) {
             case HEALTH_POTION -> drinkHealthPotion((HealthPotion) itemToUse);
             case MANA_POTION -> drinkManaPotion((ManaPotion) itemToUse);
@@ -99,12 +93,12 @@ public class Player implements FightableActor {
     }
 
     private boolean drinkHealthPotion(HealthPotion potion) {
-        stats.heal(potion.healingAmount());
+        heal(potion.healingAmount());
         return true;
     }
 
     private boolean drinkManaPotion(ManaPotion potion) {
-        stats.replenish(potion.replenishmentAmount());
+        replenish(potion.replenishmentAmount());
         return true;
     }
 
@@ -124,18 +118,14 @@ public class Player implements FightableActor {
         return false;
     }
 
-    public Item removeItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
+    public Item removeItemFromInventory(int itemNumber) {
         return inventory.removeItem(itemNumber);
     }
 
-    @Override
-    public BattleStats stats() {
-        return stats;
-    }
-
-    @Override
-    public Position2D position() {
-        return this.position;
+    public void respawnAfterDeath() {
+        int currentLevel = LevelCalculator.getLevelByExperience(experience);
+        experience = LevelCalculator.REQUIRED_XP_FOR_LEVEL.get(currentLevel); // Reset XP gained for this level
+        setPlayerStatsForLevel(currentLevel);
     }
 
     @Override
@@ -149,14 +139,14 @@ public class Player implements FightableActor {
     }
 
     @Override
-    public int dealDamage() {
+    public void dealDamage(FightableActor subject) {
         int spellDamage = spell == null ? 0 : spell.damage();
         int weaponDamage = weapon == null ? 0 : weapon.attack();
 
-        if (spellDamage > weaponDamage && stats.currentMana() >= spell.manaCost()) {
-            stats.drainMana(spell.manaCost());
+        if (spellDamage > weaponDamage && currentMana >= spell.manaCost()) {
+            drainMana(spell.manaCost());
         }
-        return stats.attack() + Math.max(spellDamage, weaponDamage);
+        subject.takeDamage(attack() + Math.max(spellDamage, weaponDamage));
     }
 
     public Spell spell() {
@@ -167,53 +157,40 @@ public class Player implements FightableActor {
         return inventory;
     }
 
-    public void setPosition(Position2D position) {
-        this.position = position;
-    }
-
     public void increaseXP(int amount) {
         int previousLevel = LevelCalculator.getLevelByExperience(experience);
         experience += amount;
         int currentLevel = LevelCalculator.getLevelByExperience(experience);
         if (currentLevel > previousLevel) {
-            stats = playerStatsForLevel(currentLevel);
+            setPlayerStatsForLevel(currentLevel);
         }
     }
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
+        super.serialize(out);
         out.writeInt(id);
-        out.writeInt(position.x());
-        out.writeInt(position.y());
         out.writeInt(experience);
-        stats.serialize(out);
-        if (weapon == null) {
-            out.writeBoolean(false);
-        } else {
-            out.writeBoolean(true);
+        out.writeBoolean(weapon != null);
+        if (weapon != null) {
             weapon.serialize(out);
         }
-        if (spell == null) {
-            out.writeBoolean(false);
-        } else {
-            out.writeBoolean(true);
+        out.writeBoolean(spell != null);
+        if (spell != null) {
             spell.serialize(out);
         }
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
+        super.deserialize(in);
         id = in.readInt();
-        position = new Position2D(in.readInt(), in.readInt());
         experience = in.readInt();
-        stats.deserialize(in);
-        boolean hasWeaponEquipped = in.readBoolean();
-        if (hasWeaponEquipped) {
+        if (in.readBoolean()) {
             weapon = new Weapon();
             weapon.deserialize(in);
         }
-        boolean knowsSpell = in.readBoolean();
-        if (knowsSpell) {
+        if (in.readBoolean()) {
             spell = new Spell();
             spell.deserialize(in);
         }
@@ -230,4 +207,5 @@ public class Player implements FightableActor {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

@@ -8,4 +8,6 @@ public interface Actor extends Transmissible {
     ActorType type();
 
     Position2D position();
+
+    void setPosition(Position2D position);
 }
