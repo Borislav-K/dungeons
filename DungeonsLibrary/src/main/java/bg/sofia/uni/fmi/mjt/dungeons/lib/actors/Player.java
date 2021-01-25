@@ -122,7 +122,8 @@ public class Player extends FightableActor {
         return inventory.removeItem(itemNumber);
     }
 
-    public void respawnAfterDeath() {
+    public void sufferDeathPenalty() {
+        inventory.removeRandomItem();
         int currentLevel = LevelCalculator.getLevelByExperience(experience);
         experience = LevelCalculator.REQUIRED_XP_FOR_LEVEL.get(currentLevel); // Reset XP gained for this level
         setPlayerStatsForLevel(currentLevel);

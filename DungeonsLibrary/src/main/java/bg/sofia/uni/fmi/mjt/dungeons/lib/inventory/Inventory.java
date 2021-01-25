@@ -9,10 +9,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Inventory implements Transmissible {
 
     private static final int INVENTORY_SIZE = 9;
+    private static final Random random = new Random();
     private List<Item> items;
 
     public Inventory() {
@@ -32,6 +34,12 @@ public class Inventory implements Transmissible {
     // Items are 1-9, indexes of the list are 0-8
     public Item getItem(int itemNumber) {
         return itemNumber <= items.size() ? items.get(itemNumber - 1) : null;
+    }
+
+    public void removeRandomItem() {
+        if (!items.isEmpty()) {
+            items.remove(random.nextInt(items.size()));
+        }
     }
 
     public Item removeItem(int itemNumber) {

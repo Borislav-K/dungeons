@@ -118,7 +118,7 @@ public class PlayerActionHandler {
         }
         if (loser.type().equals(ActorType.PLAYER)) {
             Player player = (Player) loser;
-            player.respawnAfterDeath();
+            player.sufferDeathPenalty();
             gameMap.spawnPlayer(player);
         }
     }
