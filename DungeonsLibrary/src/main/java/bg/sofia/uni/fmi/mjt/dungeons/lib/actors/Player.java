@@ -73,10 +73,6 @@ public class Player implements FightableActor {
         return LevelCalculator.getPercentageToNextLevel(experience);
     }
 
-    public boolean isDead() {
-        return stats.currentHealth() == 0;
-    }
-
     public Weapon weapon() {
         return weapon;
     }
@@ -126,6 +122,12 @@ public class Player implements FightableActor {
 
     public Item removeItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
         return inventory.removeItem(itemNumber);
+    }
+
+    public void respawnAfterDeath() {
+        int currentLevel = LevelCalculator.getLevelByExperience(experience);
+        experience = LevelCalculator.REQUIRED_XP_FOR_LEVEL.get(currentLevel); // Reset XP gained for this level
+        stats = playerStatsForLevel(currentLevel);
     }
 
     @Override
@@ -230,4 +232,5 @@ public class Player implements FightableActor {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

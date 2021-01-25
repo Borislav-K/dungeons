@@ -16,10 +16,10 @@ public class Arena {
             if (subjectStats.currentHealth() == 0) {
                 return new FightResult(initiator, subject);
             }
+            initiatorStats.takeDamage(subject.dealDamage());
             if (initiatorStats.currentHealth() == 0) {
                 return new FightResult(subject, initiator);
             }
-            initiatorStats.takeDamage(subject.dealDamage());
         }
     }
 

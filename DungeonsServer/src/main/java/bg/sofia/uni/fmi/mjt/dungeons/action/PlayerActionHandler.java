@@ -117,6 +117,11 @@ public class PlayerActionHandler {
         if (winner.type().equals(ActorType.PLAYER)) {
             ((Player) winner).increaseXP(loser.XPReward());
         }
+        if (loser.type().equals(ActorType.PLAYER)) {
+            Player player = (Player) loser;
+            player.respawnAfterDeath();
+            gameMap.spawnPlayer(player);
+        }
     }
 
     private void handleTreasurePickup(TreasurePickup action) throws NoSuchPlayerException {
