@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.inventory;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 
@@ -31,20 +30,12 @@ public class Inventory implements Transmissible {
     }
 
     // Items are 1-9, indexes of the list are 0-8
-    public Item getItem(int itemNumber) throws ItemNumberOutOfBoundsException {
-        assertItemNumberInBounds(itemNumber);
-        return items.get(itemNumber - 1);
+    public Item getItem(int itemNumber) {
+        return itemNumber <= items.size() ? items.get(itemNumber - 1) : null;
     }
 
-    public Item removeItem(int itemNumber) throws ItemNumberOutOfBoundsException {
-        assertItemNumberInBounds(itemNumber);
-        return items.remove(itemNumber - 1);
-    }
-
-    private void assertItemNumberInBounds(int itemNumber) throws ItemNumberOutOfBoundsException {
-        if (itemNumber > items.size()) {
-            throw new ItemNumberOutOfBoundsException();
-        }
+    public Item removeItem(int itemNumber) {
+        return itemNumber <= items.size() ? items.remove(itemNumber - 1) : null;
     }
 
     @Override

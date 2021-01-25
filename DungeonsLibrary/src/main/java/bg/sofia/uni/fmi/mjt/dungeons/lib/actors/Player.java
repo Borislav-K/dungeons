@@ -2,10 +2,8 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -36,7 +34,7 @@ public class Player extends FightableActor {
     }
 
     private int id;
-    private SocketChannel channel;
+    private transient SocketChannel channel;
     private int experience;
     private Inventory inventory;
     private Weapon weapon;
@@ -78,8 +76,11 @@ public class Player extends FightableActor {
         inventory.addItemToInventory(item);
     }
 
-    public void useItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
+    public void useItemFromInventory(int itemNumber) {
         Item itemToUse = inventory.getItem(itemNumber);
+        if (itemToUse == null) {
+            return;
+        }
         boolean itemUsed = switch (itemToUse.type()) {
             case HEALTH_POTION -> drinkHealthPotion((HealthPotion) itemToUse);
             case MANA_POTION -> drinkManaPotion((ManaPotion) itemToUse);
@@ -117,7 +118,7 @@ public class Player extends FightableActor {
         return false;
     }
 
-    public Item removeItemFromInventory(int itemNumber) throws ItemNumberOutOfBoundsException {
+    public Item removeItemFromInventory(int itemNumber) {
         return inventory.removeItem(itemNumber);
     }
 

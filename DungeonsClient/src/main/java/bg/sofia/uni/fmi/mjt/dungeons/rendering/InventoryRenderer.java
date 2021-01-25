@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.exceptions.ItemNumberOutOfBoundsException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
@@ -29,18 +28,14 @@ public class InventoryRenderer {
         for (int i = 1; i <= inventory.currentSize(); i++) {
             int x = 550 + ((i - 1) % 3) * 30;
             int y = 300 + ((i - 1) / 3) * 30;
-            try {
-                Item currentItem = inventory.getItem(i);
-                BufferedImage imageToDraw = switch (currentItem.type()) {
-                    case HEALTH_POTION -> imageRepository.healthPotionImage();
-                    case MANA_POTION -> imageRepository.manaPotionImage();
-                    case WEAPON -> imageRepository.weaponPictureForLevel(((Weapon) currentItem).level());
-                    case SPELL -> imageRepository.spellPictureForLevel(((Spell) currentItem).level());
-                };
-                g2d.drawImage(imageToDraw, x, y, null);
-            } catch (ItemNumberOutOfBoundsException e) {
-                throw new RuntimeException("Inconsistent relation between inventory size and actual items count");
-            }
+            Item currentItem = inventory.getItem(i);
+            BufferedImage imageToDraw = switch (currentItem.type()) {
+                case HEALTH_POTION -> imageRepository.healthPotionImage();
+                case MANA_POTION -> imageRepository.manaPotionImage();
+                case WEAPON -> imageRepository.weaponPictureForLevel(((Weapon) currentItem).level());
+                case SPELL -> imageRepository.spellPictureForLevel(((Spell) currentItem).level());
+            };
+            g2d.drawImage(imageToDraw, x, y, null);
         }
     }
 }

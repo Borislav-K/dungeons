@@ -27,8 +27,8 @@ public class Minion extends FightableActor {
                 BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * level);
     }
 
-    private static final Random generator = new Random();
     private static final int MAX_MINION_LEVEL = 5;
+    private static final Random generator = new Random();
 
     private int level;
 
