@@ -16,12 +16,12 @@ public abstract class FightableActor implements Actor {
     protected int attack;
     protected int defense;
 
-    protected FightableActor(int health, int mana, int attack, int defense) {
-        setStats(health, mana, attack, defense);
+    protected FightableActor() {
+
     }
 
-    public FightableActor() {
-
+    protected FightableActor(int health, int mana, int attack, int defense) {
+        setStats(health, mana, attack, defense);
     }
 
     protected void setStats(int health, int mana, int attack, int defense) {

@@ -11,8 +11,8 @@ public class Minion extends FightableActor {
 
     private static final int XP_REWARD_PER_MINION_LVL = 20;
 
-    private static final int BASE_HEALTH = 50;
-    private static final int BASE_ATTACK = 15;
+    private static final int BASE_HEALTH = 75;
+    private static final int BASE_ATTACK = 25;
     private static final int BASE_DEFENSE = 10;
 
     private static final int HEALTH_GAIN_PER_LEVEL = 20;
@@ -21,10 +21,10 @@ public class Minion extends FightableActor {
 
     // Minions have no mana as they use no spells
     private void setMinionStatsForLevel(int level) {
-        setStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level,
+        setStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * (level - 1),
                 0,
-                BASE_ATTACK + ATTACK_GAIN_PER_LEVEL * level,
-                BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * level);
+                BASE_ATTACK + ATTACK_GAIN_PER_LEVEL * (level - 1),
+                BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * (level - 1));
     }
 
     private static final int MAX_MINION_LEVEL = 5;

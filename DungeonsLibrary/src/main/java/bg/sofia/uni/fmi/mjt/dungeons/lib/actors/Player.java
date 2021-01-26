@@ -9,28 +9,27 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
-import java.util.Objects;
 
 public class Player extends FightableActor {
 
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
 
-    private static final int BASE_HEALTH = 150;
-    private static final int BASE_MANA = 150;
-    private static final int BASE_ATTACK = 40;
-    private static final int BASE_DEFENSE = 10;
+    private static final int BASE_HEALTH = 170;
+    private static final int BASE_MANA = 170;
+    private static final int BASE_ATTACK = 55;
+    private static final int BASE_DEFENSE = 15;
 
-    private static final int HEALTH_GAIN_PER_LEVEL = 20;
-    private static final int MANA_GAIN_PER_LEVEL = 20;
-    private static final int ATTACK_GAIN_PER_LEVEL = 15;
+    private static final int HEALTH_GAIN_PER_LEVEL = 15;
+    private static final int MANA_GAIN_PER_LEVEL = 15;
+    private static final int ATTACK_GAIN_PER_LEVEL = 10;
     private static final int DEFENSE_GAIN_PER_LEVEL = 5;
 
 
     private void setPlayerStatsForLevel(int level) {
-        setStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * level,
-                BASE_MANA + MANA_GAIN_PER_LEVEL * level,
-                BASE_ATTACK + ATTACK_GAIN_PER_LEVEL * level,
-                BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * level);
+        setStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * (level - 1),
+                BASE_MANA + MANA_GAIN_PER_LEVEL * (level - 1),
+                BASE_ATTACK + ATTACK_GAIN_PER_LEVEL * (level - 1),
+                BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * (level - 1));
     }
 
     private int id;
@@ -41,15 +40,15 @@ public class Player extends FightableActor {
     private Spell spell;
 
     public Player() {
-        super(BASE_HEALTH, BASE_MANA, BASE_ATTACK, BASE_DEFENSE);
-        this.experience = 0;
         this.inventory = new Inventory();
     }
 
     public Player(int id, SocketChannel channel) {
-        this();
+        super(BASE_HEALTH, BASE_MANA, BASE_ATTACK, BASE_DEFENSE);
         this.id = id;
         this.channel = channel;
+        this.experience = 0;
+        this.inventory = new Inventory();
     }
 
     public int id() {
@@ -72,6 +71,14 @@ public class Player extends FightableActor {
         return weapon;
     }
 
+    public Spell spell() {
+        return spell;
+    }
+
+    public Inventory inventory() {
+        return inventory;
+    }
+
     public void addItemToInventory(Item item) {
         inventory.addItemToInventory(item);
     }
@@ -92,32 +99,6 @@ public class Player extends FightableActor {
         }
     }
 
-    private boolean drinkHealthPotion(HealthPotion potion) {
-        heal(potion.healingAmount());
-        return true;
-    }
-
-    private boolean drinkManaPotion(ManaPotion potion) {
-        replenish(potion.replenishmentAmount());
-        return true;
-    }
-
-    private boolean equipWeapon(Weapon weapon) {
-        if (weapon.level() <= LevelCalculator.getLevelByExperience(experience)) {
-            this.weapon = weapon;
-            return true;
-        }
-        return false;
-    }
-
-    private boolean learnSpell(Spell spell) {
-        if (spell.level() <= LevelCalculator.getLevelByExperience(experience)) {
-            this.spell = spell;
-            return true;
-        }
-        return false;
-    }
-
     public Item removeItemFromInventory(int itemNumber) {
         return inventory.removeItem(itemNumber);
     }
@@ -127,6 +108,15 @@ public class Player extends FightableActor {
         int currentLevel = LevelCalculator.getLevelByExperience(experience);
         experience = LevelCalculator.REQUIRED_XP_FOR_LEVEL.get(currentLevel); // Reset XP gained for this level
         setPlayerStatsForLevel(currentLevel);
+    }
+
+    public void increaseXP(int amount) {
+        int previousLevel = LevelCalculator.getLevelByExperience(experience);
+        experience += amount;
+        int currentLevel = LevelCalculator.getLevelByExperience(experience);
+        if (currentLevel > previousLevel) {
+            setPlayerStatsForLevel(currentLevel);
+        }
     }
 
     @Override
@@ -150,21 +140,30 @@ public class Player extends FightableActor {
         subject.takeDamage(attack() + Math.max(spellDamage, weaponDamage));
     }
 
-    public Spell spell() {
-        return spell;
-    }
-
-    public Inventory inventory() {
-        return inventory;
-    }
-
-    public void increaseXP(int amount) {
-        int previousLevel = LevelCalculator.getLevelByExperience(experience);
-        experience += amount;
-        int currentLevel = LevelCalculator.getLevelByExperience(experience);
-        if (currentLevel > previousLevel) {
-            setPlayerStatsForLevel(currentLevel);
+    private boolean equipWeapon(Weapon weapon) {
+        if (weapon.level() <= LevelCalculator.getLevelByExperience(experience)) {
+            this.weapon = weapon;
+            return true;
         }
+        return false;
+    }
+
+    private boolean learnSpell(Spell spell) {
+        if (spell.level() <= LevelCalculator.getLevelByExperience(experience)) {
+            this.spell = spell;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean drinkHealthPotion(HealthPotion potion) {
+        heal(potion.healingAmount());
+        return true;
+    }
+
+    private boolean drinkManaPotion(ManaPotion potion) {
+        replenish(potion.replenishmentAmount());
+        return true;
     }
 
     @Override
@@ -195,18 +194,6 @@ public class Player extends FightableActor {
             spell = new Spell();
             spell.deserialize(in);
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Player player)) return false;
-        return id == player.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
 }

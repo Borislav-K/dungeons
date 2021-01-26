@@ -71,12 +71,12 @@ public class PlayerActionHandler {
     }
 
     private void handlePlayerDisconnect(PlayerDisconnect disconnection) throws NoSuchPlayerException {
-        SocketChannel channel = disconnection.initiator();
-        Player player = playerManager.getPlayerByChannel(channel);
+        SocketChannel playerChannel = disconnection.initiator();
+        Player player = playerManager.getPlayerByChannel(playerChannel);
         playerManager.removePlayer(player);
         gameMap.despawnActor(player);
         try {
-            channel.close();
+            playerChannel.close();
         } catch (IOException e) {
             System.out.printf("There was a problem when closing the player %d's channel", player.id());
         }

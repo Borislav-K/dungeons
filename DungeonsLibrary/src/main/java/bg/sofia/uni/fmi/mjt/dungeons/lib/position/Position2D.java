@@ -25,7 +25,7 @@ public class Position2D implements Transmissible {
     private boolean isObstaclePosition;
 
     public Position2D() {
-        actors = new LinkedList<>();
+        actors = new ArrayList<>();
     }
 
     public Position2D(int x, int y) {
@@ -67,20 +67,6 @@ public class Position2D implements Transmissible {
 
     public boolean isSpawnable() {
         return !isObstaclePosition && actors.isEmpty();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Position2D that = (Position2D) o;
-        return x == that.x &&
-               y == that.y;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
     }
 
     // Only positions with actors will be (de)serialized
