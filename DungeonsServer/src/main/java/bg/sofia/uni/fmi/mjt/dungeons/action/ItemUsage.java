@@ -4,7 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType;
 
 import java.nio.channels.SocketChannel;
 
-public class ItemUsage extends AbstractPlayerAction {
+public class ItemUsage extends PlayerAction {
 
     private int itemNumber;
 

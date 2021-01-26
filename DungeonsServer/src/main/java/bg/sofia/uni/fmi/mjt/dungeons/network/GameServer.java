@@ -56,7 +56,7 @@ public class GameServer {
             while (keyIterator.hasNext()) {
                 SelectionKey key = keyIterator.next();
                 if (key.isReadable()) {
-                    handlePlayerActions((SocketChannel) key.channel());
+                    handlePlayerCommands((SocketChannel) key.channel());
                 } else if (key.isAcceptable()) {
                     registerNewPlayer(key);
                 }
@@ -67,7 +67,7 @@ public class GameServer {
         }
     }
 
-    private void handlePlayerActions(SocketChannel sc) {
+    private void handlePlayerCommands(SocketChannel sc) {
         try {
             int r = buffer.readFromChannel(sc);
             if (r <= 0) {
@@ -92,7 +92,7 @@ public class GameServer {
             String nextActionString = playerInput.substring(i, i + ACTION_ENCODING_LENGTH);
             System.out.printf("Received player action: %s\n", nextActionString);
             try {
-                actionHandler.publish(PlayerAction.of(nextActionString, sc));
+                actionHandler.publish(PlayerActionFactory.create(nextActionString, sc));
             } catch (IllegalPlayerActionException e) {
                 System.out.println(e.getMessage());
             }

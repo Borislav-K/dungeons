@@ -4,7 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType;
 
 import java.nio.channels.SocketChannel;
 
-public class PlayerConnect extends AbstractPlayerAction {
+public class PlayerConnect extends PlayerAction {
 
     public PlayerConnect(SocketChannel initiator) {
         super(initiator);
