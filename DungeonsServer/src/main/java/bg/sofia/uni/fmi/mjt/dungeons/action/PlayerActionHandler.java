@@ -12,12 +12,10 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ItemFactory;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 public class PlayerActionHandler {
@@ -57,7 +55,8 @@ public class PlayerActionHandler {
                 default -> System.out.printf("Unknown action type %s\n", action.type().toString());
             }
         } catch (NoSuchPlayerException e) {
-            System.out.println("The action was sent by a player that was removed from the player manager");
+            System.out.println("The action was sent by a player that was removed. Closing channel...");
+            closeChannel(action.initiator());
         }
     }
 
@@ -71,12 +70,12 @@ public class PlayerActionHandler {
     }
 
     private void handlePlayerDisconnect(PlayerDisconnect disconnection) throws NoSuchPlayerException {
-        SocketChannel channel = disconnection.initiator();
-        Player player = playerManager.getPlayerByChannel(channel);
+        SocketChannel playerChannel = disconnection.initiator();
+        Player player = playerManager.getPlayerByChannel(playerChannel);
         playerManager.removePlayer(player);
         gameMap.despawnActor(player);
         try {
-            channel.close();
+            playerChannel.close();
         } catch (IOException e) {
             System.out.printf("There was a problem when closing the player %d's channel", player.id());
         }
@@ -90,22 +89,11 @@ public class PlayerActionHandler {
     private void handleAttack(PlayerAttack action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
 
-        List<Actor> actorsAtPosition = player.position().actors();
-        if (actorsAtPosition.size() != 2) {
+        Actor otherActor = player.position().getActorNotSameAs(player, ActorType.PLAYER, ActorType.MINION);
+        if (otherActor == null) {
             return;
         }
-        Actor actor1 = actorsAtPosition.get(0);
-        Actor actor2 = actorsAtPosition.get(1);
-        if (actor1.type().equals(ActorType.TREASURE) || actor2.type().equals(ActorType.TREASURE)) {
-            return;
-        }
-        FightResult fightResult;
-        if (actor1.equals(player)) {
-            fightResult = Arena.makeActorsFight(player, (FightableActor) actor2);
-        } else {
-            fightResult = Arena.makeActorsFight(player, (FightableActor) actor1);
-        }
-
+        FightResult fightResult = Arena.makeActorsFight(player, (FightableActor) otherActor);
         handleFightResult(fightResult);
     }
 
@@ -126,20 +114,11 @@ public class PlayerActionHandler {
     private void handleTreasurePickup(TreasurePickup action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
 
-        Position2D playerPosition = player.position();
-        if (playerPosition.actors().size() != 2) {
-            return; // If the player is alone there is no treasure to pick
+        Actor treasureToPickup = player.position().getActorNotSameAs(player, ActorType.TREASURE);
+        if (treasureToPickup != null) {
+            gameMap.despawnActor(treasureToPickup);
+            player.addItemToInventory(ItemFactory.random());
         }
-        Actor actor1 = playerPosition.actors().get(0);
-        Actor actor2 = playerPosition.actors().get(1);
-        if (player.equals(actor1) && actor2.type().equals(ActorType.TREASURE)) {
-            gameMap.despawnActor(actor2);
-            ((Player) actor1).addItemToInventory(ItemFactory.random());
-        } else if (actor1.type().equals(ActorType.TREASURE)) {
-            gameMap.despawnActor(actor1);
-            ((Player) actor2).addItemToInventory(ItemFactory.random());
-        }
-
     }
 
     private void handleItemUsage(ItemUsage action) throws NoSuchPlayerException {
@@ -149,18 +128,9 @@ public class PlayerActionHandler {
 
     private void handleItemGrant(ItemGrant action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
-
-        List<Actor> actorsAtPosition = player.position().actors();
-        if (actorsAtPosition.size() != 2) {
-            return;
-        }
-        Actor actor1 = actorsAtPosition.get(0);
-        Actor actor2 = actorsAtPosition.get(1);
-        if (player.equals(actor1) && actor2.type().equals(ActorType.PLAYER)) {
-            giveItemTo((Player) actor1, (Player) actor2, action.itemNumber());
-        }
-        if (player.equals(actor2) && actor1.type().equals(ActorType.PLAYER)) {
-            giveItemTo((Player) actor2, (Player) actor1, action.itemNumber());
+        Player receivingPlayer = (Player) player.position().getActorNotSameAs(player, ActorType.PLAYER);
+        if (receivingPlayer != null) {
+            giveItemTo(player, receivingPlayer, action.itemNumber());
         }
     }
 
@@ -174,5 +144,13 @@ public class PlayerActionHandler {
     private void handleItemThrow(ItemThrow action) throws NoSuchPlayerException {
         Player player = playerManager.getPlayerByChannel(action.initiator());
         player.removeItemFromInventory(action.itemNumber());
+    }
+
+    private static void closeChannel(SocketChannel channel) {
+        try {
+            channel.close();
+        } catch (IOException e) {
+            System.out.println("The channel has already been closed");
+        }
     }
 }

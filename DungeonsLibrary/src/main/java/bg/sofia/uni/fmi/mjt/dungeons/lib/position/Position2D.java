@@ -10,10 +10,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Position2D implements Transmissible {
     private static final int MAX_ACTORS_AT_POSITION = 2;
@@ -25,7 +22,7 @@ public class Position2D implements Transmissible {
     private boolean isObstaclePosition;
 
     public Position2D() {
-        actors = new LinkedList<>();
+        actors = new ArrayList<>();
     }
 
     public Position2D(int x, int y) {
@@ -45,6 +42,25 @@ public class Position2D implements Transmissible {
 
     public List<Actor> actors() {
         return actors;
+    }
+
+    /***
+     * Returns an actor (or null if it does not exist) on this position,
+     * that is of the given type and not same as the given actor
+     *
+     * @param actor - the actor used for the "not-same-as" relation
+     * @param allowedTypes  - the desired actor types
+     * @return
+     */
+    public Actor getActorNotSameAs(Actor actor, ActorType... allowedTypes) {
+        if (actors.size() != MAX_ACTORS_AT_POSITION) {
+            return null;
+        }
+        Actor actor1AtPosition = actors.get(0);
+        Actor actor2AtPosition = actors.get(1);
+        Actor candidateActor = actor1AtPosition.equals(actor) ? actor2AtPosition : actor1AtPosition;
+        boolean isProperCandidate = Arrays.stream(allowedTypes).anyMatch(type -> type.equals(candidateActor.type()));
+        return isProperCandidate ? candidateActor : null;
     }
 
     public void markAsObstacle() {
@@ -67,20 +83,6 @@ public class Position2D implements Transmissible {
 
     public boolean isSpawnable() {
         return !isObstaclePosition && actors.isEmpty();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Position2D that = (Position2D) o;
-        return x == that.x &&
-               y == that.y;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
     }
 
     // Only positions with actors will be (de)serialized

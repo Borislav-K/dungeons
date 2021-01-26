@@ -16,12 +16,12 @@ public abstract class FightableActor implements Actor {
     protected int attack;
     protected int defense;
 
-    protected FightableActor(int health, int mana, int attack, int defense) {
-        setStats(health, mana, attack, defense);
+    protected FightableActor() {
+
     }
 
-    public FightableActor() {
-
+    protected FightableActor(int health, int mana, int attack, int defense) {
+        setStats(health, mana, attack, defense);
     }
 
     protected void setStats(int health, int mana, int attack, int defense) {
@@ -94,8 +94,6 @@ public abstract class FightableActor implements Actor {
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(position.x());
-        out.writeInt(position.y());
         out.writeInt(health);
         out.writeInt(currentHealth);
         out.writeInt(mana);
@@ -106,7 +104,6 @@ public abstract class FightableActor implements Actor {
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
-        position = new Position2D(in.readInt(), in.readInt());
         this.health = in.readInt();
         this.currentHealth = in.readInt();
         this.mana = in.readInt();

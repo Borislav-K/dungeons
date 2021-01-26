@@ -6,7 +6,7 @@ import java.nio.channels.SocketChannel;
 
 import static bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType.TREASURE_PICKUP;
 
-public class TreasurePickup extends AbstractPlayerAction {
+public class TreasurePickup extends PlayerAction {
     public TreasurePickup(SocketChannel channel) {
         super(channel);
     }

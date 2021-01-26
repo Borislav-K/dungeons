@@ -4,7 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.enums.ActionType;
 
 import java.nio.channels.SocketChannel;
 
-public class PlayerDisconnect extends AbstractPlayerAction {
+public class PlayerDisconnect extends PlayerAction {
     public PlayerDisconnect(SocketChannel channel) {
         super(channel);
     }

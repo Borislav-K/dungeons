@@ -3,7 +3,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib;
 import java.util.Map;
 
 public class LevelCalculator {
-    public static final int INITIAL_LEVEL = 1;
+    private static final int INITIAL_LEVEL = 1;
     private static final int MAX_LEVEL = 10;
 
     private static final int RATIO_TO_PERCENTAGE_COEF = 100;
