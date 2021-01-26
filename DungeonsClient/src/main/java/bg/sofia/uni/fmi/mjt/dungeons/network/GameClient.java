@@ -26,8 +26,7 @@ public class GameClient {
     }
 
     public void connect() throws IOException {
-        socketChannel = SocketChannel.open();
-        socketChannel.connect(SERVER_ADDRESS);
+        socketChannel = SocketChannel.open(SERVER_ADDRESS);
         socketChannel.configureBlocking(false);
         System.out.println("Connected to the server.");
     }
@@ -54,6 +53,7 @@ public class GameClient {
     public PlayerSegment fetchStateFromServer() {
         try {
             int r = buffer.readFromChannel(socketChannel);
+            System.out.println(r);
             return r > 0 ? deserializePlayerSegment(buffer) : null;
         } catch (IOException e) {
             return null;
@@ -61,8 +61,8 @@ public class GameClient {
     }
 
     private PlayerSegment deserializePlayerSegment(SmartBuffer buffer) {
-        byte[] mapBytes = buffer.read();
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mapBytes);
+        byte[] receivedBytes = buffer.read();
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(receivedBytes);
              DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
             PlayerSegment playerSegment = new PlayerSegment();
             playerSegment.deserialize(dataInputStream);

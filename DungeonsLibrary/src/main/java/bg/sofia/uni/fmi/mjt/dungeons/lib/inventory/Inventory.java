@@ -65,21 +65,13 @@ public class Inventory implements Transmissible {
 
     private Item deserializeSingleItem(DataInputStream in) throws IOException {
         ItemType itemType = ItemType.values()[in.readInt()];
-        Item item = null;
-        switch (itemType) {
-            case HEALTH_POTION -> item = new HealthPotion();
-            case MANA_POTION -> item = new ManaPotion();
-            case WEAPON -> {
-                Weapon weapon = new Weapon();
-                weapon.deserialize(in);
-                item = weapon;
-            }
-            case SPELL -> {
-                Spell spell = new Spell();
-                spell.deserialize(in);
-                item = spell;
-            }
-        }
+        Item item = switch (itemType) {
+            case HEALTH_POTION -> new HealthPotion();
+            case MANA_POTION -> new ManaPotion();
+            case WEAPON -> new Weapon();
+            case SPELL -> new Spell();
+        };
+        item.deserialize(in);
         return item;
     }
 }
