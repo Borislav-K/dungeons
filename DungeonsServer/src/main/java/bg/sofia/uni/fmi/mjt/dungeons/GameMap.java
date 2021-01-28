@@ -5,7 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 
 import java.util.LinkedList;
 import java.util.List;

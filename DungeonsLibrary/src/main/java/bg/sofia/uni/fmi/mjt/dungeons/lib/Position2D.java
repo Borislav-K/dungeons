@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeons.lib.position;
+package bg.sofia.uni.fmi.mjt.dungeons.lib;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;

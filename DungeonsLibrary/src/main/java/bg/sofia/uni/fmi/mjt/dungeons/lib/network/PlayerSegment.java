@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.position.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
