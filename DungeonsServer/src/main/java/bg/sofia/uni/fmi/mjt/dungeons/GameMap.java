@@ -1,11 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeons;
 
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -87,21 +87,14 @@ public class GameMap {
 
 
     private void constructGameMap() {
-        buildBarrier();
-        setObstacles();
-        spawnInitialMinions();
-        spawnInitialTreasures();
-    }
-
-    private void buildBarrier() {
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
             for (int j = 0; j < MAP_DIMENSIONS; j++) {
                 fields[i][j] = new Position2D(i, j);
-                if (i == 0 || j == 0 || i == MAP_DIMENSIONS - 1 || j == MAP_DIMENSIONS - 1) {
-                    fields[i][j].markAsObstacle();
-                }
             }
         }
+        setObstacles();
+        spawnInitialMinions();
+        spawnInitialTreasures();
     }
 
     private void setObstacles() {

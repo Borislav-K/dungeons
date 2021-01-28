@@ -12,14 +12,14 @@ public class GameConfigurator {
     public static final int[] OBSTACLE_POSITIONS = initializeObstacles();
 
     private static int[] initializeObstacles() {
-        int[] barrier = buildBarrier();
-        int[] obstacles = setObstacles();
+        int[] barrier = barrierPositions();
+        int[] obstacles = obstaclePositions();
         int[] both = Arrays.copyOf(barrier, barrier.length + obstacles.length);
         System.arraycopy(obstacles, 0, both, barrier.length, obstacles.length);
         return both;
     }
 
-    private static int[] buildBarrier() {
+    private static int[] barrierPositions() {
         int[] barrierPositions = new int[BARRIER_LENGTH];
         int nextIndex = 0;
         for (int i = 0; i < MAP_DIMENSIONS; i++) {
@@ -32,8 +32,10 @@ public class GameConfigurator {
         return barrierPositions;
     }
 
-    private static int[] setObstacles() {
+    private static int[] obstaclePositions() {
         return new int[]{55, 56, 57, 58, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72,
-                93, 94, 95, 96, 97, 221, 222, 223, 224, 225, 226, 227, 228, 248, 268, 288, 308, 328, 348, 354, 355, 356, 357};
+                93, 94, 95, 96, 97,
+                221, 222, 223, 224, 225, 226, 227, 228,
+                248, 268, 288, 308, 328, 348, 354, 355, 356, 357};
     }
 }
