@@ -39,7 +39,7 @@ public class PlayerSegment implements Transmissible {
         player.inventory().serialize(out);
 
         // Positions with actors
-        out.writeInt(positions.size());
+        out.writeByte(positions.size());
         for (Position2D position : positions) {
             position.serialize(out);
         }
@@ -52,7 +52,7 @@ public class PlayerSegment implements Transmissible {
         player.inventory().deserialize(in);
 
         // Positions with actors
-        int positionsCount = in.readInt();
+        int positionsCount = in.readByte();
         for (int i = 1; i <= positionsCount; i++) {
             Position2D position = new Position2D();
             position.deserialize(in);

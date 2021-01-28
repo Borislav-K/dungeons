@@ -94,21 +94,21 @@ public abstract class FightableActor implements Actor {
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(health);
-        out.writeInt(currentHealth);
-        out.writeInt(mana);
-        out.writeInt(currentMana);
-        out.writeInt(attack);
-        out.writeInt(defense);
+        out.writeShort(health);
+        out.writeShort(currentHealth);
+        out.writeShort(mana);
+        out.writeShort(currentMana);
+        out.writeShort(attack);
+        out.writeShort(defense);
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
-        this.health = in.readInt();
-        this.currentHealth = in.readInt();
-        this.mana = in.readInt();
-        this.currentMana = in.readInt();
-        this.attack = in.readInt();
-        this.defense = in.readInt();
+        this.health = in.readShort();
+        this.currentHealth = in.readShort();
+        this.mana = in.readShort();
+        this.currentMana = in.readShort();
+        this.attack = in.readShort();
+        this.defense = in.readShort();
     }
 }

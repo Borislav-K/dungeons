@@ -60,12 +60,12 @@ public class Minion extends FightableActor {
     @Override
     public void serialize(DataOutputStream out) throws IOException {
         super.serialize(out);
-        out.writeInt(level);
+        out.writeByte(level);
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
         super.deserialize(in);
-        level = in.readInt();
+        level = in.readByte();
     }
 }

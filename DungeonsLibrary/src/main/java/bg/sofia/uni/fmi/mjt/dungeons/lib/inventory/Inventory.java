@@ -48,23 +48,23 @@ public class Inventory implements Transmissible {
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(items.size());
+        out.writeByte(items.size());
         for (Item item : items) {
-            out.writeInt(item.type().ordinal());
+            out.writeByte(item.type().ordinal());
             item.serialize(out);
         }
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
-        int itemsCount = in.readInt();
+        int itemsCount = in.readByte();
         for (int i = 1; i <= itemsCount; i++) {
             items.add(deserializeSingleItem(in));
         }
     }
 
     private Item deserializeSingleItem(DataInputStream in) throws IOException {
-        ItemType itemType = ItemType.values()[in.readInt()];
+        ItemType itemType = ItemType.values()[in.readByte()];
         Item item = switch (itemType) {
             case HEALTH_POTION -> new HealthPotion();
             case MANA_POTION -> new ManaPotion();

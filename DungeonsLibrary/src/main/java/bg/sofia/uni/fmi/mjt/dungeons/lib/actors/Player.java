@@ -162,7 +162,7 @@ public class Player extends FightableActor {
     @Override
     public void serialize(DataOutputStream out) throws IOException {
         super.serialize(out);
-        out.writeInt(id);
+        out.writeByte(id);
         out.writeInt(experience);
         out.writeBoolean(weapon != null);
         if (weapon != null) {
@@ -177,7 +177,7 @@ public class Player extends FightableActor {
     @Override
     public void deserialize(DataInputStream in) throws IOException {
         super.deserialize(in);
-        id = in.readInt();
+        id = in.readByte();
         experience = in.readInt();
         if (in.readBoolean()) {
             weapon = new Weapon();

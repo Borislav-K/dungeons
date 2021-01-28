@@ -40,15 +40,15 @@ public class Spell implements Item {
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(level);
-        out.writeInt(damage);
-        out.writeInt(manaCost);
+        out.writeByte(level);
+        out.writeShort(damage);
+        out.writeShort(manaCost);
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
-        level = in.readInt();
-        damage = in.readInt();
-        manaCost = in.readInt();
+        level = in.readByte();
+        damage = in.readShort();
+        manaCost = in.readShort();
     }
 }

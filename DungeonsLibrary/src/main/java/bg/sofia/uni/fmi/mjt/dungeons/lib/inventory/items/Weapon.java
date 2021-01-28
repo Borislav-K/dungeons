@@ -34,13 +34,13 @@ public class Weapon implements Item {
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(level);
-        out.writeInt(attack);
+        out.writeByte(level);
+        out.writeShort(attack);
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
-        level = in.readInt();
-        attack = in.readInt();
+        level = in.readByte();
+        attack = in.readShort();
     }
 }

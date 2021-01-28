@@ -88,22 +88,22 @@ public class Position2D implements Transmissible {
     // Only positions with actors will be (de)serialized
     @Override
     public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(x);
-        out.writeInt(y);
-        out.writeInt(actors.size());
+        out.writeByte(x);
+        out.writeByte(y);
+        out.writeByte(actors.size());
         for (Actor actor : actors) {
-            out.writeInt(actor.type().ordinal());
+            out.writeByte(actor.type().ordinal());
             actor.serialize(out);
         }
     }
 
     @Override
     public void deserialize(DataInputStream in) throws IOException {
-        x = in.readInt();
-        y = in.readInt();
-        int actorsCount = in.readInt();
+        x = in.readByte();
+        y = in.readByte();
+        int actorsCount = in.readByte();
         for (int i = 1; i <= actorsCount; i++) {
-            ActorType actorType = ActorType.values()[in.readInt()];
+            ActorType actorType = ActorType.values()[in.readByte()];
             Actor actor = switch (actorType) {
                 case PLAYER -> new Player();
                 case MINION -> new Minion();
