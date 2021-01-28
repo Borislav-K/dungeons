@@ -1,9 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Random;
 
 public class Minion extends FightableActor {
@@ -57,14 +57,14 @@ public class Minion extends FightableActor {
     }
 
     @Override
-    public void serialize(ByteBuffer out) throws IOException {
+    public void serialize(SmartBuffer out) throws IOException {
         super.serialize(out);
-        out.putInt(level);
+        out.writeInt(level);
     }
 
     @Override
-    public void deserialize(ByteBuffer in) throws IOException {
+    public void deserialize(SmartBuffer in) throws IOException {
         super.deserialize(in);
-        level = in.getInt();
+        level = in.readInt();
     }
 }

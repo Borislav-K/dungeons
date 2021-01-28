@@ -4,9 +4,9 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class Player extends FightableActor {
 
@@ -159,30 +159,30 @@ public class Player extends FightableActor {
     }
 
     @Override
-    public void serialize(ByteBuffer out) throws IOException {
+    public void serialize(SmartBuffer out) throws IOException {
         super.serialize(out);
-        out.putInt(id);
-        out.putInt(experience);
-        out.putChar(weapon == null ? 'F' : 'T');
+        out.writeInt(id);
+        out.writeInt(experience);
+        out.writeBoolean(weapon != null);
         if (weapon != null) {
             weapon.serialize(out);
         }
-        out.putChar(spell == null ? 'F' : 'T');
+        out.writeBoolean(spell != null);
         if (spell != null) {
             spell.serialize(out);
         }
     }
 
     @Override
-    public void deserialize(ByteBuffer in) throws IOException {
+    public void deserialize(SmartBuffer in) throws IOException {
         super.deserialize(in);
-        id = in.getInt();
-        experience = in.getInt();
-        if (in.getChar() == 'T') {
+        id = in.readInt();
+        experience = in.readInt();
+        if (in.readBoolean()) {
             weapon = new Weapon();
             weapon.deserialize(in);
         }
-        if (in.getChar() == 'T') {
+        if (in.readBoolean()) {
             spell = new Spell();
             spell.deserialize(in);
         }

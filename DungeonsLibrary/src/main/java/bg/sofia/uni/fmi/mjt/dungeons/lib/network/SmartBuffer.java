@@ -18,8 +18,22 @@ public class SmartBuffer {
         this.buffer = ByteBuffer.allocate(capacity); // TODO think about allocateDirect()
     }
 
-    public ByteBuffer underlyingBuffer() {
-        return buffer;//TODO encapsulate this
+    public void writeInt(int value) {
+        buffer.putInt(value);
+    }
+
+    // ByteBuffer does not support booleans, this wrapper writes 'T' for true and 'F' for false
+    public void writeBoolean(boolean value) {
+        buffer.putChar(value ? 'T' : 'F');
+    }
+
+    // Synchronized with writeBoolean
+    public boolean readBoolean() {
+        return buffer.getChar() == 'T';
+    }
+
+    public int readInt() {
+        return buffer.getInt();
     }
 
     public void startSerialization() {

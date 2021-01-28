@@ -1,9 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class Weapon implements Item {
 
@@ -32,14 +32,14 @@ public class Weapon implements Item {
     }
 
     @Override
-    public void serialize(ByteBuffer out) throws IOException {
-        out.putInt(level);
-        out.putInt(attack);
+    public void serialize(SmartBuffer out) throws IOException {
+        out.writeInt(level);
+        out.writeInt(attack);
     }
 
     @Override
-    public void deserialize(ByteBuffer in) throws IOException {
-        level = in.getInt();
-        attack = in.getInt();
+    public void deserialize(SmartBuffer in) throws IOException {
+        level = in.readInt();
+        attack = in.readInt();
     }
 }

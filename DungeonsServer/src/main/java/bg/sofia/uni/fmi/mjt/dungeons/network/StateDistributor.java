@@ -39,7 +39,7 @@ public class StateDistributor {
         try {
             buffer.startSerialization();
             PlayerSegment playerSegment = new PlayerSegment(player, gameMap.getPositionsWithActors());
-            playerSegment.serialize(buffer.underlyingBuffer());
+            playerSegment.serialize(buffer);
         } catch (IOException e) {
             throw new RuntimeException("Could not serialize game state", e);
         }

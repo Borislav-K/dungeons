@@ -60,7 +60,7 @@ public class GameClient {
         try {
             buffer.startDeserialization();
             PlayerSegment playerSegment = new PlayerSegment();
-            playerSegment.deserialize(buffer.underlyingBuffer());
+            playerSegment.deserialize(buffer);
             return playerSegment;
         } catch (IOException e) {
             throw new RuntimeException("Could not deserialize game state", e);

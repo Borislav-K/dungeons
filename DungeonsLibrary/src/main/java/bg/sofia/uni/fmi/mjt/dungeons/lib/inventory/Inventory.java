@@ -2,10 +2,9 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.inventory;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -48,24 +47,24 @@ public class Inventory implements Transmissible {
     }
 
     @Override
-    public void serialize(ByteBuffer out) throws IOException {
-        out.putInt(items.size());
+    public void serialize(SmartBuffer out) throws IOException {
+        out.writeInt(items.size());
         for (Item item : items) {
-            out.putInt(item.type().ordinal());
+            out.writeInt(item.type().ordinal());
             item.serialize(out);
         }
     }
 
     @Override
-    public void deserialize(ByteBuffer in) throws IOException {
-        int itemsCount = in.getInt();
+    public void deserialize(SmartBuffer in) throws IOException {
+        int itemsCount = in.readInt();
         for (int i = 1; i <= itemsCount; i++) {
             items.add(deserializeSingleItem(in));
         }
     }
 
-    private Item deserializeSingleItem(ByteBuffer in) throws IOException {
-        ItemType itemType = ItemType.values()[in.getInt()];
+    private Item deserializeSingleItem(SmartBuffer in) throws IOException {
+        ItemType itemType = ItemType.values()[in.readInt()];
         Item item = switch (itemType) {
             case HEALTH_POTION -> new HealthPotion();
             case MANA_POTION -> new ManaPotion();

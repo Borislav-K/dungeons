@@ -5,12 +5,10 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 public class Position2D implements Transmissible {
@@ -88,23 +86,23 @@ public class Position2D implements Transmissible {
 
     // Only positions with actors will be (de)serialized
     @Override
-    public void serialize(ByteBuffer out) throws IOException {
-        out.putInt(x);
-        out.putInt(y);
-        out.putInt(actors.size());
+    public void serialize(SmartBuffer out) throws IOException {
+        out.writeInt(x);
+        out.writeInt(y);
+        out.writeInt(actors.size());
         for (Actor actor : actors) {
-            out.putInt(actor.type().ordinal());
+            out.writeInt(actor.type().ordinal());
             actor.serialize(out);
         }
     }
 
     @Override
-    public void deserialize(ByteBuffer in) throws IOException {
-        x = in.getInt();
-        y = in.getInt();
-        int actorsCount = in.getInt();
+    public void deserialize(SmartBuffer in) throws IOException {
+        x = in.readInt();
+        y = in.readInt();
+        int actorsCount = in.readInt();
         for (int i = 1; i <= actorsCount; i++) {
-            ActorType actorType = ActorType.values()[in.getInt()];
+            ActorType actorType = ActorType.values()[in.readInt()];
             Actor actor = switch (actorType) {
                 case PLAYER -> new Player();
                 case MINION -> new Minion();
