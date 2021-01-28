@@ -29,7 +29,7 @@ public class StateDistributor {
             byte[] playerPackageBytes = serializePlayerSegment(player);
             buffer.write(playerPackageBytes);
             try {
-                buffer.writeIntoChannel(player.channel());
+                buffer.writeIntoChannel(playerManager.getPlayerChannel(player));
             } catch (IOException e) {
                 System.out.println("Could not distribute the map to a player!");
                 gameMap.despawnActor(player);

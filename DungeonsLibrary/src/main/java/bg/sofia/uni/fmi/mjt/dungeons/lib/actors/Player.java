@@ -8,7 +8,6 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.channels.SocketChannel;
 
 public class Player extends FightableActor {
 
@@ -33,7 +32,6 @@ public class Player extends FightableActor {
     }
 
     private int id;
-    private transient SocketChannel channel;
     private int experience;
     private Inventory inventory;
     private Weapon weapon;
@@ -43,20 +41,15 @@ public class Player extends FightableActor {
         this.inventory = new Inventory();
     }
 
-    public Player(int id, SocketChannel channel) {
+    public Player(int id) {
         super(BASE_HEALTH, BASE_MANA, BASE_ATTACK, BASE_DEFENSE);
         this.id = id;
-        this.channel = channel;
         this.experience = 0;
         this.inventory = new Inventory();
     }
 
     public int id() {
         return id;
-    }
-
-    public SocketChannel channel() {
-        return channel;
     }
 
     public int level() {
