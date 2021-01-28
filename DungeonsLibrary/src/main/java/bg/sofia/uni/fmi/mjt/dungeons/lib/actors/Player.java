@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.LevelCalculator;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
@@ -8,10 +7,23 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 public class Player extends FightableActor {
-
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
+    private static final int MAX_LEVEL = 10;
+    private static final Map<Integer, Integer> REQUIRED_XP_FOR_LEVEL = Map.of(
+            1, 0,
+            2, 100,
+            3, 200,
+            4, 400,
+            5, 650,
+            6, 900,
+            7, 1200,
+            8, 1500,
+            9, 2000,
+            MAX_LEVEL, 3000
+    );
 
     private static final int BASE_HEALTH = 170;
     private static final int BASE_MANA = 170;
@@ -22,7 +34,6 @@ public class Player extends FightableActor {
     private static final int MANA_GAIN_PER_LEVEL = 15;
     private static final int ATTACK_GAIN_PER_LEVEL = 10;
     private static final int DEFENSE_GAIN_PER_LEVEL = 5;
-
 
     private void setPlayerStatsForLevel(int level) {
         setStats(BASE_HEALTH + HEALTH_GAIN_PER_LEVEL * (level - 1),
@@ -53,11 +64,24 @@ public class Player extends FightableActor {
     }
 
     public int level() {
-        return LevelCalculator.getLevelByExperience(experience);
+        return REQUIRED_XP_FOR_LEVEL.entrySet().stream()
+                .filter(entry -> entry.getValue() <= experience)
+                .mapToInt(Map.Entry::getKey)
+                .max().getAsInt();
     }
 
     public int XPPercentage() {
-        return LevelCalculator.getPercentageToNextLevel(experience);
+        int currentLevel = level();
+        if (currentLevel == MAX_LEVEL) {
+            return 0;
+        }
+
+        int levelXPGap = REQUIRED_XP_FOR_LEVEL.get(currentLevel + 1) - REQUIRED_XP_FOR_LEVEL.get(currentLevel);
+        int currentLevelXP = experience - REQUIRED_XP_FOR_LEVEL.get(currentLevel);
+
+        System.out.println(levelXPGap + " / " + currentLevelXP);
+        double XPRatio = (double) currentLevelXP / levelXPGap * 100;
+        return (int) XPRatio;
     }
 
     public Weapon weapon() {
@@ -98,15 +122,15 @@ public class Player extends FightableActor {
 
     public void sufferDeathPenalty() {
         inventory.removeRandomItem();
-        int currentLevel = LevelCalculator.getLevelByExperience(experience);
-        experience = LevelCalculator.REQUIRED_XP_FOR_LEVEL.get(currentLevel); // Reset XP gained for this level
+        int currentLevel = level();
+        experience = REQUIRED_XP_FOR_LEVEL.get(currentLevel); // Reset XP gained for this level
         setPlayerStatsForLevel(currentLevel);
     }
 
     public void increaseXP(int amount) {
-        int previousLevel = LevelCalculator.getLevelByExperience(experience);
+        int previousLevel = level();
         experience += amount;
-        int currentLevel = LevelCalculator.getLevelByExperience(experience);
+        int currentLevel = level();
         if (currentLevel > previousLevel) {
             setPlayerStatsForLevel(currentLevel);
         }
@@ -119,7 +143,7 @@ public class Player extends FightableActor {
 
     @Override
     public int XPReward() {
-        return LevelCalculator.getLevelByExperience(experience) * XP_REWARD_PER_PLAYER_LVL;
+        return level() * XP_REWARD_PER_PLAYER_LVL;
     }
 
     @Override
@@ -134,7 +158,7 @@ public class Player extends FightableActor {
     }
 
     private boolean equipWeapon(Weapon weapon) {
-        if (weapon.level() <= LevelCalculator.getLevelByExperience(experience)) {
+        if (weapon.level() <= level()) {
             this.weapon = weapon;
             return true;
         }
@@ -142,7 +166,7 @@ public class Player extends FightableActor {
     }
 
     private boolean learnSpell(Spell spell) {
-        if (spell.level() <= LevelCalculator.getLevelByExperience(experience)) {
+        if (spell.level() <= level()) {
             this.spell = spell;
             return true;
         }
