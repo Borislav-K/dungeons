@@ -2,12 +2,10 @@ package bg.sofia.uni.fmi.mjt.dungeons.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
-import bg.sofia.uni.fmi.mjt.dungeons.io.PerformantByteArrayOutputStream;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 // StateDistributor distributes only the necessary data (PlayerSegment) to each player
@@ -26,8 +24,7 @@ public class StateDistributor {
 
     public void distributeState() {
         for (Player player : playerManager.getAllPlayers()) {
-            byte[] playerPackageBytes = serializePlayerSegment(player);
-            buffer.write(playerPackageBytes);
+            serializePlayerSegmentIntoBuffer(player);
             try {
                 buffer.writeIntoChannel(playerManager.getPlayerChannel(player));
             } catch (IOException e) {
@@ -38,13 +35,11 @@ public class StateDistributor {
         }
     }
 
-    private byte[] serializePlayerSegment(Player player) {
-        PlayerSegment playerSegment = new PlayerSegment(player, gameMap.getPositionsWithActors());
-        try (var byteArrayOutputStream = new PerformantByteArrayOutputStream();
-             var dataOutputStream = new DataOutputStream(byteArrayOutputStream)) {
-            playerSegment.serialize(dataOutputStream);
-            dataOutputStream.flush();
-            return byteArrayOutputStream.getBuf();
+    private void serializePlayerSegmentIntoBuffer(Player player) {
+        try {
+            buffer.startSerialization();
+            PlayerSegment playerSegment = new PlayerSegment(player, gameMap.getPositionsWithActors());
+            playerSegment.serialize(buffer.underlyingBuffer());
         } catch (IOException e) {
             throw new RuntimeException("Could not serialize game state", e);
         }

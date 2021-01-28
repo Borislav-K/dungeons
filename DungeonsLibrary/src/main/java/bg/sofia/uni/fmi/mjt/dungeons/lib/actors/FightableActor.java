@@ -2,9 +2,8 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public abstract class FightableActor implements Actor {
 
@@ -93,22 +92,22 @@ public abstract class FightableActor implements Actor {
     }
 
     @Override
-    public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(health);
-        out.writeInt(currentHealth);
-        out.writeInt(mana);
-        out.writeInt(currentMana);
-        out.writeInt(attack);
-        out.writeInt(defense);
+    public void serialize(ByteBuffer out) throws IOException {
+        out.putInt(health);
+        out.putInt(currentHealth);
+        out.putInt(mana);
+        out.putInt(currentMana);
+        out.putInt(attack);
+        out.putInt(defense);
     }
 
     @Override
-    public void deserialize(DataInputStream in) throws IOException {
-        this.health = in.readInt();
-        this.currentHealth = in.readInt();
-        this.mana = in.readInt();
-        this.currentMana = in.readInt();
-        this.attack = in.readInt();
-        this.defense = in.readInt();
+    public void deserialize(ByteBuffer in) throws IOException {
+        this.health = in.getInt();
+        this.currentHealth = in.getInt();
+        this.mana = in.getInt();
+        this.currentMana = in.getInt();
+        this.attack = in.getInt();
+        this.defense = in.getInt();
     }
 }

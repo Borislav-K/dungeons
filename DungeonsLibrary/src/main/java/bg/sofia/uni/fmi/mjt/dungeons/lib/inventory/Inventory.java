@@ -7,6 +7,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -47,24 +48,24 @@ public class Inventory implements Transmissible {
     }
 
     @Override
-    public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(items.size());
+    public void serialize(ByteBuffer out) throws IOException {
+        out.putInt(items.size());
         for (Item item : items) {
-            out.writeInt(item.type().ordinal());
+            out.putInt(item.type().ordinal());
             item.serialize(out);
         }
     }
 
     @Override
-    public void deserialize(DataInputStream in) throws IOException {
-        int itemsCount = in.readInt();
+    public void deserialize(ByteBuffer in) throws IOException {
+        int itemsCount = in.getInt();
         for (int i = 1; i <= itemsCount; i++) {
             items.add(deserializeSingleItem(in));
         }
     }
 
-    private Item deserializeSingleItem(DataInputStream in) throws IOException {
-        ItemType itemType = ItemType.values()[in.readInt()];
+    private Item deserializeSingleItem(ByteBuffer in) throws IOException {
+        ItemType itemType = ItemType.values()[in.getInt()];
         Item item = switch (itemType) {
             case HEALTH_POTION -> new HealthPotion();
             case MANA_POTION -> new ManaPotion();

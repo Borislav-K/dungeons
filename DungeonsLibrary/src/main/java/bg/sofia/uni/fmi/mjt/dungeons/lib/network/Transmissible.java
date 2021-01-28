@@ -1,17 +1,16 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 // Transmissible objects can be properly (de)serialized for server<->client network transmission
 public interface Transmissible {
 
-    default void serialize(DataOutputStream out) throws IOException {
+    default void serialize(ByteBuffer out) throws IOException {
 
     }
 
-    default void deserialize(DataInputStream in) throws IOException {
+    default void deserialize(ByteBuffer in) throws IOException {
 
     }
 }

@@ -2,9 +2,8 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class Spell implements Item {
 
@@ -39,16 +38,16 @@ public class Spell implements Item {
     }
 
     @Override
-    public void serialize(DataOutputStream out) throws IOException {
-        out.writeInt(level);
-        out.writeInt(damage);
-        out.writeInt(manaCost);
+    public void serialize(ByteBuffer out) throws IOException {
+        out.putInt(level);
+        out.putInt(damage);
+        out.putInt(manaCost);
     }
 
     @Override
-    public void deserialize(DataInputStream in) throws IOException {
-        level = in.readInt();
-        damage = in.readInt();
-        manaCost = in.readInt();
+    public void deserialize(ByteBuffer in) throws IOException {
+        level = in.getInt();
+        damage = in.getInt();
+        manaCost = in.getInt();
     }
 }

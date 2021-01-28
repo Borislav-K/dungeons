@@ -4,8 +4,6 @@ package bg.sofia.uni.fmi.mjt.dungeons.network;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.SmartBuffer;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
@@ -16,13 +14,11 @@ public class GameClient {
     private static final int SERVER_PORT = 10_000;
     private static final InetSocketAddress SERVER_ADDRESS = new InetSocketAddress(SERVER_HOST, SERVER_PORT);
 
-    private static final int SEGMENT_LENGTH = 1024;
-
     private SmartBuffer buffer;
     private SocketChannel socketChannel;
 
     public GameClient() {
-        this.buffer = new SmartBuffer(SEGMENT_LENGTH);
+        this.buffer = new SmartBuffer();
     }
 
     public void connect() throws IOException {
@@ -54,18 +50,17 @@ public class GameClient {
         try {
             int r = buffer.readFromChannel(socketChannel);
             System.out.println(r);
-            return r > 0 ? deserializePlayerSegment(buffer) : null;
+            return r > 0 ? deserializePlayerSegment() : null;
         } catch (IOException e) {
             return null;
         }
     }
 
-    private PlayerSegment deserializePlayerSegment(SmartBuffer buffer) {
-        byte[] receivedBytes = buffer.read();
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(receivedBytes);
-             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
+    private PlayerSegment deserializePlayerSegment() {
+        try {
+            buffer.startDeserialization();
             PlayerSegment playerSegment = new PlayerSegment();
-            playerSegment.deserialize(dataInputStream);
+            playerSegment.deserialize(buffer.underlyingBuffer());
             return playerSegment;
         } catch (IOException e) {
             throw new RuntimeException("Could not deserialize game state", e);

@@ -18,6 +18,18 @@ public class SmartBuffer {
         this.buffer = ByteBuffer.allocate(capacity); // TODO think about allocateDirect()
     }
 
+    public ByteBuffer underlyingBuffer() {
+        return buffer;//TODO encapsulate this
+    }
+
+    public void startSerialization() {
+        buffer.clear();
+    }
+
+    public void startDeserialization() {
+        buffer.flip();
+    }
+
     public byte[] read() {
         buffer.flip();
         byte[] destination = new byte[buffer.remaining()];
@@ -28,11 +40,6 @@ public class SmartBuffer {
     public void write(String s) {
         buffer.clear();
         buffer.put(s.getBytes());
-    }
-
-    public void write(byte[] bytes) {
-        buffer.clear();
-        buffer.put(bytes);
     }
 
     public int readFromChannel(SocketChannel from) throws IOException {
