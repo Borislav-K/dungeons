@@ -2,20 +2,11 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -42,6 +33,8 @@ public class PlayerSegmentTest {
         dummyItems.forEach(dummyPlayer::addItemToInventory);
         dummyPlayer.useItemFromInventory(4); // Learn dummy spell
         dummyPlayer.useItemFromInventory(3); // Equip dummy weapon
+        dummyPlayer.addItemToInventory(dummyWeapon);
+        dummyPlayer.addItemToInventory(dummySpell);
     }
 
     @Test
