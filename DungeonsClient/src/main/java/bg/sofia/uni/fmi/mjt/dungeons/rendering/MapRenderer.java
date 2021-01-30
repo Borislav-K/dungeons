@@ -24,19 +24,8 @@ public class MapRenderer {
         g2d.setColor(Color.red);
         g2d.setFont(new Font("Comic Sans", Font.PLAIN, MAP_FIELD_SIZE));
 
-        drawBarrier(g2d);
         drawObstacles(g2d);
-        drawPositions(g2d, positionsWithActors);
-    }
-
-    private static void drawBarrier(Graphics2D g2d) {
-        for (int i = 0; i < MAP_DIMENSIONS; i++) {
-            for (int j = 0; j < MAP_DIMENSIONS; j++) {
-                if (i == 0 || j == 0 || i == MAP_DIMENSIONS - 1 || j == MAP_DIMENSIONS - 1) {
-                    g2d.drawImage(imageRepository.obstacleImage(), i * MAP_FIELD_SIZE, j * MAP_FIELD_SIZE, null);
-                }
-            }
-        }
+        positionsWithActors.forEach(position -> drawPosition(g2d, position));
     }
 
     private static void drawObstacles(Graphics2D g2d) {
@@ -45,10 +34,6 @@ public class MapRenderer {
             int y = (obstacle % MAP_DIMENSIONS) * MAP_FIELD_SIZE;
             g2d.drawImage(imageRepository.obstacleImage(), x, y, null);
         }
-    }
-
-    private static void drawPositions(Graphics2D g2d, Collection<Position2D> positionsWithActors) {
-        positionsWithActors.forEach(position -> drawPosition(g2d, position));
     }
 
     private static void drawPosition(Graphics2D g2d, Position2D pos) {
