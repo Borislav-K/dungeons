@@ -7,11 +7,6 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.DataInputStream;
 import java.util.List;
 
 import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.MINION;
@@ -92,32 +87,6 @@ public class Position2DTest {
         testPosition.addActor(dummyPlayer);
         testPosition.addActor(dummyMinion);
         assertEquals(dummyMinion, testPosition.getActorNotSameAs(dummyPlayer, MINION));
-    }
-
-    @Test
-    public void testPosition2DTransmission() throws IOException {
-        testPosition.addActor(dummyPlayer);
-        testPosition.addActor(dummyTreasure);
-        byte[] positionBytes = serializePosition(testPosition);
-        Position2D deserializedPosition = deserializePosition(positionBytes);
-        assertEquals(testPosition, deserializedPosition);
-        assertEquals(testPosition.actors(), deserializedPosition.actors());
-    }
-
-    private static byte[] serializePosition(Position2D position2D) throws IOException {
-        var byteArrayOutputStream = new ByteArrayOutputStream();
-        var dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-        position2D.serialize(dataOutputStream);
-        dataOutputStream.flush();
-        return byteArrayOutputStream.toByteArray();
-    }
-
-    private static Position2D deserializePosition(byte[] bytes) throws IOException {
-        var byteArrayInputStream = new ByteArrayInputStream(bytes);
-        var dataInputStream = new DataInputStream(byteArrayInputStream);
-        Position2D position2D = new Position2D();
-        position2D.deserialize(dataInputStream);
-        return position2D;
     }
 
 }
