@@ -1,12 +1,18 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.network;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +26,8 @@ public class PlayerSegmentTest {
             new HealthPotion(), new ManaPotion(), dummyWeapon, dummySpell);
 
     private static final Player dummyPlayer = new Player(1);
+    private static final Minion dummyMinion = new Minion(3);
+    private static final Treasure dummyTreasure = new Treasure();
 
     // Positions with actors
     private static final Position2D dummyPosition1 = new Position2D(1, 2);
@@ -35,6 +43,10 @@ public class PlayerSegmentTest {
         dummyPlayer.useItemFromInventory(3); // Equip dummy weapon
         dummyPlayer.addItemToInventory(dummyWeapon);
         dummyPlayer.addItemToInventory(dummySpell);
+
+        dummyPosition1.addActor(dummyPlayer);
+        dummyPosition2.addActor(dummyMinion);
+        dummyPosition2.addActor(dummyTreasure);
     }
 
     @Test

@@ -5,6 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public abstract class FightableActor implements Actor {
 
@@ -69,7 +70,7 @@ public abstract class FightableActor implements Actor {
     }
 
     public void drainMana(int amount) {
-        currentMana -= Math.max(0, amount);
+        currentMana = Math.max(0,currentMana-amount);
     }
 
     public void replenish(int amount) {
@@ -110,5 +111,20 @@ public abstract class FightableActor implements Actor {
         this.currentMana = in.readShort();
         this.attack = in.readShort();
         this.defense = in.readShort();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FightableActor that = (FightableActor) o;
+        return health == that.health && currentHealth == that.currentHealth && mana == that.mana
+                && currentMana == that.currentMana && attack == that.attack && defense == that.defense
+                && Objects.equals(position, that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, health, currentHealth, mana, currentMana, attack, defense);
     }
 }

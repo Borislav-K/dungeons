@@ -5,7 +5,6 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Random;
 
 public class Minion extends FightableActor {
 
