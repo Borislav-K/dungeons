@@ -1,6 +1,5 @@
-package bg.sofia.uni.fmi.mjt.dungeons;
+package bg.sofia.uni.fmi.mjt.dungeons.lib;
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Actor;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
@@ -10,13 +9,8 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.MINION;
-import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.TREASURE;
-import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.PLAYER;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.*;
+import static org.junit.Assert.*;
 
 public class Position2DTest {
 
