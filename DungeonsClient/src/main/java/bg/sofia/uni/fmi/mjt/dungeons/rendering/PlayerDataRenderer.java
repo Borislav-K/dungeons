@@ -26,7 +26,7 @@ public class PlayerDataRenderer {
     private static final int STATS_BARS_HEIGHT = 18;
     private static final int STATS_LABEL_LOCATION_X = 555;
     private static final int STATS_TEXT_LOCATION_X = 555;
-    private static final int STATS_BAR_LOCATION_Y = 525;
+    private static final int STATS_BAR_LOCATION_X = 525;
 
     // Health bar
     private static final int HEALTH_LABEL_LOCATION_Y = 50;
@@ -66,9 +66,9 @@ public class PlayerDataRenderer {
 
         // Health Bar
         g2d.setColor(Color.GREEN);
-        g2d.drawRect(STATS_BAR_LOCATION_Y, HEALTH_BAR_LOCATION_Y, STATS_BARS_WIDTH, STATS_BARS_HEIGHT);
+        g2d.drawRect(STATS_BAR_LOCATION_X, HEALTH_BAR_LOCATION_Y, STATS_BARS_WIDTH, STATS_BARS_HEIGHT);
         int barWidth = STATS_BARS_WIDTH * player.currentHealth() / player.health();
-        g2d.fillRect(STATS_BAR_LOCATION_Y, HEALTH_BAR_LOCATION_Y, barWidth, STATS_BARS_HEIGHT);
+        g2d.fillRect(STATS_BAR_LOCATION_X, HEALTH_BAR_LOCATION_Y, barWidth, STATS_BARS_HEIGHT);
 
         g2d.setColor(Color.black);
         g2d.drawString("Health", STATS_LABEL_LOCATION_X, HEALTH_LABEL_LOCATION_Y);
@@ -79,9 +79,9 @@ public class PlayerDataRenderer {
 
         // Mana bar
         g2d.setColor(Color.BLUE);
-        g2d.drawRect(STATS_BAR_LOCATION_Y, MANA_BAR_LOCATION_Y, STATS_BARS_WIDTH, STATS_BARS_HEIGHT);
+        g2d.drawRect(STATS_BAR_LOCATION_X, MANA_BAR_LOCATION_Y, STATS_BARS_WIDTH, STATS_BARS_HEIGHT);
         barWidth = STATS_BARS_WIDTH * player.currentMana() / player.mana();
-        g2d.fillRect(STATS_BAR_LOCATION_Y, MANA_BAR_LOCATION_Y, barWidth, STATS_BARS_HEIGHT);
+        g2d.fillRect(STATS_BAR_LOCATION_X, MANA_BAR_LOCATION_Y, barWidth, STATS_BARS_HEIGHT);
 
         g2d.setColor(Color.black);
         g2d.drawString("Mana", STATS_LABEL_LOCATION_X, MANA_LABEL_LOCATION_Y);
