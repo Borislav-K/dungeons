@@ -59,6 +59,7 @@ public abstract class FightableActor implements Actor {
     }
 
     public void takeDamage(int amount) {
+        assertNotNegative(amount);
         int diminishedAmount = amount - defense;
         if (diminishedAmount > 0) {
             currentHealth = Math.max(0, currentHealth - diminishedAmount);
@@ -66,14 +67,17 @@ public abstract class FightableActor implements Actor {
     }
 
     public void heal(int amount) {
+        assertNotNegative(amount);
         currentHealth = Math.min(health, currentHealth + amount);
     }
 
     public void drainMana(int amount) {
-        currentMana = Math.max(0,currentMana-amount);
+        assertNotNegative(amount);
+        currentMana = Math.max(0, currentMana - amount);
     }
 
     public void replenish(int amount) {
+        assertNotNegative(amount);
         currentMana = Math.min(mana, currentMana + amount);
     }
 
@@ -126,5 +130,11 @@ public abstract class FightableActor implements Actor {
     @Override
     public int hashCode() {
         return Objects.hash(position, health, currentHealth, mana, currentMana, attack, defense);
+    }
+
+    protected static void assertNotNegative(int value) {
+        if (value < 0) {
+            throw new IllegalArgumentException("Value must be >=0");
+        }
     }
 }
