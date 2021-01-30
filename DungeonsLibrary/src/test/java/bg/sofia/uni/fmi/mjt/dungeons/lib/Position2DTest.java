@@ -7,18 +7,28 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Treasure;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
 import java.util.List;
 
-import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.*;
-import static org.junit.Assert.*;
+import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.MINION;
+import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.PLAYER;
+import static bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType.TREASURE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 public class Position2DTest {
 
     private static final int MAX_ACTORS_AT_POSITION = 2;
 
-    private static final Actor testPlayer = new Player(1);
-    private static final Actor testMinion = new Minion();
-    private static final Actor testTreasure = new Treasure();
+    private static final Actor dummyPlayer = new Player(1);
+    private static final Actor dummyMinion = new Minion();
+    private static final Actor dummyTreasure = new Treasure();
 
 
     private static Position2D testPosition;
@@ -30,14 +40,14 @@ public class Position2DTest {
 
     @Test
     public void testPositionActorLimit() {
-        testPosition.addActor(testPlayer);
-        testPosition.addActor(testMinion);
-        testPosition.addActor(testTreasure);
+        testPosition.addActor(dummyPlayer);
+        testPosition.addActor(dummyMinion);
+        testPosition.addActor(dummyTreasure);
 
         List<Actor> actorsAtPosition = testPosition.actors();
         assertEquals(MAX_ACTORS_AT_POSITION, actorsAtPosition.size());
-        assertTrue(actorsAtPosition.contains(testPlayer));
-        assertTrue(actorsAtPosition.contains(testMinion));
+        assertTrue(actorsAtPosition.contains(dummyPlayer));
+        assertTrue(actorsAtPosition.contains(dummyMinion));
 
         assertFalse(testPosition.containsFreeSpace());
     }
@@ -45,16 +55,16 @@ public class Position2DTest {
     @Test
     public void testIsSpawnable() {
         assertTrue(testPosition.isSpawnable());
-        testPosition.addActor(testPlayer);
+        testPosition.addActor(dummyPlayer);
         assertFalse(testPosition.isSpawnable());
     }
 
     @Test
     public void testContainsFreeSpace() {
         assertTrue(testPosition.containsFreeSpace());
-        testPosition.addActor(testPlayer);
+        testPosition.addActor(dummyPlayer);
         assertTrue(testPosition.containsFreeSpace());
-        testPosition.addActor(testMinion);
+        testPosition.addActor(dummyMinion);
         assertFalse(testPosition.containsFreeSpace());
     }
 
@@ -67,21 +77,47 @@ public class Position2DTest {
 
     @Test
     public void testGetActorNotSameAsWhenGivenActorIsNotPresent() {
-        assertNull(testPosition.getActorNotSameAs(testPlayer, PLAYER, MINION, TREASURE));
+        assertNull(testPosition.getActorNotSameAs(dummyPlayer, PLAYER, MINION, TREASURE));
     }
 
     @Test
     public void testGetActorNotSameAsWhenGivenActorIsPresentAndGivenTypeIsNot() {
-        testPosition.addActor(testPlayer);
-        testPosition.addActor(testMinion);
-        assertNull(testPosition.getActorNotSameAs(testPlayer, PLAYER, TREASURE));
+        testPosition.addActor(dummyPlayer);
+        testPosition.addActor(dummyMinion);
+        assertNull(testPosition.getActorNotSameAs(dummyPlayer, PLAYER, TREASURE));
     }
 
     @Test
     public void testGetActorNotSameAsWhenGivenActorIsPresentAndGivenTypeIs() {
-        testPosition.addActor(testPlayer);
-        testPosition.addActor(testMinion);
-        assertEquals(testMinion, testPosition.getActorNotSameAs(testPlayer, MINION));
+        testPosition.addActor(dummyPlayer);
+        testPosition.addActor(dummyMinion);
+        assertEquals(dummyMinion, testPosition.getActorNotSameAs(dummyPlayer, MINION));
+    }
+
+    @Test
+    public void testPosition2DTransmission() throws IOException {
+        testPosition.addActor(dummyPlayer);
+        testPosition.addActor(dummyTreasure);
+        byte[] positionBytes = serializePosition(testPosition);
+        Position2D deserializedPosition = deserializePosition(positionBytes);
+        assertEquals(testPosition, deserializedPosition);
+        assertEquals(testPosition.actors(), deserializedPosition.actors());
+    }
+
+    private static byte[] serializePosition(Position2D position2D) throws IOException {
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+        position2D.serialize(dataOutputStream);
+        dataOutputStream.flush();
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private static Position2D deserializePosition(byte[] bytes) throws IOException {
+        var byteArrayInputStream = new ByteArrayInputStream(bytes);
+        var dataInputStream = new DataInputStream(byteArrayInputStream);
+        Position2D position2D = new Position2D();
+        position2D.deserialize(dataInputStream);
+        return position2D;
     }
 
 }
