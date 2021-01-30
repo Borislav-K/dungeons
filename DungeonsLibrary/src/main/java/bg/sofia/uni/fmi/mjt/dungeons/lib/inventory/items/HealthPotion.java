@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class HealthPotion implements Item {
@@ -18,5 +19,16 @@ public class HealthPotion implements Item {
 
     public int healingAmount() {
         return random.nextInt(MAX_HEALING - MIN_HEALING) + MIN_HEALING;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        return o != null && getClass() == o.getClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ItemType.HEALTH_POTION.ordinal());
     }
 }

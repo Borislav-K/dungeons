@@ -1,7 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
-import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
+
+import java.util.Objects;
 
 public class Treasure implements Actor {
 
@@ -29,4 +31,17 @@ public class Treasure implements Actor {
         this.position = position;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Treasure treasure = (Treasure) o;
+        return Objects.equals(type(), treasure.type());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ActorType.TREASURE.ordinal());
+    }
 }

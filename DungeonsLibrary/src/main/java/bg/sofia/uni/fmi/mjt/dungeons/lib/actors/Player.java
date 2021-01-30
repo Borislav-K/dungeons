@@ -2,12 +2,17 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.actors;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.Inventory;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 public class Player extends FightableActor {
     private static final int XP_REWARD_PER_PLAYER_LVL = 50;
@@ -79,7 +84,6 @@ public class Player extends FightableActor {
         int levelXPGap = REQUIRED_XP_FOR_LEVEL.get(currentLevel + 1) - REQUIRED_XP_FOR_LEVEL.get(currentLevel);
         int currentLevelXP = experience - REQUIRED_XP_FOR_LEVEL.get(currentLevel);
 
-        System.out.println(levelXPGap + " / " + currentLevelXP);
         double XPRatio = (double) currentLevelXP / levelXPGap * 100;
         return (int) XPRatio;
     }
@@ -128,6 +132,9 @@ public class Player extends FightableActor {
     }
 
     public void increaseXP(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("XP amount has to be >=0");
+        }
         int previousLevel = level();
         experience += amount;
         int currentLevel = level();
@@ -148,13 +155,16 @@ public class Player extends FightableActor {
 
     @Override
     public void dealDamage(FightableActor subject) {
+        Objects.requireNonNull(subject);
         int spellDamage = spell == null ? 0 : spell.damage();
         int weaponDamage = weapon == null ? 0 : weapon.attack();
 
+        int resultDamage = weaponDamage;
         if (spellDamage > weaponDamage && currentMana >= spell.manaCost()) {
             drainMana(spell.manaCost());
+            resultDamage = spellDamage;
         }
-        subject.takeDamage(attack() + Math.max(spellDamage, weaponDamage));
+        subject.takeDamage(attack() + resultDamage);
     }
 
     private boolean equipWeapon(Weapon weapon) {
@@ -213,4 +223,16 @@ public class Player extends FightableActor {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return id == player.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

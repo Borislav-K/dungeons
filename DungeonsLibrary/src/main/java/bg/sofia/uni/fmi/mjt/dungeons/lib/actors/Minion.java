@@ -5,7 +5,6 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ActorType;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Random;
 
 public class Minion extends FightableActor {
 
@@ -27,13 +26,16 @@ public class Minion extends FightableActor {
                 BASE_DEFENSE + DEFENSE_GAIN_PER_LEVEL * (level - 1));
     }
 
-    private static final int MAX_MINION_LEVEL = 5;
-    private static final Random generator = new Random();
+    public static final int MAX_MINION_LEVEL = 5;
 
     private int level;
 
     public Minion() {
-        this.level = generator.nextInt(MAX_MINION_LEVEL) + 1;
+
+    }
+
+    public Minion(int level) {
+        this.level = level;
         setMinionStatsForLevel(level);
     }
 
