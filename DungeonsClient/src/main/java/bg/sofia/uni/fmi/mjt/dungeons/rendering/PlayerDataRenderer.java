@@ -10,34 +10,6 @@ public class PlayerDataRenderer {
 
     private static final ImageRepository imageRepository = ImageRepository.getInstance();
 
-    // Experience bar
-    private static final int XP_LABEL_LOCATION_X = 220;
-    private static final int XP_LABEL_LOCATION_Y = 550;
-    private static final int XP_BAR_UPPER_CORNER_X = 20;
-    private static final int XP_BAR_UPPER_CORNER_Y = 525;
-    private static final int XP_BAR_WIDTH = 450;
-    private static final int XP_BAR_HEIGHT = 30;
-    private static final int XP_BAR_ARC = 10;
-    private static final int LEVEL_LABEL_LOCATION_X = 195;
-    private static final int LEVEL_LABEL_LOCATION_Y = 580;
-
-    // Battlestats
-    private static final int STATS_BARS_WIDTH = 125;
-    private static final int STATS_BARS_HEIGHT = 18;
-    private static final int STATS_LABEL_LOCATION_X = 555;
-    private static final int STATS_TEXT_LOCATION_X = 555;
-    private static final int STATS_BAR_LOCATION_X = 525;
-
-    // Health bar
-    private static final int HEALTH_LABEL_LOCATION_Y = 50;
-    private static final int HEALTH_TEXT_LOCATION_Y = 70;
-    private static final int HEALTH_BAR_LOCATION_Y = 55;
-
-    // Mana bar
-    private static final int MANA_LABEL_LOCATION_Y = 100;
-    private static final int MANA_TEXT_LOCATION_Y = 120;
-    private static final int MANA_BAR_LOCATION_Y = 105;
-
     public static void renderPlayerStats(Graphics2D g2d, Player player) {
         renderXPBar(g2d, player.level(), player.XPPercentage());
         renderBattleStats(g2d, player);
@@ -46,18 +18,16 @@ public class PlayerDataRenderer {
     private static void renderXPBar(Graphics2D g2d, int level, int XPPercentage) {
         g2d.setStroke(new BasicStroke(2));
 
-        String levelLabel = "Level ".concat(String.valueOf(level));
-
         //XP Bar progress
         g2d.setColor(Color.YELLOW);
-        int progressWidth = (int) Math.round(XP_BAR_WIDTH * (XPPercentage / 100.0));
-        g2d.fillRoundRect(XP_BAR_UPPER_CORNER_X, XP_BAR_UPPER_CORNER_Y, progressWidth, XP_BAR_HEIGHT, XP_BAR_ARC, XP_BAR_ARC);
+        int progressWidth = (int) Math.round(450 * (XPPercentage / 100.0));
+        g2d.fillRoundRect(20, 525, progressWidth, 30, 10, 10);
         //XP Bar Border
         g2d.setColor(Color.BLUE);
-        g2d.drawRoundRect(XP_BAR_UPPER_CORNER_X, XP_BAR_UPPER_CORNER_Y, XP_BAR_WIDTH, XP_BAR_HEIGHT, XP_BAR_ARC, XP_BAR_ARC);
+        g2d.drawRoundRect(20, 525, 450, 30, 10, 10);
         // Level Label
-        g2d.drawString(String.valueOf(XPPercentage).concat("%"), XP_LABEL_LOCATION_X, XP_LABEL_LOCATION_Y);
-        g2d.drawString(levelLabel, LEVEL_LABEL_LOCATION_X, LEVEL_LABEL_LOCATION_Y);
+        g2d.drawString("%d%%".formatted(XPPercentage), 220, 550);
+        g2d.drawString("Level %d".formatted(level), 195, 580);
 
     }
 
@@ -66,32 +36,26 @@ public class PlayerDataRenderer {
 
         // Health Bar
         g2d.setColor(Color.GREEN);
-        g2d.drawRect(STATS_BAR_LOCATION_X, HEALTH_BAR_LOCATION_Y, STATS_BARS_WIDTH, STATS_BARS_HEIGHT);
-        int barWidth = STATS_BARS_WIDTH * player.currentHealth() / player.health();
-        g2d.fillRect(STATS_BAR_LOCATION_X, HEALTH_BAR_LOCATION_Y, barWidth, STATS_BARS_HEIGHT);
-
-        g2d.setColor(Color.black);
-        g2d.drawString("Health", STATS_LABEL_LOCATION_X, HEALTH_LABEL_LOCATION_Y);
-        String healthText = String.valueOf(player.currentHealth())
-                .concat("/")
-                .concat(String.valueOf(player.health()));
-        g2d.drawString(healthText, STATS_TEXT_LOCATION_X, HEALTH_TEXT_LOCATION_Y);
+        g2d.drawRect(525, 55, 125, 18);
+        int barWidth = 125 * player.currentHealth() / player.health();
+        g2d.fillRect(525, 55, barWidth, 18);
 
         // Mana bar
         g2d.setColor(Color.BLUE);
-        g2d.drawRect(STATS_BAR_LOCATION_X, MANA_BAR_LOCATION_Y, STATS_BARS_WIDTH, STATS_BARS_HEIGHT);
-        barWidth = STATS_BARS_WIDTH * player.currentMana() / player.mana();
-        g2d.fillRect(STATS_BAR_LOCATION_X, MANA_BAR_LOCATION_Y, barWidth, STATS_BARS_HEIGHT);
+        g2d.drawRect(525, 105, 125, 18);
+        barWidth = 125 * player.currentMana() / player.mana();
+        g2d.fillRect(525, 105, barWidth, 18);
 
+        // Health Label
         g2d.setColor(Color.black);
-        g2d.drawString("Mana", STATS_LABEL_LOCATION_X, MANA_LABEL_LOCATION_Y);
-        String manaText = String.valueOf(player.currentMana())
-                .concat("/")
-                .concat(String.valueOf(player.mana()));
-        g2d.drawString(manaText, STATS_TEXT_LOCATION_X, MANA_TEXT_LOCATION_Y);
+        g2d.drawString("Health", 555, 50);
+        g2d.drawString("%d/%d".formatted(player.currentHealth(), player.health()), 555, 70);
+
+        // Mana label
+        g2d.drawString("Mana", 555, 100);
+        g2d.drawString("%d/%d".formatted(player.currentMana(), player.mana()), 555, 120);
 
         // Attack and defense icons
-        g2d.setColor(Color.black);
         g2d.drawImage(imageRepository.attackPointsIcon(), 520, 150, null);
         g2d.drawImage(imageRepository.defensePointsIcon(), 520, 200, null);
 
@@ -99,6 +63,7 @@ public class PlayerDataRenderer {
         g2d.drawString(String.valueOf(player.attack()), 550, 170);
         g2d.drawString(String.valueOf(player.defense()), 550, 220);
 
+        // Weapon and spell bonus damage
         Weapon weapon = player.weapon();
         Spell spell = player.spell();
 
@@ -119,9 +84,12 @@ public class PlayerDataRenderer {
         g2d.setColor(Color.BLACK);
         g2d.drawString("Weapon", 525, 250);
         g2d.drawString("Spell", 525, 275);
+
+        // Weapon image
         if (weapon != null) {
             g2d.drawImage(imageRepository.weaponPictureForLevel(weapon.level()), 605, 230, null);
         }
+        // Spell image
         if (spell != null) {
             g2d.drawImage(imageRepository.spellPictureForLevel(spell.level()), 580, 255, null);
         }

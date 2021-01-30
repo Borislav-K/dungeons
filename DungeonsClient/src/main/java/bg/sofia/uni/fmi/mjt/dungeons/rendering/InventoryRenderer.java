@@ -14,8 +14,6 @@ public class InventoryRenderer {
 
     public static void renderInventory(Graphics2D g2d, Inventory inventory) {
         // Inventory grid
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(550, 300, 90, 90);
         g2d.setColor(Color.black);
         g2d.drawRect(550, 300, 90, 90);
         g2d.drawRect(550, 300, 30, 30);

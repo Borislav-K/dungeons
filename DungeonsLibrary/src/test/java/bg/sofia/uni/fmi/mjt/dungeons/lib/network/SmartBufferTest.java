@@ -3,8 +3,6 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.network;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.junit.Assert.assertArrayEquals;
 
 public class SmartBufferTest {
