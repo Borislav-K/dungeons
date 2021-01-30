@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class Inventory implements Transmissible {
@@ -73,5 +74,18 @@ public class Inventory implements Transmissible {
         };
         item.deserialize(in);
         return item;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Inventory inventory = (Inventory) o;
+        return Objects.equals(items, inventory.items);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(items);
     }
 }

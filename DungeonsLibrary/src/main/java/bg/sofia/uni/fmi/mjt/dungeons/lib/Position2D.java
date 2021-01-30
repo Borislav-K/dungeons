@@ -113,4 +113,17 @@ public class Position2D implements Transmissible {
             actors.add(actor);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Position2D that = (Position2D) o;
+        return x == that.x && y == that.y && isObstaclePosition == that.isObstaclePosition;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, isObstaclePosition);
+    }
 }

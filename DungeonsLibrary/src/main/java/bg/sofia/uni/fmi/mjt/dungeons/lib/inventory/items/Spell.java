@@ -5,6 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Spell implements Item {
 
@@ -50,5 +51,18 @@ public class Spell implements Item {
         level = in.readByte();
         damage = in.readShort();
         manaCost = in.readShort();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Spell spell = (Spell) o;
+        return level == spell.level && damage == spell.damage && manaCost == spell.manaCost;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(level, damage, manaCost);
     }
 }

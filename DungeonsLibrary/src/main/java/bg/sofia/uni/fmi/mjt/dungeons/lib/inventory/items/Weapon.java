@@ -5,6 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Weapon implements Item {
 
@@ -42,5 +43,18 @@ public class Weapon implements Item {
     public void deserialize(DataInputStream in) throws IOException {
         level = in.readByte();
         attack = in.readShort();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Weapon weapon = (Weapon) o;
+        return level == weapon.level && attack == weapon.attack;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(level, attack);
     }
 }
