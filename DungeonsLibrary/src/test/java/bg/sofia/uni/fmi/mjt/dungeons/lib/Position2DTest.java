@@ -26,7 +26,7 @@ public class Position2DTest {
     private static final Actor dummyTreasure = new Treasure();
 
 
-    private static Position2D testPosition;
+    private Position2D testPosition;
 
     @Before
     public void setUp() {
