@@ -51,7 +51,6 @@ public class GameClient {
     public PlayerSegment fetchStateFromServer() {
         try {
             int r = buffer.readFromChannel(socketChannel);
-            System.out.println(r);
             return r > 0 ? deserializePlayerSegment(buffer) : null;
         } catch (IOException e) {
             return null;
