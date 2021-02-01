@@ -59,8 +59,13 @@ public class PlayerActionFactoryTest {
         assertEquals(ActionType.TREASURE_PICKUP, createdAction.type());
     }
 
+    @Test(expected = IllegalPlayerActionException.class)
+    public void testItemUsageCommandCreationWhenItemNumberIsOutOfBounds() throws IllegalPlayerActionException {
+        PlayerActionFactory.create("us10", dummyChannel);
+    }
+
     @Test
-    public void testItemUsageCommandCreationWhenItemNumberIsInBounds() throws IllegalPlayerActionException {
+    public void testItemUsageCommandCreationOK() throws IllegalPlayerActionException {
         PlayerAction createdAction = PlayerActionFactory.create("us1", dummyChannel);
         assertEquals(ActionType.ITEM_USAGE, createdAction.type());
         ItemUsage itemUsage = (ItemUsage) createdAction;
@@ -68,10 +73,30 @@ public class PlayerActionFactoryTest {
     }
 
     @Test(expected = IllegalPlayerActionException.class)
-    public void testItemUsageCommandCreationWhenItemNumberIsOutOfBounds() throws IllegalPlayerActionException {
-        PlayerActionFactory.create("us10", dummyChannel);
+    public void testItemThrowCommandCreationWhenItemIsOutOfBounds() throws IllegalPlayerActionException {
+        PlayerActionFactory.create("th10", dummyChannel);
     }
 
+    @Test
+    public void testItemThrowCommandCreationOK() throws IllegalPlayerActionException {
+        PlayerAction createdAction = PlayerActionFactory.create("th1", dummyChannel);
+        assertEquals(ActionType.ITEM_THROW, createdAction.type());
+        ItemThrow itemThrow = (ItemThrow) createdAction;
+        assertEquals(1, itemThrow.itemNumber());
+    }
+
+    @Test(expected = IllegalPlayerActionException.class)
+    public void testItemGrantCommandCreationWhenItemIsOutOfBounds() throws IllegalPlayerActionException {
+        PlayerActionFactory.create("gv10", dummyChannel);
+    }
+
+    @Test
+    public void testItemGrantCommandCreationOK() throws IllegalPlayerActionException {
+        PlayerAction createdAction = PlayerActionFactory.create("gv1", dummyChannel);
+        assertEquals(ActionType.ITEM_GRANT, createdAction.type());
+        ItemGrant itemGrant = (ItemGrant) createdAction;
+        assertEquals(1,itemGrant.itemNumber());
+    }
 
     private static void assertMovementAction(PlayerAction action, Direction direction) {
         assertEquals(ActionType.MOVEMENT, action.type());
