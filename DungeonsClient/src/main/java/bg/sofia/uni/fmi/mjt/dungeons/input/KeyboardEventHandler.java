@@ -7,18 +7,18 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class KeyboardEventHandler {
 
-    private static final int MAX_COMMANDS_PER_FRAME = 3;
+    private static final int COMMAND_CAPACITY = 3;
 
     private Queue<String> commands;
     private GameClient webClient;
 
     public KeyboardEventHandler(GameClient webClient) {
-        this.commands = new ArrayBlockingQueue<>(MAX_COMMANDS_PER_FRAME);
+        this.commands = new ArrayBlockingQueue<>(COMMAND_CAPACITY);
         this.webClient = webClient;
     }
 
     public void publishCommand(String command) {
-        if (commands.size() == MAX_COMMANDS_PER_FRAME) {
+        if (commands.size() == COMMAND_CAPACITY) {
             return;
         }
         commands.add(command);
