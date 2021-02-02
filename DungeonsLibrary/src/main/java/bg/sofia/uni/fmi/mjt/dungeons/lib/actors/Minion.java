@@ -54,7 +54,6 @@ public class Minion extends FightableActor {
         return level * XP_REWARD_PER_MINION_LVL;
     }
 
-    @Override
     public int level() {
         return level;
     }

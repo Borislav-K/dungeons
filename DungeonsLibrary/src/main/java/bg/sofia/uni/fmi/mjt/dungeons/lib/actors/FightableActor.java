@@ -83,8 +83,6 @@ public abstract class FightableActor implements Actor {
 
     public abstract int XPReward();
 
-    public abstract int level();
-
     public abstract void dealDamage(FightableActor subject);
 
     @Override

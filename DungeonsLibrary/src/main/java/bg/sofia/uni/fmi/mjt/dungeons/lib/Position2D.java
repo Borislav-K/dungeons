@@ -50,7 +50,7 @@ public class Position2D implements Transmissible {
      *
      * @param actor - the actor used for the "not-same-as" relation
      * @param allowedTypes  - the desired actor types
-     * @return
+     * @return the found actor - or null if there wasn't such
      */
     public Actor getActorNotSameAs(Actor actor, ActorType... allowedTypes) {
         if (actors.size() != MAX_ACTORS_AT_POSITION) {
