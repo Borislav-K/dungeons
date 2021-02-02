@@ -65,8 +65,8 @@ public class PlayerActionHandler {
             Player player = playerManager.createNewPlayer(connection.initiator());
             gameMap.spawnPlayer(player);
         } catch (PlayerCapacityReachedException e) {
-            System.out.println("Game is full - cannot add player"); //TODO let the player know as well and add test for it
-            // TODO probably close the channel - otherwise player segments need to be sent with a proper flag
+            System.out.println("Game is full - cannot add player");
+            closeChannel(connection.initiator());
         }
     }
 
