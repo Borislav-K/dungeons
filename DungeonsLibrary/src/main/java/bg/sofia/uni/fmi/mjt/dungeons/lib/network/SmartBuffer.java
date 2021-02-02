@@ -15,7 +15,7 @@ public class SmartBuffer {
     }
 
     public SmartBuffer(int capacity) {
-        this.buffer = ByteBuffer.allocate(capacity); // TODO think about allocateDirect()
+        this.buffer = ByteBuffer.allocate(capacity);
     }
 
     public byte[] read() {

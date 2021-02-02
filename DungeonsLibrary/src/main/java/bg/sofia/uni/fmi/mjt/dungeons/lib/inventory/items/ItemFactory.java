@@ -21,7 +21,7 @@ public class ItemFactory {
     private static Random random = new Random();
 
     public static Item random() {
-        ItemType itemType = ItemType.values()[random.nextInt(ItemType.values().length)]; // TODO Adjust randomization
+        ItemType itemType = ItemType.values()[random.nextInt(ItemType.values().length)];
         return ofType(itemType);
     }
 
