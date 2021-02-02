@@ -31,8 +31,10 @@ public class GameClient {
 
     public void disconnect() {
         try {
-            socketChannel.close();
-            System.out.println("Disconnected from the server");
+            if (socketChannel != null) { // Happens if not connected to the server at all
+                socketChannel.close();
+                System.out.println("Disconnected from the server");
+            }
         } catch (IOException e) {
             System.out.println("Could not gracefully terminate connection to the server.");
         }
@@ -43,12 +45,14 @@ public class GameClient {
         try {
             buffer.writeIntoChannel(socketChannel);
         } catch (IOException e) {
-            System.out.printf("Could not send %s to the server%n", msg);
-            e.printStackTrace();
+            System.out.printf("Could not send %s to the server. Reason %s\n", msg, e.getMessage());
         }
     }
 
     public PlayerSegment fetchStateFromServer() {
+        if (socketChannel == null) {
+            return null;
+        }
         try {
             int r = buffer.readFromChannel(socketChannel);
             return r > 0 ? deserializePlayerSegment(buffer) : null;
