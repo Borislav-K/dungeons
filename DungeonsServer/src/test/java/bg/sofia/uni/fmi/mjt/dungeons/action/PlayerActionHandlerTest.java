@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.mjt.dungeons.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeons.PlayerManager;
 import bg.sofia.uni.fmi.mjt.dungeons.enums.Direction;
 import bg.sofia.uni.fmi.mjt.dungeons.exceptions.NoSuchPlayerException;
+import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.Position2D;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Minion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
@@ -48,7 +49,14 @@ public class PlayerActionHandlerTest {
     }
 
     @Test
-    public void testPlayerConnectHandling() throws Exception {
+    public void testPlayerConnectWhenGameIsFull() throws Exception {
+        when(playerManagerMock.createNewPlayer(any())).thenThrow(PlayerCapacityReachedException.class);
+        handleAction(new PlayerConnect(playerChannelMock));
+        verify(playerChannelMock).close();
+    }
+
+    @Test
+    public void testPlayerConnectHandlingOK() throws Exception {
         handleAction(new PlayerConnect(playerChannelMock));
         verify(playerManagerMock).createNewPlayer(playerChannelMock);
         verify(gameMapMock).spawnPlayer(playerSpy);
