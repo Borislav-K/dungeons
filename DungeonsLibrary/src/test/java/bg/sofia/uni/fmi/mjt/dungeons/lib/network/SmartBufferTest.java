@@ -9,7 +9,7 @@ public class SmartBufferTest {
 
     private static final int TEST_BUFFER_CAPACITY = 128;
 
-    private static SmartBuffer testBuffer;
+    private SmartBuffer testBuffer;
 
     @Before
     public void setUp() {

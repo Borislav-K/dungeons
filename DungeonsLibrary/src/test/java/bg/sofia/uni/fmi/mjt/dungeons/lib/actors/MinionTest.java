@@ -12,7 +12,7 @@ public class MinionTest {
 
     private static final Player dummyPlayer = new Player();
 
-    private static final Minion testMinion = new Minion(1);
+    private Minion testMinion = new Minion(1);
 
     @Before
     public void setUp() {

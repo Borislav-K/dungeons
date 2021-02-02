@@ -65,7 +65,8 @@ public class PlayerActionHandler {
             Player player = playerManager.createNewPlayer(connection.initiator());
             gameMap.spawnPlayer(player);
         } catch (PlayerCapacityReachedException e) {
-            System.out.println("Game is full - cannot add player"); //TODO let the player know as well
+            System.out.println("Game is full - cannot add player"); //TODO let the player know as well and add test for it
+            // TODO probably close the channel - otherwise player segments need to be sent with a proper flag
         }
     }
 
@@ -74,11 +75,7 @@ public class PlayerActionHandler {
         Player player = playerManager.getPlayerByChannel(playerChannel);
         playerManager.removePlayer(player);
         gameMap.despawnActor(player);
-        try {
-            playerChannel.close();
-        } catch (IOException e) {
-            System.out.printf("There was a problem when closing the player %d's channel", player.id());
-        }
+        closeChannel(playerChannel);
     }
 
     private void handleMovement(PlayerMovement action) throws NoSuchPlayerException {

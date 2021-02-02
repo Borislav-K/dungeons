@@ -2,8 +2,6 @@ package bg.sofia.uni.fmi.mjt.dungeons.lib.inventory;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,12 +12,9 @@ public class InventoryTest {
 
     private static final int INVENTORY_LIMIT = 9;
 
-    private static final Item dummyItem1 = new HealthPotion();
-    private static final Item dummyItem2 = new ManaPotion();
-    private static final Item dummyItem3 = new Spell(1, 10, 100);
+    private static final Item dummyItem = new HealthPotion();
 
     private Inventory testInventory;
-
 
     @Before
     public void setUp() {
@@ -29,7 +24,7 @@ public class InventoryTest {
     @Test
     public void testInventoryLimit() {
         for (int i = 1; i <= INVENTORY_LIMIT + 1; i++) {
-            testInventory.addItemToInventory(dummyItem1);
+            testInventory.addItemToInventory(dummyItem);
         }
         assertEquals(INVENTORY_LIMIT,testInventory.currentSize());
     }
@@ -41,14 +36,14 @@ public class InventoryTest {
 
     @Test
     public void testGetItemWhenItemsCountIsNotEnough() {
-        testInventory.addItemToInventory(dummyItem1);
+        testInventory.addItemToInventory(dummyItem);
         assertNull(testInventory.getItem(2));
     }
 
     @Test
     public void testGetItemOK() {
-        testInventory.addItemToInventory(dummyItem1);
-        assertEquals(dummyItem1,testInventory.getItem(1));
+        testInventory.addItemToInventory(dummyItem);
+        assertEquals(dummyItem,testInventory.getItem(1));
     }
 
     @Test
@@ -58,25 +53,25 @@ public class InventoryTest {
 
     @Test
     public void testRemoveItemWhenItemsCountIsNotEnough() {
-        testInventory.addItemToInventory(dummyItem1);
+        testInventory.addItemToInventory(dummyItem);
         assertNull(testInventory.removeItem(2));
     }
 
     @Test
     public void testRemoveItemOK() {
-        testInventory.addItemToInventory(dummyItem1);
-        assertEquals(dummyItem1,testInventory.removeItem(1));
+        testInventory.addItemToInventory(dummyItem);
+        assertEquals(dummyItem,testInventory.removeItem(1));
         assertEquals(0,testInventory.currentSize());
     }
 
     @Test
     public void testRemoveRandomItemWhenInventoryIsEmpty() {
-        testInventory.removeRandomItem(); // should not throw an out of bounds exception
+        testInventory.removeRandomItem(); // should not throw an array out of bounds exception
     }
 
     @Test
     public void testRemoveRandomItemOK() {
-        testInventory.addItemToInventory(dummyItem1);
+        testInventory.addItemToInventory(dummyItem);
         assertEquals(1,testInventory.currentSize());
         testInventory.removeRandomItem();
         assertEquals(0,testInventory.currentSize());

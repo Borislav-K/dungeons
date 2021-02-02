@@ -12,9 +12,9 @@ public class PlayerActionFactory {
     private static final String MOVE_RIGHT_CMD = "mvr";
     private static final String ATTACK_CMD = "att";
     private static final String TREASURE_PICKUP_CMD = "pck";
-    private static final String ITEM_USAGE_REGEX = "us[0-9]";
-    private static final String ITEM_GRANT_REGEX = "gv[0-9]";
-    private static final String ITEM_THROW_REGEX = "th[0-9]";
+    private static final String ITEM_USAGE_REGEX = "us[1-9]";
+    private static final String ITEM_GRANT_REGEX = "gv[1-9]";
+    private static final String ITEM_THROW_REGEX = "th[1-9]";
 
     public static PlayerAction create(String command, SocketChannel initiator) throws IllegalPlayerActionException {
         if (command.matches(ITEM_USAGE_REGEX)) {

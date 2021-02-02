@@ -26,6 +26,7 @@ public class GameServer {
     private PlayerActionHandler actionHandler;
 
     private Selector selector;
+    private ServerSocketChannel serverSocketChannel;
 
     public GameServer(PlayerActionHandler actionHandler) {
         this.actionHandler = actionHandler;
@@ -34,7 +35,7 @@ public class GameServer {
 
     public void start() {
         try {
-            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+            serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.bind(new InetSocketAddress(HOST, PORT));
             serverSocketChannel.configureBlocking(false);
             selector = Selector.open();
@@ -42,6 +43,11 @@ public class GameServer {
         } catch (IOException e) {
             throw new IllegalStateException("Cannot start the server", e);
         }
+    }
+
+    public void stop() throws IOException {
+        selector.close();
+        serverSocketChannel.close();
     }
 
     public void fetchPlayerActions() {

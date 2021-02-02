@@ -22,7 +22,6 @@ public class Game {
     private KeyboardEventHandler keyboardEventHandler;
     private KeyboardListener keyboardListener;
 
-    private boolean shouldTerminate = false;
     private int consecutiveFramesWithoutResponse = 0;
 
     public Game() {
@@ -44,17 +43,14 @@ public class Game {
             webClient.connect();
         } catch (IOException e) {
             System.out.println("Startup failed: could not connect to the game server.");
-            terminate(); //TODO render a proper message
+            // After threshold frames pass, the application will terminate
         }
     }
 
     private void startLoop() {
         double framesElapsed = 0;
         long lastMoment = System.nanoTime();
-        while (!shouldTerminate) {
-            if (consecutiveFramesWithoutResponse == FRAMES_WITH_NO_RESPONSE_THRESHOLD) {
-                terminate();
-            }
+        while (consecutiveFramesWithoutResponse != FRAMES_WITH_NO_RESPONSE_THRESHOLD) {
             long now = System.nanoTime();
             framesElapsed += (now - lastMoment) / FRAME_NANOS;
             lastMoment = now;
@@ -63,6 +59,7 @@ public class Game {
                 framesElapsed--;
             }
         }
+        terminate();
     }
 
     private void tick() {
@@ -80,7 +77,6 @@ public class Game {
     private void terminate() {
         webClient.disconnect();
         gameWindow.dispose();
-        shouldTerminate = true;
     }
 
 }

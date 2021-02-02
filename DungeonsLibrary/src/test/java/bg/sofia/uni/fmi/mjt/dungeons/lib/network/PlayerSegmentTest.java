@@ -34,7 +34,7 @@ public class PlayerSegmentTest {
     private static final Position2D dummyPosition2 = new Position2D(3, 4);
     private static final List<Position2D> dummyPositions = List.of(dummyPosition1, dummyPosition2);
 
-    private static final PlayerSegment testSegment = new PlayerSegment(dummyPlayer, dummyPositions);
+    private PlayerSegment testSegment = new PlayerSegment(dummyPlayer, dummyPositions);
 
     @BeforeClass
     public static void init() {
@@ -61,15 +61,15 @@ public class PlayerSegmentTest {
         assertEqualToDummyPositions(deserializedPositions);
     }
 
-    private static byte[] serializeTestSegment() throws IOException {
+    private byte[] serializeTestSegment() throws IOException {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-        PlayerSegmentTest.testSegment.serialize(dataOutputStream);
+        testSegment.serialize(dataOutputStream);
         dataOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
     }
 
-    private static PlayerSegment deserializeSegment(byte[] bytes) throws IOException {
+    private PlayerSegment deserializeSegment(byte[] bytes) throws IOException {
         var byteArrayInputStream = new ByteArrayInputStream(bytes);
         var dataInputStream = new DataInputStream(byteArrayInputStream);
         PlayerSegment deserializedSegment = new PlayerSegment();
@@ -77,7 +77,7 @@ public class PlayerSegmentTest {
         return deserializedSegment;
     }
 
-    private static void assertEqualToDummyPlayer(Player player) {
+    private void assertEqualToDummyPlayer(Player player) {
         assertEquals(dummyPlayer, player); // Compares IDs only
         assertEquals(dummyPlayer.position(), player.position());
         assertEquals(dummyPlayer.inventory(), player.inventory());
@@ -85,7 +85,7 @@ public class PlayerSegmentTest {
         assertEquals(dummyPlayer.spell(), player.spell());
     }
 
-    private static void assertEqualToDummyPositions(List<Position2D> positions) {
+    private void assertEqualToDummyPositions(List<Position2D> positions) {
         assertEquals(2, positions.size());
         assertEquals(dummyPosition1, positions.get(0)); // Compares x,y, isObstaclePosition only
         assertEquals(dummyPosition1.actors(), positions.get(0).actors());
