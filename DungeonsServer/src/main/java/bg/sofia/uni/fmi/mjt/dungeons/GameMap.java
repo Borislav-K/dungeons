@@ -15,12 +15,11 @@ import static bg.sofia.uni.fmi.mjt.dungeons.lib.GameConfigurator.*;
 
 public class GameMap {
 
-    private Random generator;
+    private static final Random generator = new Random();
 
     private Position2D[][] fields;
 
     public GameMap() {
-        generator = new Random();
         fields = new Position2D[MAP_DIMENSIONS][MAP_DIMENSIONS];
         constructGameMap();
     }
