@@ -75,11 +75,7 @@ public class PlayerActionHandler {
         Player player = playerManager.getPlayerByChannel(playerChannel);
         playerManager.removePlayer(player);
         gameMap.despawnActor(player);
-        try {
-            playerChannel.close();
-        } catch (IOException e) {
-            System.out.printf("There was a problem when closing the player %d's channel", player.id());
-        }
+        closeChannel(playerChannel);
     }
 
     private void handleMovement(PlayerMovement action) throws NoSuchPlayerException {
