@@ -9,7 +9,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class KeyboardListenerTest {

@@ -10,7 +10,10 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class Position2D implements Transmissible {
     private static final int MAX_ACTORS_AT_POSITION = 2;

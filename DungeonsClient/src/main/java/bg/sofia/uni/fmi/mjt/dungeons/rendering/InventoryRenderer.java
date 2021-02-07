@@ -5,7 +5,8 @@ import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class InventoryRenderer {

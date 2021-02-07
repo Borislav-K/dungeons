@@ -3,8 +3,10 @@ package bg.sofia.uni.fmi.mjt.dungeons.rendering;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.PlayerSegment;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Color;
 
 public class Renderer extends JPanel {
 

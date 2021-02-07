@@ -20,7 +20,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.channels.SocketChannel;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PlayerActionHandlerTest {

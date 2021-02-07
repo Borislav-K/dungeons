@@ -5,8 +5,11 @@ import bg.sofia.uni.fmi.mjt.dungeons.exceptions.PlayerCapacityReachedException;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.actors.Player;
 
 import java.nio.channels.SocketChannel;
-import java.util.*;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
 // PlayerManager maintains a mapping between clients(channels) and their respective player entities
 public class PlayerManager {
 

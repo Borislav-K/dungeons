@@ -36,7 +36,7 @@ public class GameClient {
                 System.out.println("Disconnected from the server");
             }
         } catch (IOException e) {
-            System.out.println("Could not gracefully terminate connection to the server.");
+            System.out.printf("Could not gracefully terminate connection to the server: %s\n",e.getMessage());
         }
     }
 

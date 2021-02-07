@@ -21,7 +21,10 @@ import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.spy;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,7 +44,7 @@ public class StateDistributorTest {
     @Before
     public void setUp() throws Exception {
         Player player = playerManager.createNewPlayer(playerChannel);
-        player.setPosition(new Position2D(10,10));
+        player.setPosition(new Position2D(10, 10));
         playerSegment = new PlayerSegment(player, gameMap.getPositionsWithActors());
     }
 

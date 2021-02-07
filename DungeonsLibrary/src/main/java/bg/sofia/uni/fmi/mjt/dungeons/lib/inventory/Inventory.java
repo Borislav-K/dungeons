@@ -1,7 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeons.lib.inventory;
 
 import bg.sofia.uni.fmi.mjt.dungeons.lib.enums.ItemType;
-import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.*;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Item;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.HealthPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.ManaPotion;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Weapon;
+import bg.sofia.uni.fmi.mjt.dungeons.lib.inventory.items.Spell;
 import bg.sofia.uni.fmi.mjt.dungeons.lib.network.Transmissible;
 
 import java.io.DataInputStream;
