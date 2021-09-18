@@ -22,4 +22,4 @@ The main keybindings are the following:
 * **SHIFT+1-9** to throw an item from the inventory
 * **F1-F9** to trade an item from the inventory to another player (both players must be at the same position)
 
-* Players are labeled with the numbers 1-9 on the map. Minions' level varies from level 1 to 5. Making unsuccessful attempts until learning how a level X minion works is part of the design :)
+* Players are labeled with the numbers 1-9 on the map. Minions' level varies from 1 to 5. Making unsuccessful attempts until learning how a level X minion looks is part of the design :)
